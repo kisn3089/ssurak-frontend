@@ -8,17 +8,12 @@ import {
   CreateTablePayload,
   createTablePayloadSchema,
 } from "@ssurak/api/schemas/model/table.schema";
-import {
-  Resolver,
-  useForm,
-  UseFormRegisterReturn,
-  useWatch,
-} from "react-hook-form";
+import { useForm, UseFormRegisterReturn, useWatch } from "react-hook-form";
 import useResetPreviewOnEdit from "../add/hooks/useResetPreviewOnEdit";
 import useSuspenseWithAuth from "@ssurak/api/hooks/useSuspenseWithAuth";
 import { Table } from "@ssurak/api/types/table/table.interface";
 import { staticAddTableFields } from "../add/components/staticAddTableFields";
-import { zodResolver } from "@hookform/resolvers/zod";
+import useFormResolver from "../../menus/hooks/useFormResolver";
 import BackListAfterAdd from "../add/components/BackListAfterAdd";
 import { DynamicFormFields } from "../../components/form/FormFields.type";
 import Link from "next/link";
@@ -28,11 +23,6 @@ import FormSubmitContent, {
   previewSuccessContent,
 } from "../../components/form/FormSubmitContent";
 import FormFields from "../../components/form/FormFields";
-
-const duplicateResolverError = {
-  type: "manual",
-  message: "이미 존재하는 테이블 번호입니다.",
-};
 
 export default function TableForm({
   linkToCancel,
@@ -57,24 +47,12 @@ export default function TableForm({
     existingTableNumbers.delete(formDefaultValues.tableNumber);
   }
 
-  const resolver: Resolver<CreateTablePayload> = async (values, ...options) => {
-    const result = await zodResolver(createTablePayloadSchema)(
-      values,
-      ...options
-    );
-
-    if (existingTableNumbers.has(values.tableNumber?.trim())) {
-      return {
-        values: {},
-        errors: {
-          ...result.errors,
-          tableNumber: duplicateResolverError,
-        },
-      };
-    }
-
-    return result;
-  };
+  const resolver = useFormResolver<CreateTablePayload>({
+    schema: createTablePayloadSchema,
+    existingValues: existingTableNumbers,
+    field: "tableNumber",
+    duplicateMessage: "이미 존재하는 테이블 번호입니다.",
+  });
 
   const {
     register,
