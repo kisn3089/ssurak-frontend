@@ -1,5 +1,5 @@
 import { Menu } from "@ssurak/api/types/menu/menu.interface";
-import { buildRows } from "./build-rows";
+import { buildRows, PreviewRow } from "./build-rows";
 import OutOfWindowMessage from "./OutOfWindowMessage";
 import SortNumber from "./SortNumber";
 import SortMenuName from "./SortMenuName";
@@ -10,19 +10,13 @@ const MAX_VISIBLE = 5;
 
 type SortOrderPreviewProps = {
   categoryName: string;
-  menus: Menu[];
-  sortOrder?: number;
-  newMenuName: string;
+  rows: PreviewRow[];
 };
 
 export default function SortOrderPreview({
   categoryName,
-  menus,
-  sortOrder,
-  newMenuName,
+  rows,
 }: SortOrderPreviewProps) {
-  const rows = buildRows(menus, sortOrder, newMenuName);
-
   const newIndex = rows.findIndex((row) => row.isNew);
   const half = Math.floor(MAX_VISIBLE / 2);
   let start = Math.max(0, newIndex - half);
