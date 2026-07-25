@@ -21,7 +21,7 @@ export default function FormErrorWithRetry({
       </div>
       <Button
         type="submit"
-        className="shrink-0 border-red-200 bg-background text-red-500 shadow-none font-semibold dark:border-red-900 dark:text-red-400 dark:shadow-none hover:text-red-400 hover:bg-background/60"
+        className="shrink-0 ml-auto border-red-200 bg-background text-red-500 shadow-none font-semibold dark:border-red-900 dark:text-red-400 dark:shadow-none hover:text-red-400 hover:bg-background/60"
         variant={"outline"}
       >
         다시 시도

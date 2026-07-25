@@ -9,6 +9,7 @@ import EntityListView, {
 import useMenuMutation from "@ssurak/api/core/store/menu/useMenuMutation";
 import { httpMenuErrors } from "@ssurak/api/core/store/menu/httpMenuErrors";
 import { useParams } from "next/navigation";
+import { activeBadge } from "../../components/table-view/table/activate-badge.const";
 
 interface MenuListViewProps {
   menuList: Menu[];
@@ -50,6 +51,7 @@ export default function MenuListView({ menuList }: MenuListViewProps) {
       toastPrefix="메뉴"
       mutation={{ updateActivate, deleteAction }}
       httpErrors={httpMenuErrors}
+      activeBadge={activeBadge(["판매중", "미판매중"])}
     />
   );
 }

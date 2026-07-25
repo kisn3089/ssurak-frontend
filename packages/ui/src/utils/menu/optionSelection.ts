@@ -1,9 +1,9 @@
 import {
-  Menu,
+  DetailMenu,
   MenuOptionEntry,
 } from "@ssurak/ui/components/menu/menu-detail/menu-detail.type";
 
-export function toOptionEntries<MenuLike extends Menu>(
+export function toOptionEntries<MenuLike extends DetailMenu>(
   options: MenuLike["requiredOptions"] | MenuLike["customOptions"]
 ): MenuOptionEntry[] {
   if (!options) return [];

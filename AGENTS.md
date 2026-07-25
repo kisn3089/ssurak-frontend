@@ -177,6 +177,7 @@ return response.data;
 | --------------------------------- | -------------- | --------------------------------------------------------- |
 | `NEXT_PUBLIC_API_SSURAK_URL`      | order, console | 백엔드 API URL (브라우저 클라이언트용)                    |
 | `NEXT_PUBLIC_SSURAK_INTERNAL_URL` | order, console | 백엔드 API URL (서버 컴포넌트/라우트 핸들러용)            |
+| `NEXT_PUBLIC_IMAGE_HOSTNAME`      | order, console | 메뉴 이미지 CDN 호스트명 (S3 + CloudFront, dev/prod 분리) |
 | `NEXT_PUBLIC_ORDER_APP_URL`       | console        | 고객 앱 URL (테이블 QR 코드 생성에 사용)                  |
 | `COOKIE_DOMAIN`                   | console        | 인증 쿠키 도메인 (서브도메인 공유, production에서만 적용) |
 

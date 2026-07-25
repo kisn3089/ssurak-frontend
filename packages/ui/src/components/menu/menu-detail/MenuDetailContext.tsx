@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from "react";
 import {
-  Menu,
+  DetailMenu,
   MenuOptionEntry,
   SnapshotToFetch,
   SelectedOptions,
@@ -10,7 +10,7 @@ import {
 } from "./menu-detail.type";
 
 export interface MenuDetailState {
-  menu: Menu;
+  menu: DetailMenu;
   quantity: number;
   selectedOptions: SelectedOptions;
 }

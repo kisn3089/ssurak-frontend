@@ -11,7 +11,7 @@ import {
 } from "@ssurak/api/schemas/model/table.schema";
 import { TableFormValues } from "../../types/table-form.type";
 import { UseFormSetError } from "react-hook-form";
-import { diffFromDefaults } from "../../utils/diff-from-defaults";
+import { tableDiffFromDefaults } from "../../utils/table-diff-from-defaults";
 import FormErrorWithRetry from "../../../components/FormErrorWithRetry";
 import { httpTableErrors } from "@ssurak/api/core/store/table/httpTableErrors";
 
@@ -39,16 +39,20 @@ export default function TableEditForm() {
     payload: CreateTablePayload,
     setError: UseFormSetError<CreateTablePayload>
   ) => {
-    const updateTablePayload: UpdateTablePayload = diffFromDefaults(
+    const updateTablePayload: UpdateTablePayload = tableDiffFromDefaults(
       payload,
       formDefaultValues
     );
 
     if (Object.keys(updateTablePayload).length === 0) {
-      setError("tableNumber", {
-        type: "manual",
-        message: "변경된 사항이 없습니다.",
-      });
+      setError(
+        "tableNumber",
+        {
+          type: "manual",
+          message: "변경된 사항이 없습니다.",
+        },
+        { shouldFocus: true }
+      );
       return;
     }
 
@@ -62,7 +66,7 @@ export default function TableEditForm() {
   return (
     <TableForm
       formDefaultValues={formDefaultValues}
-      buttonText="수정"
+      buttonText="테이블 수정"
       linkToCancel={`/${storeId}/tables`}
       mutation={updateTable}
       formSubmit={formSubmit}

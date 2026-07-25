@@ -3,17 +3,20 @@ import type {
   MenuRequiredOption,
 } from "./menuOptions.interface";
 
-/**
- * 메뉴 응답.
- * 서버는 `id`·`categoryId`와 관계 필드를 제외하고 내려준다.
- */
+export interface MenuImages {
+  hero: string;
+  thumbnail: string;
+}
+
+/** 메뉴 응답. 서버는 `id`·`categoryId`와 관계 필드를 제외하고 내려준다. */
 export interface Menu {
   publicId: string;
   name: string;
   price: number;
   description: string | null;
-  imageUrl: string | null;
+  images: MenuImages | null;
   isAvailable: boolean;
+  categoryId: string;
   /** 카테고리 내 표시 순서 (Sparse 패턴: 10, 20, 30...) */
   sortOrder: number;
   requiredOptions: MenuRequiredOption | null;

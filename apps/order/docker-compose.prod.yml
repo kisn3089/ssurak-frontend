@@ -8,6 +8,8 @@ services:
       context: ../../
       dockerfile: apps/order/Dockerfile
       target: runner
+      args:
+        NEXT_PUBLIC_IMAGE_HOSTNAME: ${NEXT_PUBLIC_IMAGE_HOSTNAME:?prod CDN 호스트명이 필요합니다. 배포 전 NEXT_PUBLIC_IMAGE_HOSTNAME 을 셸 환경이나 .env 에 설정하세요}
     container_name: space-order-frontend-prod
     restart: unless-stopped
     environment:

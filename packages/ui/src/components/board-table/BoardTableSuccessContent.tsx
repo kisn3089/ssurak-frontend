@@ -1,5 +1,5 @@
-import { Check } from "lucide-react";
 import { useBoardTableContext } from "./BoardTableContext";
+import SuccessCheck from "../SuccessCheck";
 
 export default function BoardTableSuccessContent({
   successText,
@@ -24,16 +24,7 @@ export default function BoardTableSuccessContent({
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-y-3 p-4 text-center">
-      <span className="relative flex size-16 items-center justify-center">
-        <span className="absolute inset-0 rounded-full bg-green-500 animate-tzRing" />
-        <span className="relative flex size-16 items-center justify-center rounded-full bg-green-600 text-white animate-tzPop">
-          <Check
-            className="size-9 animate-tzDraw"
-            strokeWidth={3}
-            style={{ strokeDasharray: 24, strokeDashoffset: 24 }}
-          />
-        </span>
-      </span>
+      <SuccessCheck />
       <div className="flex flex-col gap-y-1">
         <p className="text-lg font-extrabold">{successText}</p>
         {summary && <p className="text-sm text-muted-foreground">{summary}</p>}

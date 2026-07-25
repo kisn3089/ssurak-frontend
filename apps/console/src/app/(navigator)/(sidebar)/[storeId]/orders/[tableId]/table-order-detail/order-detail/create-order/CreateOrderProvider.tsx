@@ -21,7 +21,6 @@ type MenuLike = Pick<
   | "customOptions"
   | "requiredOptions"
   | "description"
-  | "imageUrl"
   | "isAvailable"
 > &
   Partial<Pick<SnapshotMenu, "quantity">>;

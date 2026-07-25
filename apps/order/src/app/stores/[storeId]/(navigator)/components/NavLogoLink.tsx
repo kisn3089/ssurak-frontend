@@ -12,6 +12,7 @@ export default function NavLogoLink({ storeId }: { storeId: string }) {
           width={20}
           height={20}
           className="shrink-0"
+          loading="eager"
         />
         <StoreName />
       </div>

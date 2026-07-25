@@ -12,7 +12,7 @@ export interface TableFormValues {
 
 type TableMutations = ReturnType<typeof useTableMutation>;
 
-type TableFormBaseProps = {
+type TableBaseForm = {
   formDefaultValues: TableFormValues;
   linkToCancel: string;
   children: React.ReactNode;
@@ -23,12 +23,6 @@ type TableFormBaseProps = {
   ) => void;
 };
 
-type AddTableFormProps = TableFormBaseProps & {
-  mutation: TableMutations["createTable"];
+export type TableFormProps = TableBaseForm & {
+  mutation: TableMutations["createTable"] | TableMutations["updateTable"];
 };
-
-type EditTableFormProps = TableFormBaseProps & {
-  mutation: TableMutations["updateTable"];
-};
-
-export type TableFormProps = AddTableFormProps | EditTableFormProps;

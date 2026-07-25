@@ -27,7 +27,8 @@
     "react-dom": "19.2.0",
     "react-error-boundary": "^6.0.3",
     "react-hook-form": "^7.53.0",
-    "socket.io-client": "^4.8.3"
+    "socket.io-client": "^4.8.3",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@ssurak/lintconfig": "workspace:^",

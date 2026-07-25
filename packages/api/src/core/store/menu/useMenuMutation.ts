@@ -10,7 +10,6 @@ import { makeQueryKey } from "../../../utils/makeQueryKey";
 export default function useMenuMutation(storeId: string) {
   const queryClient = useQueryClient();
 
-  // invalidate 테스트 필요
   const invalidQueryKeys = [makeQueryKey(`/stores/v1/${storeId}/menus`)];
 
   const invalidateQueries = () => {

@@ -1,7 +1,12 @@
 import { CreateTablePayload } from "@ssurak/api/schemas/model/table.schema";
-import { StaticFormField } from "./AddTableFields.type";
+import { StaticInputField } from "@/app/(navigator)/(sidebar)/[storeId]/components/form/FormInputField";
+import { StaticCheckboxField } from "../../../components/form/FormToggleField";
 
-export const staticAddTableFields: StaticFormField<CreateTablePayload>[] = [
+/** 테이블 폼은 select 필드를 쓰지 않는다. */
+export const staticAddTableFields: (
+  | StaticInputField<CreateTablePayload>
+  | StaticCheckboxField<CreateTablePayload>
+)[] = [
   {
     id: "tableNumber",
     label: "테이블 번호",

@@ -40,7 +40,7 @@ export default function StoreSwitcher() {
       <div className="flex aspect-square items-center justify-center">
         <StoreIcon className="size-4" />
       </div>
-      <span className="truncate font-semibold">
+      <span className="truncate text-sm font-semibold">
         {currentStore?.name ?? "매장 선택"}
       </span>
       {hasMultipleStores && <ChevronsUpDown className="ml-auto size-4" />}

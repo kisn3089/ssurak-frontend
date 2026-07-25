@@ -1,9 +1,9 @@
 import { ItemContent, ItemFooter, ItemTitle } from "@ssurak/ui/components/item";
 import { transCurrencyFormat } from "@ssurak/ui/utils/menu/priceFormatter";
-import { Menu } from "./menu-detail.type";
+import { DetailMenu } from "./menu-detail.type";
 
 type MenuContentProps = {
-  menu: Menu;
+  menu: DetailMenu;
   description?: React.ReactNode;
   children: React.ReactNode;
 };

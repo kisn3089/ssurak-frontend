@@ -1,7 +1,7 @@
 import { ItemMedia } from "@ssurak/ui/components/item";
 import Image from "next/image";
 
-type MenuImageSize = "cover" | "item";
+type MenuImageSize = "cover" | "thumbnail" | "tiny";
 type MenuImagePreset = {
   class: string;
   width: number;
@@ -10,14 +10,19 @@ type MenuImagePreset = {
 
 const sizeClassMap = {
   cover: {
-    class: "w-full h-svw max-h-[calc(100vh-36rem)]",
+    class: "size-full aspect-[4/3]",
     width: 1080,
-    height: 480,
+    height: 810,
   },
-  item: {
+  thumbnail: {
     class: "size-24",
     width: 240,
-    height: 120,
+    height: 240,
+  },
+  tiny: {
+    class: "size-16",
+    width: 160,
+    height: 160,
   },
 } satisfies Record<MenuImageSize, MenuImagePreset>;
 

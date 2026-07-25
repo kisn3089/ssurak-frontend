@@ -2,7 +2,7 @@
 
 import { CardHeader } from "@ssurak/ui/components/layouts/card";
 import type { CartItem } from "@ssurak/api/types/cart/cart.interface";
-import MenuImage from "../../menus/components/MenuImage";
+import MenuImage from "@/app/stores/[storeId]/(navigator)/menus/components/MenuImage";
 import { useCart } from "./CartProvider";
 import CartMenuContent from "./CartMenuContent";
 import DeleteMenuButton from "./DeleteMenuButton";
@@ -20,7 +20,7 @@ export default function CartMenu({ menu }: CartMenuProps) {
       <MenuImage
         src={menu.menuImageUrl}
         alt={menu.menuName}
-        size="item"
+        size="thumbnail"
         className="rounded-xl"
       />
       <div className="w-full">

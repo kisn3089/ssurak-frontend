@@ -8,16 +8,16 @@ interface MenuOption {
   options: Option[];
 }
 
-export interface Menu {
+export interface DetailMenu {
   publicId: string;
   name: string;
   description: string | null;
-  imageUrl: string | null;
   price: number;
   isAvailable: boolean;
   requiredOptions: Record<string, MenuOption> | null;
   customOptions: Record<string, MenuOption> | null;
   quantity?: number;
+  imageKey?: string | null; // 이미지 키를 추가하여 이미지 URL을 가져올 수 있도록 함
 }
 
 export interface MenuOptionEntry {
@@ -26,7 +26,7 @@ export interface MenuOptionEntry {
 }
 
 export interface MenuDetailProviderProps {
-  menu: Menu;
+  menu: DetailMenu;
   children: React.ReactNode;
 }
 

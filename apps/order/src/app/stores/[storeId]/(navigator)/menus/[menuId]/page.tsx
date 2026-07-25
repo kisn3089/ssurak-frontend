@@ -6,7 +6,7 @@ import { StoreContextResponse } from "@ssurak/api/types/store/store.interface";
 import useSuspenseWithSession from "@ssurak/api/hooks/useSuspenseWithSession";
 import MenuDetailAddCart from "./components/MenuDetailAddCart";
 import { MenuDetail } from "@ssurak/ui/components/menu/menu-detail";
-import MenuImage from "../components/MenuImage";
+import MenuImage from "@/app/stores/[storeId]/(navigator)/menus/components/MenuImage";
 import { ItemDescription } from "@ssurak/ui/components/item";
 
 export default function MenuDetailPage() {
@@ -28,8 +28,10 @@ export default function MenuDetailPage() {
     throw new Error("메뉴를 찾을 수 없습니다.");
   }
 
+  const detailMenu = { ...menu, images: menu.images?.hero ?? null };
+
   return (
-    <MenuDetail.Provider menu={menu}>
+    <MenuDetail.Provider menu={detailMenu}>
       <main className="bg-accent flex flex-col gap-y-2">
         <MenuDetail.Info
           className="bg-background"
@@ -40,11 +42,11 @@ export default function MenuDetailPage() {
           }
         >
           <MenuImage
-            src={menu.imageUrl}
+            src={menu.images?.hero ?? "/images/default-menu-image.png"}
             priority={true}
             alt={menu.name}
             size="cover"
-            className="rounded-3xl min-h-72"
+            className="rounded-3xl"
           />
         </MenuDetail.Info>
         <section

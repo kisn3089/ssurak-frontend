@@ -52,6 +52,11 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# 이미지 CDN 호스트명은 next.config.mts 의 remotePatterns 에 빌드 타임으로 박히므로
+# 런타임 주입이 불가능하다. 컨텍스트의 .env(dev 값)를 덮어쓰려면 build arg 로 넘길 것.
+ARG NEXT_PUBLIC_IMAGE_HOSTNAME
+ENV NEXT_PUBLIC_IMAGE_HOSTNAME=$NEXT_PUBLIC_IMAGE_HOSTNAME
+
 # Build using turbo
 RUN corepack enable pnpm && pnpm build --filter=console
 

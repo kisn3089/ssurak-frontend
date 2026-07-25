@@ -32,6 +32,7 @@ interface EntityListViewProps<T> {
   toastPrefix: string;
   mutation: Mutation;
   httpErrors: ActionHttpErrors;
+  activeBadge: ReturnType<typeof activeBadge>;
 }
 
 export default function EntityListView<T>({
@@ -41,6 +42,7 @@ export default function EntityListView<T>({
   toastPrefix,
   mutation,
   httpErrors,
+  activeBadge,
 }: EntityListViewProps<T>) {
   const { isActioning } = useToasting();
 

@@ -1,6 +1,7 @@
 import { CardFooter } from "@ssurak/ui/components/layouts/card";
 import QrButton from "@ssurak/ui/components/qr-scan/QrButton";
 import { BoardTable } from "@ssurak/ui/components/board-table";
+import { cn } from "@ssurak/ui/lib/utils";
 import { TableOrder } from "../../../orders/components/table-order-list/table-order";
 
 type Table = {
@@ -24,10 +25,14 @@ export default function SampleTable({
   return (
     <BoardTable.Provider table={table}>
       <BoardTable.Layout
-        className={`pointer-events-none overflow-hidden ${table.disabled ? "opacity-50" : "opacity-100"} ${isSuccess ? "animate-tzCard border-[#c3ecd1] bg-[#f1faf4] mb-3" : ""}`}
+        className={cn(
+          "pointer-events-none overflow-hidden",
+          { "opacity-50": table.disabled },
+          { "animate-tzCard mb-3 border-green-200 bg-green-50": isSuccess }
+        )}
       >
         <BoardTable.Header
-          className={isSuccess ? "border-[#c3ecd1] bg-green-50" : ""}
+          className={cn({ "border-green-200 bg-green-50": isSuccess })}
         >
           <BoardTable.LeftLayout>
             <div className="pointer-events-none">
@@ -42,7 +47,7 @@ export default function SampleTable({
           </BoardTable.RightLayout>
         </BoardTable.Header>
         <BoardTable.Content
-          className={`min-h-52 ${isSuccess ? "border-[#d6ecdd] flex" : ""}`}
+          className={cn("min-h-52", { "flex border-green-100": isSuccess })}
         >
           {children}
           {!isSuccess && (

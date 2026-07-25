@@ -10,6 +10,7 @@ import ServerPrefetch from "@/app/(navigator)/components/ServerPrefetch";
 import { Metadata } from "next";
 import TableListSkeleton from "../components/table-view/table/TableListSkeleton";
 import TableListHeader from "../components/table-view/table/TableListHeader";
+import FilterListSkeleton from "../components/table-view/filter/FilterListSkeleton";
 
 export const metadata: Metadata = {
   title: "메뉴 설정 - ssurak",
@@ -32,9 +33,12 @@ export default function MenusSettingPage({
       </PageTitle>
       <Suspense
         fallback={
-          <TableListSkeleton row={5} column={5}>
-            <TableListHeader headers={menuHeaders} />
-          </TableListSkeleton>
+          <>
+            <FilterListSkeleton />
+            <TableListSkeleton row={5} column={5}>
+              <TableListHeader headers={menuHeaders} />
+            </TableListSkeleton>
+          </>
         }
       >
         <ServerPrefetch url={`/stores/v1/${storeId}/menus`}>

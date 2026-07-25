@@ -40,7 +40,7 @@ export default function TableAddForm() {
   return (
     <TableForm
       formDefaultValues={formDefaultValues}
-      buttonText="추가"
+      buttonText="테이블 추가"
       linkToCancel={`/${storeId}/tables`}
       mutation={createTable}
       formSubmit={formSubmit}

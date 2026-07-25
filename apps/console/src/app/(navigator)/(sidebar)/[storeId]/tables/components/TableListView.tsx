@@ -7,6 +7,7 @@ import EntityListView, {
 import useTableMutation from "@ssurak/api/core/store/table/useTableMutation";
 import { httpTableErrors } from "@ssurak/api/core/store/table/httpTableErrors";
 import { useParams } from "next/navigation";
+import { activeBadge } from "../../components/table-view/table/activate-badge.const";
 
 interface TableListViewProps {
   tableList: Table[];
@@ -52,6 +53,7 @@ export default function TableListView({
       toastPrefix={toastPrefix}
       mutation={{ updateActivate, deleteAction }}
       httpErrors={httpTableErrors}
+      activeBadge={activeBadge(["활성화", "비활성화"])}
     />
   );
 }

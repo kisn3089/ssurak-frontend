@@ -1,4 +1,4 @@
-import MenuImage from "../../(navigator)/menus/components/MenuImage";
+import MenuImage from "@/app/stores/[storeId]/(navigator)/menus/components/MenuImage";
 import CountIcon from "@ssurak/ui/components/CountIcon";
 
 type OrderItemThumbnailProps = {
@@ -15,7 +15,7 @@ export default function OrderItemThumbnail({
     <div className="flex flex-col gap-y-2 w-fit">
       <div className="relative w-fit">
         <MenuImage
-          size="item"
+          size="thumbnail"
           src={menuImageUrl}
           alt={menuName}
           className="rounded-2xl"

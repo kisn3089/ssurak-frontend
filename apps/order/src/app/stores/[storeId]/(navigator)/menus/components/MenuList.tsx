@@ -1,6 +1,6 @@
 import MenuCard from "@/app/stores/[storeId]/(navigator)/menus/components/MenuCard";
 import { Menu } from "@ssurak/api/types/menu/menu.interface";
-import { useState } from "react";
+import { cn } from "@ssurak/ui/lib/utils";
 
 export default function MenuList({
   menus,
@@ -9,17 +9,16 @@ export default function MenuList({
   menus: Menu[];
   priority: boolean;
 }) {
-  const [touched, setTouched] = useState<string | null>(null);
-
   return (
     <>
       {menus.map((menu) => (
         <div
           key={menu.publicId}
-          className={`rounded-md hover:bg-accent transition-all duration-200 ${touched === menu.publicId ? "bg-accent scale-98 " : "hover:bg-accent hover:scale-98"} ${!menu.isAvailable ? "opacity-50" : ""}`}
-          onTouchStart={() => setTouched(menu.publicId)}
-          onTouchEnd={() => setTouched(null)}
-          onTouchCancel={() => setTouched(null)}
+          className={cn(
+            `rounded-md hover:bg-accent transition-all duration-200`,
+            "active:not-aria-[haspopup]:scale-98 active:not-aria-[haspopup]:bg-accent hover:scale-98 hover:bg-accent",
+            !menu.isAvailable && "opacity-50"
+          )}
         >
           <MenuCard menu={menu} priority={priority} />
         </div>

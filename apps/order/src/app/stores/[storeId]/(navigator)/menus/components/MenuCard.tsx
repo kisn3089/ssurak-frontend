@@ -11,7 +11,7 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ActivityRender from "@ssurak/ui/components/activity-render/ActivityRender";
-import MenuImage from "./MenuImage";
+import MenuImage from "@/app/stores/[storeId]/(navigator)/menus/components/MenuImage";
 import { transCurrencyFormat } from "@ssurak/ui/utils/menu/priceFormatter";
 
 type MenuCardProps = {
@@ -38,15 +38,13 @@ export default function MenuCard({ menu, priority = false }: MenuCardProps) {
             )}
           </ActivityRender>
         </ItemContent>
-        <div className="flex items-center">
-          <MenuImage
-            src={menu.imageUrl}
-            alt={menu.name}
-            size="item"
-            priority={priority}
-            className="rounded-xl"
-          />
-        </div>
+        <MenuImage
+          src={menu.images?.thumbnail ?? null}
+          alt={menu.name}
+          size="thumbnail"
+          priority={priority}
+          className="rounded-xl"
+        />
       </Item>
     </Link>
   );
