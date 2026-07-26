@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getRealtimeSocket } from "./socket";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import {
+  getRealtimeSocket,
+  getRealtimeSocketEpoch,
+  subscribeRealtimeSocketEpoch,
+} from "./socket";
 
 export type RealtimeConnectionStatus =
   | "connected"
@@ -9,11 +13,20 @@ export type RealtimeConnectionStatus =
   | "disconnected"
   | "failed";
 
+const getServerRealtimeSocketEpoch = (): number => 0;
+
 export function useRealtimeConnectionStatus(): RealtimeConnectionStatus {
   const [status, setStatus] = useState<RealtimeConnectionStatus>(() => {
     if (typeof window === "undefined") return "disconnected";
     return getRealtimeSocket().connected ? "connected" : "disconnected";
   });
+
+  /** resetRealtimeSocket으로 인스턴스가 교체되면 새 소켓에 리스너를 다시 붙인다 */
+  const socketEpoch = useSyncExternalStore(
+    subscribeRealtimeSocketEpoch,
+    getRealtimeSocketEpoch,
+    getServerRealtimeSocketEpoch
+  );
 
   useEffect(() => {
     const socket = getRealtimeSocket();
@@ -37,7 +50,7 @@ export function useRealtimeConnectionStatus(): RealtimeConnectionStatus {
       socket.io.off("reconnect_attempt", onReconnectAttempt);
       socket.io.off("reconnect_failed", onReconnectFailed);
     };
-  }, []);
+  }, [socketEpoch]);
 
   return status;
 }

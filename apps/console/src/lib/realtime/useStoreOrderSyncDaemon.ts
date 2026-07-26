@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import {
   getRealtimeSocket,
+  getRealtimeSocketEpoch,
   REALTIME_EVENT,
   subscribeAdmin,
+  subscribeRealtimeSocketEpoch,
   unsubscribeAdmin,
 } from "./socket";
 import { OrderSyncEvent } from "@ssurak/api/types/realtime/syncNotice.interface";
@@ -17,12 +19,21 @@ export type StoreRealtimeHandlers = {
   onCancelledAction?: (event: OrderSyncEvent) => void;
 };
 
+const getServerRealtimeSocketEpoch = (): number => 0;
+
 export const useStoreOrderSyncDaemon = (
   storeId: string,
   handlers: StoreRealtimeHandlers
 ): void => {
   const { onCreatedAction, onUpdatedAction, onCancelledAction } = handlers;
   const queryClient = useQueryClient();
+
+  /** resetRealtimeSocket으로 인스턴스가 교체되면 새 소켓에 다시 구독한다 */
+  const socketEpoch = useSyncExternalStore(
+    subscribeRealtimeSocketEpoch,
+    getRealtimeSocketEpoch,
+    getServerRealtimeSocketEpoch
+  );
 
   useEffect(() => {
     if (!storeId) return;
@@ -43,7 +54,7 @@ export const useStoreOrderSyncDaemon = (
     return () => {
       socket.io.off("reconnect", invalidateOrders);
     };
-  }, [storeId, queryClient]);
+  }, [storeId, queryClient, socketEpoch]);
 
   useEffect(() => {
     if (!storeId) return;
@@ -82,5 +93,11 @@ export const useStoreOrderSyncDaemon = (
 
       unsubscribeAdmin(storeId);
     };
-  }, [storeId, onCreatedAction, onUpdatedAction, onCancelledAction]);
+  }, [
+    storeId,
+    onCreatedAction,
+    onUpdatedAction,
+    onCancelledAction,
+    socketEpoch,
+  ]);
 };
