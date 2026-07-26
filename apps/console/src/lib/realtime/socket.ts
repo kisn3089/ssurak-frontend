@@ -15,24 +15,40 @@ export const REALTIME_EVENT = {
   UNSUBSCRIBE_ADMIN: "unsubscribe:admin",
 } as const;
 
+const SUBSCRIBE_ACK_TIMEOUT_MS = 5_000;
+
 let socket: Socket | null = null;
 let socketIdInterceptorInstalled = false;
+let socketEpoch = 0;
+const epochListeners = new Set<() => void>();
 const adminSubscriberCounts = new Map<string, number>();
 
+const notifySubscribeFailure = (storeId: string, reason: string): void => {
+  console.warn(
+    `[realtime] subscribe:admin 실패 (store=${storeId}, reason=${reason})`
+  );
+  toast.error("실시간 주문 알림 연결에 실패했어요.", {
+    duration: Infinity,
+    closeButton: true,
+    action: {
+      label: "새로고침",
+      onClick: () => window.location.reload(),
+    },
+  });
+};
+
 const emitSubscribeAdmin = (s: Socket, storeId: string): void => {
-  s.emit(
+  s.timeout(SUBSCRIBE_ACK_TIMEOUT_MS).emit(
     REALTIME_EVENT.SUBSCRIBE_ADMIN,
     { storeId },
-    (ack?: { ok: boolean }) => {
+    (error: Error | null, ack?: { ok: boolean }) => {
+      if (error) {
+        if (!s.connected) return;
+        notifySubscribeFailure(storeId, "ack timeout");
+        return;
+      }
       if (ack?.ok) return;
-      toast.error("실시간 주문 알림 연결에 실패했어요.", {
-        duration: Infinity,
-        closeButton: true,
-        action: {
-          label: "새로고침",
-          onClick: () => window.location.reload(),
-        },
-      });
+      notifySubscribeFailure(storeId, "rejected by server");
     }
   );
 };
@@ -75,6 +91,25 @@ export const subscribeAdmin = (storeId: string): void => {
     if (!s.connected) s.connect();
     else emitSubscribeAdmin(s, storeId);
   }
+};
+
+export const getRealtimeSocketEpoch = (): number => socketEpoch;
+
+export const subscribeRealtimeSocketEpoch = (
+  listener: () => void
+): (() => void) => {
+  epochListeners.add(listener);
+  return () => {
+    epochListeners.delete(listener);
+  };
+};
+
+export const resetRealtimeSocket = (): void => {
+  socket?.disconnect();
+  socket = null;
+  adminSubscriberCounts.clear();
+  socketEpoch += 1;
+  for (const listener of epochListeners) listener();
 };
 
 export const unsubscribeAdmin = (storeId: string): void => {

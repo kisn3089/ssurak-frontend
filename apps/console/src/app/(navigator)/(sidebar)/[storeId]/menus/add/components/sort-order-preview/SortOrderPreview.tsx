@@ -1,5 +1,4 @@
-import { Menu } from "@ssurak/api/types/menu/menu.interface";
-import { buildRows, PreviewRow } from "./build-rows";
+import { PreviewRow } from "./build-rows";
 import OutOfWindowMessage from "./OutOfWindowMessage";
 import SortNumber from "./SortNumber";
 import SortMenuName from "./SortMenuName";

@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import AxiosInterceptor from "@/lib/AxiosInterceptor";
 import { clearServerCookie } from "@/app/common/servers/cookies";
 import { COOKIE_TABLE } from "@ssurak/api/utils/cookieTable.const";
+import { resetRealtimeSocket } from "@/lib/realtime/socket";
 
-export function OrderdeskAuthProvider({
+export function ConsoleAuthProvider({
   children,
 }: {
   children: React.ReactNode;
@@ -14,6 +15,8 @@ export function OrderdeskAuthProvider({
   const router = useRouter();
 
   const signOut = () => {
+    resetRealtimeSocket();
+
     void (async () => {
       try {
         await clearServerCookie([

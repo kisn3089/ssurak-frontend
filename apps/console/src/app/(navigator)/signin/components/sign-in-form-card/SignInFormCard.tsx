@@ -12,6 +12,7 @@ import { SignInPayload } from "@ssurak/api/core/auth/auth.type";
 import { signInPayloadSchema } from "@ssurak/api/schemas/signIn.schema";
 import { useAuthInfo } from "@ssurak/auth/providers/AuthenticationProvider";
 import { Spinner } from "@ssurak/ui/components/spinner";
+import { resetRealtimeSocket } from "@/lib/realtime/socket";
 
 export default function SignInFormCard() {
   const { setAuthInfo } = useAuthInfo();
@@ -39,7 +40,7 @@ export default function SignInFormCard() {
       return;
     }
     setAuthInfo({ accessToken: signInResult.data.accessToken });
-
+    resetRealtimeSocket();
     router.replace("/");
   };
 
