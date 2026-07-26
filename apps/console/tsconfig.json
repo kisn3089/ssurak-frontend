@@ -23,5 +23,20 @@
     "**/*.tsx",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    ".next/dev",
+    ".next/cache",
+    ".next/server",
+    ".next/static",
+    ".next/build"
+  ],
+  "watchOptions": {
+    "excludeDirectories": [
+      "**/node_modules",
+      "**/.next/dev",
+      "**/.next/cache",
+      "**/.turbo"
+    ]
+  }
 }
