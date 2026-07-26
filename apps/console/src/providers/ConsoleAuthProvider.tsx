@@ -6,7 +6,7 @@ import AxiosInterceptor from "@/lib/AxiosInterceptor";
 import { clearServerCookie } from "@/app/common/servers/cookies";
 import { COOKIE_TABLE } from "@ssurak/api/utils/cookieTable.const";
 
-export function OrderdeskAuthProvider({
+export function ConsoleAuthProvider({
   children,
 }: {
   children: React.ReactNode;

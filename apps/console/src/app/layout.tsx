@@ -2,7 +2,7 @@ import { Inter, JetBrains_Mono } from "next/font/google";
 import "@ssurak/ui/globals.css";
 import TanstackProvider from "@ssurak/api/core/TanstackProvider";
 import React from "react";
-import { OrderdeskAuthProvider } from "@/providers/OrderdeskAuthProvider";
+import { ConsoleAuthProvider } from "@/providers/ConsoleAuthProvider";
 import { NextThemeProviders } from "@ssurak/ui/components/theme/ThemeProviders";
 
 const inter = Inter({
@@ -25,7 +25,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
       >
-        <OrderdeskAuthProvider>
+        <ConsoleAuthProvider>
           <TanstackProvider>
             <NextThemeProviders
               options={{
@@ -37,7 +37,7 @@ export default function RootLayout({
               {children}
             </NextThemeProviders>
           </TanstackProvider>
-        </OrderdeskAuthProvider>
+        </ConsoleAuthProvider>
       </body>
     </html>
   );
