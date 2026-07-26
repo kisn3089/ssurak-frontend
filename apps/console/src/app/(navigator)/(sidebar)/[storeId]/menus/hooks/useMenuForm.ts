@@ -1,7 +1,7 @@
 import useSuspenseWithAuth from "@ssurak/api/hooks/useSuspenseWithAuth";
 import { CategoryWithMenusResponse } from "@ssurak/api/types/category/category.interface";
 import { useParams } from "next/navigation";
-import { SelectOption } from "../../components/form/FormSelectField";
+import { SelectOption } from "../../components/form/SelectFormField";
 import { MenuFormValues } from "../../tables/types/menu-form.type";
 
 export default function useMenuForm(formDefaultValues: MenuFormValues) {

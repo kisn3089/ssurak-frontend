@@ -23,7 +23,7 @@ export type DynamicCheckboxField<Payload extends FieldValues> = {
 export type CheckboxField<Payload extends FieldValues> =
   StaticCheckboxField<Payload> & DynamicCheckboxField<Payload>;
 
-export default function FormToggleField<Payload extends FieldValues>({
+export default function ToggleFormField<Payload extends FieldValues>({
   legend,
   label,
   description,

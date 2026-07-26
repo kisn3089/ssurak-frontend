@@ -19,9 +19,9 @@ import { DynamicFormFields } from "../../components/form/FormFields.type";
 import Link from "next/link";
 import { TableFormProps } from "../types/table-form.type";
 import { BoardTable } from "@ssurak/ui/components/board-table";
-import FormSubmitContent, {
+import FormSubmitLabel, {
   previewSuccessContent,
-} from "../../components/form/FormSubmitContent";
+} from "../../components/form/FormSubmitLabel";
 import FormFields from "../../components/form/FormFields";
 
 export default function TableForm({
@@ -139,7 +139,7 @@ export default function TableForm({
           <Button variant={"outline"}>취소</Button>
         </Link>
         <Button type="submit" disabled={!isValid || isLoading}>
-          <FormSubmitContent isLoading={isLoading} buttonText={buttonText} />
+          <FormSubmitLabel isLoading={isLoading} buttonText={buttonText} />
         </Button>
       </div>
     </form>

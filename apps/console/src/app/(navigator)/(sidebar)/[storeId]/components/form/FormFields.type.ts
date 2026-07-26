@@ -1,11 +1,11 @@
 import {
   DynamicInputField,
   StaticInputField,
-} from "@/app/(navigator)/(sidebar)/[storeId]/components/form/FormInputField";
+} from "@/app/(navigator)/(sidebar)/[storeId]/components/form/InputFormField";
 import { FieldValues } from "react-hook-form";
-import { DynamicSelectField, StaticSelectField } from "./FormSelectField";
-import { CheckboxField, StaticCheckboxField } from "./FormToggleField";
-import { DynamicUploadField, StaticUploadField } from "./FormUploadField";
+import { DynamicSelectField, StaticSelectField } from "./SelectFormField";
+import { CheckboxField, StaticCheckboxField } from "./ToggleFormField";
+import { DynamicUploadField, StaticUploadField } from "./UploadFormField";
 
 export type DynamicFormFields<Payload extends FieldValues> =
   | DynamicInputField<Payload>

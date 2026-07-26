@@ -4,15 +4,15 @@ export function previewSuccessContent(buttonText: string) {
   return `${buttonText}되었습니다.`;
 }
 
-type FormSubmitContentProps = {
+type FormSubmitLabelProps = {
   isLoading: boolean;
   buttonText: string;
 };
 
-export default function FormSubmitContent({
+export default function FormSubmitLabel({
   isLoading,
   buttonText,
-}: FormSubmitContentProps) {
+}: FormSubmitLabelProps) {
   return isLoading ? (
     <>
       <Spinner />

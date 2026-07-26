@@ -2,7 +2,7 @@
 
 import { Button } from "@ssurak/ui/components/buttons/button";
 import Link from "next/link";
-import FormSubmitContent from "../../components/form/FormSubmitContent";
+import FormSubmitLabel from "../../components/form/FormSubmitLabel";
 import { MenuFormProps } from "../../tables/types/menu-form.type";
 import {
   CreateMenuPayload,
@@ -170,7 +170,7 @@ export default function MenuForm({
         </Link>
         <SuccessMenuDialog menu={menu} isSuccess={isSuccess} reset={reset}>
           <Button type="submit" disabled={!isValid || isLoading}>
-            <FormSubmitContent isLoading={isLoading} buttonText={buttonText} />
+            <FormSubmitLabel isLoading={isLoading} buttonText={buttonText} />
           </Button>
         </SuccessMenuDialog>
       </div>

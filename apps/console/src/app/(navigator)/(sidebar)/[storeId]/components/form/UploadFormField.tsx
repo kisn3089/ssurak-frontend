@@ -18,7 +18,7 @@ export type DynamicUploadField<Payload extends FieldValues> =
     errorMessage?: string;
   };
 
-export default function FormUploadField<Payload extends FieldValues>({
+export default function UploadFormField<Payload extends FieldValues>({
   id,
   control,
   label,

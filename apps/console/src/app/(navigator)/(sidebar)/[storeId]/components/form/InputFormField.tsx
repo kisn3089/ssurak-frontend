@@ -6,7 +6,7 @@ import FormLabel from "./FormLabel";
 
 export type StaticInputField<Payload extends FieldValues> = {
   id: FieldPath<Payload>;
-  label: string;
+  label: string | React.ReactNode;
   placeholder?: string;
   required?: boolean;
   type: "text" | "number";
@@ -20,7 +20,7 @@ export type DynamicInputField<Payload extends FieldValues> =
     errorMessage?: string;
   };
 
-export default function FormInputField<Field extends FieldValues>({
+export default function InputFormField<Field extends FieldValues>({
   id,
   label,
   placeholder,

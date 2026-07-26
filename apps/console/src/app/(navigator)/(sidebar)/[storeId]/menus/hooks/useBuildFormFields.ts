@@ -1,6 +1,6 @@
 import { CreateMenuPayload } from "@ssurak/api/schemas/model/menu.schema";
 import { DynamicFormFields } from "../../components/form/FormFields.type";
-import { SelectOption } from "../../components/form/FormSelectField";
+import { SelectOption } from "../../components/form/SelectFormField";
 import { WatchingMenuForm } from "./useMenuFormControl";
 import { staticAddMenuFields } from "../add/components/staticAddMenuFields";
 import {

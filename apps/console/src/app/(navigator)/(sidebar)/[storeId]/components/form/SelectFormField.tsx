@@ -34,7 +34,7 @@ export type SelectOption = {
   label: string;
 };
 
-export default function FormSelectField<Field extends FieldValues>({
+export default function SelectFormField<Field extends FieldValues>({
   id,
   label,
   placeholder,
