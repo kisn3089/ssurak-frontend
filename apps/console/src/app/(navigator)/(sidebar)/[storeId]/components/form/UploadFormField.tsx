@@ -2,7 +2,7 @@ import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
 import ErrorMessage from "./ErrorMessage";
 import { Field } from "@ssurak/ui/components/forms/field";
 import FormLabel from "./FormLabel";
-import ImageUploader from "./ImageUploader";
+import ImageUploader from "./image-uploader/ImageUploader";
 
 export type StaticUploadField<Payload extends FieldValues> = {
   id: FieldPath<Payload>;
