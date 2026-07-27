@@ -21,7 +21,8 @@
     "vitest.config.mts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "../../packages/api/src/schemas/model/menu-form-payload.schema.ts"
   ],
   "exclude": [
     "node_modules",

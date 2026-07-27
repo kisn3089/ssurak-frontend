@@ -65,13 +65,7 @@ export const createMenuPayloadSchema = z
       .max(100, "메뉴 설명은 최대 100자까지 가능합니다.")
       .nullable()
       .optional(),
-    imageKey: z
-      .string({
-        required_error: "이미지는 필수입니다.",
-        invalid_type_error: "이미지를 업로드해 주세요.",
-      })
-      .min(1, "이미지를 업로드해 주세요.")
-      .nullable(),
+    imageKey: z.string().nullable().optional(),
     isAvailable: z.boolean().optional(),
     requiredOptions: requiredOptionsSchema.optional(),
     customOptions: customOptionsSchema.optional(),
