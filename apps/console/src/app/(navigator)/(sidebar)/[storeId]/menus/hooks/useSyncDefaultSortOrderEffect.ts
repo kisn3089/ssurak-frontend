@@ -1,11 +1,11 @@
-import { CreateMenuPayload } from "@ssurak/api/schemas/model/menu.schema";
 import { useEffect, useRef } from "react";
 import { UseFormSetValue } from "react-hook-form";
+import { MenuFormPayload } from "../types/menu-form-payload.type";
 
 type UseSyncDefaultSortOrderEffectProps = {
   persistedSortOrder: number | undefined;
   defaultSortOrder: number | undefined;
-  setValue: UseFormSetValue<CreateMenuPayload>;
+  setValue: UseFormSetValue<MenuFormPayload>;
 };
 export default function useSyncDefaultSortOrderEffect({
   persistedSortOrder,

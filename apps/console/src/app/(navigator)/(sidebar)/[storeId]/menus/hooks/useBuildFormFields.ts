@@ -1,4 +1,3 @@
-import { CreateMenuPayload } from "@ssurak/api/schemas/model/menu.schema";
 import { DynamicFormFields } from "../../components/form/FormFields.type";
 import { SelectOption } from "../../components/form/SelectFormField";
 import { WatchingMenuForm } from "./useMenuFormControl";
@@ -11,16 +10,17 @@ import {
   UseFormRegisterReturn,
 } from "react-hook-form";
 import { Dispatch, SetStateAction } from "react";
+import { MenuFormPayload } from "../types/menu-form-payload.type";
 
 type UseBuildFormFieldsProps = {
   categoryOptions: SelectOption[];
   filteredEditMenu: { name: string; sortOrder: number }[];
   watchingMenuForm: WatchingMenuForm;
-  control: Control<CreateMenuPayload>;
-  formState: FormState<CreateMenuPayload>;
-  getFieldState: UseFormGetFieldState<CreateMenuPayload>;
+  control: Control<MenuFormPayload>;
+  formState: FormState<MenuFormPayload>;
+  getFieldState: UseFormGetFieldState<MenuFormPayload>;
   setIsSortActive: Dispatch<SetStateAction<boolean>>;
-  register: UseFormRegister<CreateMenuPayload>;
+  register: UseFormRegister<MenuFormPayload>;
 };
 
 export default function useBuildFormFields({
@@ -45,14 +45,6 @@ export default function useBuildFormFields({
     description: {
       ...register("description", { setValueAs: (v) => v || undefined }),
     },
-    requiredOptions: {
-      ...register("requiredOptions", {
-        setValueAs: (v) => v || undefined,
-      }),
-    },
-    customOptions: {
-      ...register("customOptions", { setValueAs: (v) => v || undefined }),
-    },
   };
 
   const forefront: SelectOption = { label: "맨 앞에 표시", value: 0 };
@@ -66,8 +58,8 @@ export default function useBuildFormFields({
   const isCategorySelect =
     !watchingMenuForm.categoryId && watchingMenuForm.sortOrder === undefined;
 
-  const fields: DynamicFormFields<CreateMenuPayload>[] =
-    staticAddMenuFields.map((field) => {
+  const fields: DynamicFormFields<MenuFormPayload>[] = staticAddMenuFields.map(
+    (field) => {
       const errorMessage = getFieldState(field.id, formState).error?.message;
       switch (field.type) {
         case "switch":
@@ -95,6 +87,8 @@ export default function useBuildFormFields({
             errorMessage,
             control,
           };
+        case "option":
+          return { ...field, control };
         default:
           return {
             ...field,
@@ -102,7 +96,8 @@ export default function useBuildFormFields({
             registration: inputDynamicFields[field.id],
           };
       }
-    });
+    }
+  );
 
   return fields;
 }

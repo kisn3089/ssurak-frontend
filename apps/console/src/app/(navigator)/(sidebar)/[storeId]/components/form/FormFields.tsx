@@ -4,6 +4,7 @@ import InputFormField from "@/app/(navigator)/(sidebar)/[storeId]/components/for
 import SelectFormField from "@/app/(navigator)/(sidebar)/[storeId]/components/form/SelectFormField";
 import ToggleFormField from "./ToggleFormField";
 import UploadFormField from "./UploadFormField";
+import OptionFormField from "./OptionFormField";
 
 type FormFieldProps<Payload extends FieldValues> = {
   fields: DynamicFormFields<Payload>[];
@@ -15,6 +16,10 @@ export default function FormFields<Payload extends FieldValues>({
   return (
     <div className="flex flex-col gap-y-2 mb-6 grow">
       {fields.map((field) => {
+        if (field.type === "option") {
+          return <OptionFormField key={field.id} {...field} />;
+        }
+
         if (field.type === "switch") {
           return <ToggleFormField key={field.id} {...field} />;
         }
@@ -30,6 +35,8 @@ export default function FormFields<Payload extends FieldValues>({
         if (field.type === "file") {
           return <UploadFormField key={field.id} {...field} />;
         }
+
+        return null;
       })}
     </div>
   );

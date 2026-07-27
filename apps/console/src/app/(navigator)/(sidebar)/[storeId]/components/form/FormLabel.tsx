@@ -13,7 +13,7 @@ export default function FormLabel({
 }: FormLabelProps) {
   return (
     <div>
-      <FieldLabel className="gap-0 font-semibold" htmlFor={id}>
+      <FieldLabel className="gap-0 font-bold" htmlFor={id}>
         {children}
         {required && (
           <span className="ml-0.5 inline-block text-red-500">*</span>

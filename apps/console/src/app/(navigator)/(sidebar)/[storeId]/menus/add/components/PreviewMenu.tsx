@@ -4,11 +4,21 @@ import MenuImage from "./MenuImage";
 import { DetailMenu } from "@ssurak/ui/components/menu/menu-detail/menu-detail.type";
 import { buildImageUrl } from "@utils/buildImageUrl";
 
+function toDefaultSelectionKey(menu: DetailMenu) {
+  return [menu.requiredOptions, menu.customOptions]
+    .map((options) =>
+      Object.entries(options ?? {})
+        .map(([groupKey, optionInfo]) => `${groupKey}:${optionInfo.defaultKey}`)
+        .join("|")
+    )
+    .join("||");
+}
+
 type PreviewMenuProps = { menu: DetailMenu; children?: React.ReactNode };
 export default function PreviewMenu({ menu, children }: PreviewMenuProps) {
   return (
     <>
-      <MenuDetail.Provider menu={menu}>
+      <MenuDetail.Provider key={toDefaultSelectionKey(menu)} menu={menu}>
         <main className="bg-accent flex flex-col gap-y-2">
           <MenuDetail.Info
             className="bg-background pointer-events-none"

@@ -15,6 +15,7 @@ import {
 import { UseFormSetError } from "react-hook-form";
 import { parseImageUrlToImageKey } from "@utils/buildImageUrl";
 import { menuDiffFromDefaults } from "../../../tables/utils/menu-diff-from-defaults";
+import { MenuFormPayload } from "../../types/menu-form-payload.type";
 
 export default function MenuEditForm() {
   const { storeId, menuId } = useParams<{ storeId: string; menuId: string }>();
@@ -39,7 +40,7 @@ export default function MenuEditForm() {
 
   const formSubmit = (
     payload: CreateMenuPayload,
-    setError: UseFormSetError<CreateMenuPayload>
+    setError: UseFormSetError<MenuFormPayload>
   ) => {
     const updateMenuPayload: UpdateMenuPayload = menuDiffFromDefaults(
       payload,

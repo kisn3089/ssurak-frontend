@@ -5,6 +5,7 @@ import {
   MenuRequiredOption,
 } from "@ssurak/api/types/menu/menuOptions.interface";
 import { UseFormSetError } from "react-hook-form";
+import { MenuFormPayload } from "../../menus/types/menu-form-payload.type";
 
 export interface MenuFormValues {
   name: string;
@@ -26,9 +27,10 @@ type MenuBaseForm = {
   linkToCancel: string;
   children: React.ReactNode;
   buttonText: string;
+  /** payload는 이미 폼 배열 → 서버 Record로 변환된 상태로 넘어온다. */
   formSubmit: (
     payload: CreateMenuPayload,
-    setError: UseFormSetError<CreateMenuPayload>
+    setError: UseFormSetError<MenuFormPayload>
   ) => void;
 };
 

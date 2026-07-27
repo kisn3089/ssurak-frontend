@@ -1,7 +1,7 @@
-import { CreateMenuPayload } from "@ssurak/api/schemas/model/menu.schema";
 import { StaticFormField } from "../../../components/form/FormFields.type";
+import { MenuFormPayload } from "../../types/menu-form-payload.type";
 
-export const staticAddMenuFields: StaticFormField<CreateMenuPayload>[] = [
+export const staticAddMenuFields: StaticFormField<MenuFormPayload>[] = [
   {
     id: "name",
     label: "메뉴 이름",
@@ -49,16 +49,18 @@ export const staticAddMenuFields: StaticFormField<CreateMenuPayload>[] = [
   {
     id: "requiredOptions",
     label: "필수 옵션",
-    placeholder: "사이즈",
-    type: "text",
-    disabled: true,
+    description:
+      "주문 시 반드시 하나를 선택해야 하는 옵션입니다. (예: 사이즈, 원두)",
+    type: "option",
+    addOptionGroupButtonLabel: "+ 필수 옵션 그룹 추가",
   },
   {
     id: "customOptions",
     label: "선택 옵션",
-    placeholder: "얼음",
-    type: "text",
-    disabled: true,
+    description:
+      "고객이 원할 때 추가로 선택하는 옵션입니다. 다른 옵션 선택값에 따른 노출 조건을 걸 수 있어요.",
+    type: "option",
+    addOptionGroupButtonLabel: "+ 선택 옵션 그룹 추가",
   },
   {
     id: "description",

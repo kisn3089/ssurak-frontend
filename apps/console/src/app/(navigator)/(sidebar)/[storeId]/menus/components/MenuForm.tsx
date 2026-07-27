@@ -4,10 +4,6 @@ import { Button } from "@ssurak/ui/components/buttons/button";
 import Link from "next/link";
 import FormSubmitLabel from "../../components/form/FormSubmitLabel";
 import { MenuFormProps } from "../../tables/types/menu-form.type";
-import {
-  CreateMenuPayload,
-  createMenuPayloadSchema,
-} from "@ssurak/api/schemas/model/menu.schema";
 import FormFields from "../../components/form/FormFields";
 import PreviewMenu from "../add/components/PreviewMenu";
 import SortOrderPreview from "../add/components/sort-order-preview/SortOrderPreview";
@@ -22,6 +18,9 @@ import useMenuFormControl from "../hooks/useMenuFormControl";
 import useBuildFormFields from "../hooks/useBuildFormFields";
 import useSetSortOrderFromCategoryEffect from "../hooks/useSetSortOrderFromCategoryEffect";
 import useSyncDefaultSortOrderEffect from "../hooks/useSyncDefaultSortOrderEffect";
+import { menuFormPayloadSchema } from "@ssurak/api/schemas/model/menu-form-payload.schema";
+import { MenuFormPayload } from "../types/menu-form-payload.type";
+import { toMenuOptionRecord } from "../utils/menu-option-form";
 
 export default function MenuForm({
   formDefaultValues,
@@ -42,8 +41,8 @@ export default function MenuForm({
     existingMenuNames,
   } = useMenuForm(formDefaultValues);
 
-  const resolver = useFormResolver<CreateMenuPayload>({
-    schema: createMenuPayloadSchema,
+  const resolver = useFormResolver<MenuFormPayload>({
+    schema: menuFormPayloadSchema,
     existingValues: existingMenuNames,
     field: "name",
     duplicateMessage: "이미 존재하는 메뉴 이름입니다.",
@@ -104,7 +103,7 @@ export default function MenuForm({
     watchingMenuForm,
   });
 
-  const addSetErrorOnSubmit = (payload: CreateMenuPayload) => {
+  const addSetErrorOnSubmit = (payload: MenuFormPayload) => {
     const isCategoryChanged = payload.categoryId !== defaultCategoryId;
     const isSortOrderChanged =
       payload.sortOrder !== undefined && payload.sortOrder !== defaultSortOrder;
@@ -119,7 +118,17 @@ export default function MenuForm({
         ? defaultCategory.id.toString()
         : payload.categoryId;
 
-    formSubmit({ ...payload, sortOrder, categoryId }, setError);
+    // 폼은 옵션을 배열로 들고 있으므로, 서버 페이로드인 Record로 되돌려 보낸다.
+    formSubmit(
+      {
+        ...payload,
+        sortOrder,
+        categoryId,
+        requiredOptions: toMenuOptionRecord(payload.requiredOptions),
+        customOptions: toMenuOptionRecord(payload.customOptions),
+      },
+      setError
+    );
   };
   const onSubmit = handleSubmit(addSetErrorOnSubmit);
 
@@ -129,10 +138,9 @@ export default function MenuForm({
     price: watchingMenuForm.price || 0,
     imageKey: watchingMenuForm.imageKey || null,
     description: watchingMenuForm.description || null,
-    requiredOptions: null,
-    customOptions: null,
-    // requiredOptions: requiredOptions || null,
-    // customOptions: customOptions || null,
+    requiredOptions:
+      toMenuOptionRecord(watchingMenuForm.requiredOptions) ?? null,
+    customOptions: toMenuOptionRecord(watchingMenuForm.customOptions) ?? null,
     isAvailable: watchingMenuForm.isAvailable ?? true,
   };
 
@@ -152,6 +160,7 @@ export default function MenuForm({
       <div className="@container">
         <div className="flex gap-6 flex-col @3xl:flex-row pb-10">
           <FormFields fields={fields} />
+
           <div className="flex flex-col w-full @3xl:max-w-100 @3xl:sticky @3xl:top-14 @3xl:h-fit">
             {isSortActive && selectedCategory ? (
               <SortOrderPreview

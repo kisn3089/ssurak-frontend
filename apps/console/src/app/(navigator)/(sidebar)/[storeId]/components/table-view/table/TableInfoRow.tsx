@@ -13,7 +13,7 @@ export default function TableInfoRow({
 }: TableInfoRowProps) {
   return (
     <td className="text-left p-4 first:pl-4">
-      <div className={cn(className, "text-ellipsis max-w-32")}>
+      <div className={cn(className, "text-ellipsis")}>
         <span
           className={cn(
             "max-w-full",

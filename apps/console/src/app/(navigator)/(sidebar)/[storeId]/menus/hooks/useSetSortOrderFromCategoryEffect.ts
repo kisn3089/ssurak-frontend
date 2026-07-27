@@ -1,13 +1,13 @@
-import { CreateMenuPayload } from "@ssurak/api/schemas/model/menu.schema";
 import { useEffect, useRef } from "react";
 import { UseFormSetValue } from "react-hook-form";
+import { MenuFormPayload } from "../types/menu-form-payload.type";
 
 type UseSetSortOrderFromCategoryEffectProps = {
   watchingCategoryId: string | null;
   defaultCategoryId: string | undefined;
   defaultSortOrder: number | undefined;
   filteredEditMenu: { name: string; sortOrder: number }[];
-  setValue: UseFormSetValue<CreateMenuPayload>;
+  setValue: UseFormSetValue<MenuFormPayload>;
 };
 export default function useSetSortOrderFromCategoryEffect({
   watchingCategoryId,
