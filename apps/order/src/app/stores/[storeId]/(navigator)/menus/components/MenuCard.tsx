@@ -39,7 +39,7 @@ export default function MenuCard({ menu, priority = false }: MenuCardProps) {
           </ActivityRender>
         </ItemContent>
         <MenuImage
-          src={menu.images?.thumbnail ?? null}
+          src={menu.images?.thumbnail ?? "/coffee_sample.webp"}
           alt={menu.name}
           size="thumbnail"
           priority={priority}

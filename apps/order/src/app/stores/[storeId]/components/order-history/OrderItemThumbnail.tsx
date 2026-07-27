@@ -16,7 +16,7 @@ export default function OrderItemThumbnail({
       <div className="relative w-fit">
         <MenuImage
           size="thumbnail"
-          src={menuImageUrl}
+          src={menuImageUrl ?? "/coffee_sample.webp"}
           alt={menuName}
           className="rounded-2xl"
         />

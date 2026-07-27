@@ -27,7 +27,7 @@ const sizeClassMap = {
 } satisfies Record<MenuImageSize, MenuImagePreset>;
 
 type MenuImageProps = {
-  src: string | null;
+  src: string;
   alt: string;
   size: MenuImageSize;
   className?: string;
@@ -46,7 +46,7 @@ export default function MenuImage({
       className={`${sizeClassMap[size].class} shadow-lg ${className}`}
     >
       <Image
-        src={src || "/coffee_sample.jpg"}
+        src={src}
         alt={alt}
         width={sizeClassMap[size].width}
         height={sizeClassMap[size].height}

@@ -18,7 +18,7 @@ export default function CartMenu({ menu }: CartMenuProps) {
   return (
     <CardHeader className="flex flex-row gap-x-4 p-4">
       <MenuImage
-        src={menu.menuImageUrl}
+        src={menu.menuImageUrl ?? "/coffee_sample.webp"}
         alt={menu.menuName}
         size="thumbnail"
         className="rounded-xl"
