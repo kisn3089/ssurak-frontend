@@ -20,18 +20,16 @@ export default function AuthGuard({ accessToken, children }: AuthGuardProps) {
   const { authInfo, setAuthInfo } = useAuthInfo();
   const router = useRouter();
 
-  const isUsableToken = !!accessToken && !isExpired(accessToken);
-
   useEffect(() => {
-    if (!accessToken || isExpired(accessToken)) {
-      return;
-    }
+    if (!accessToken || isExpired(accessToken)) return;
 
     setAuthInfo({ accessToken });
     updateAxiosAuthorizationHeader(accessToken);
   }, [accessToken, setAuthInfo]);
 
-  if (!isUsableToken) {
+  if (authInfo.accessToken) return children;
+
+  if (!accessToken || isExpired(accessToken)) {
     return (
       <ErrorFallback
         error={new Error(AUTH_UNAVAILABLE_MESSAGE)}
@@ -40,9 +38,5 @@ export default function AuthGuard({ accessToken, children }: AuthGuardProps) {
     );
   }
 
-  if (!authInfo.accessToken) {
-    return null;
-  }
-
-  return children;
+  return null;
 }
