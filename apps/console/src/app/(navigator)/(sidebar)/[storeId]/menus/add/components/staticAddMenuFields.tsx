@@ -1,4 +1,5 @@
 import { StaticFormField } from "../../../components/form/FormFields.type";
+import CategoryFormController from "../../components/reorder-controller/CategoryFormController";
 import { MenuFormPayload } from "../../types/menu-form-payload.type";
 
 export const staticAddMenuFields: StaticFormField<MenuFormPayload>[] = [
@@ -24,6 +25,9 @@ export const staticAddMenuFields: StaticFormField<MenuFormPayload>[] = [
     type: "select",
     description:
       "메뉴가 속할 카테고리를 선택합니다. 카테고리는 메뉴를 그룹화하고 필터링하는 데 사용됩니다.",
+    children: (selectChildrenProps) => (
+      <CategoryFormController {...selectChildrenProps} />
+    ),
   },
   {
     id: "imageKey",
