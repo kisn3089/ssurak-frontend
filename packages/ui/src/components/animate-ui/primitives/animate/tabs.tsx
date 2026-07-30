@@ -278,6 +278,9 @@ function TabsContents({
   React.useLayoutEffect(() => {
     if (height === 0 && activeIndex >= 0) {
       const next = measure(activeIndex);
+      // DOM을 실제로 측정한 뒤에야 알 수 있는 높이라 레이아웃 이펙트에서 넣을 수밖에 없다.
+      // animate-ui에서 그대로 들여온 파일이라 손대지 않는다.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (next !== 0) setHeight(next);
     }
   }, [activeIndex, height, measure]);

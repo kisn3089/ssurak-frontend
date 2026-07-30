@@ -83,6 +83,9 @@ function Slot<T extends HTMLElement = HTMLElement>({
   const mergedProps = mergeProps(childProps, props);
 
   return (
+    // asChild로 받은 자식 타입을 motion.create로 감싸는 게 이 프리미티브의 존재 이유라,
+    // 렌더 중 컴포넌트 생성을 피할 수 없다. animate-ui에서 그대로 들여온 파일이라 손대지 않는다.
+    // eslint-disable-next-line react-hooks/static-components
     <Base {...mergedProps} ref={mergeRefs(childRef as React.Ref<T>, ref)} />
   );
 }
