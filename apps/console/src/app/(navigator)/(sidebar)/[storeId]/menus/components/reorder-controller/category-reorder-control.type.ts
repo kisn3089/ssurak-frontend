@@ -16,9 +16,9 @@ export type CategoryReorderChildrenProps = {
   deleteRow: (categoryId: string, name: string) => void;
 };
 
-export type CategoryReorderControlProps = Omit<
+export type CategoryReorderControlProps = Pick<
   SelectFromChildrenProps,
-  "setIsRenderChild"
+  "isRenderChild" | "registerCommit"
 > & {
   children: (props: CategoryReorderChildrenProps) => React.ReactNode;
 };
