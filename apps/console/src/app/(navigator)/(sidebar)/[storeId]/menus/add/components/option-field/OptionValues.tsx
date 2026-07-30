@@ -49,7 +49,7 @@ export default function OptionValues({
     <div className="flex flex-col gap-y-2 pb-4">
       {fields.map((optionValue, index) => (
         <OptionValue
-          key={`${optionValue.id}-${index}`}
+          key={optionValue.id}
           control={control}
           name={`${name}.${index}`}
           index={index}
