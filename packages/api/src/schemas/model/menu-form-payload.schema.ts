@@ -3,12 +3,12 @@ import z from "zod";
 
 const optionValueFormSchema = z.object({
   key: z.string().trim().min(1, "옵션 값 이름을 입력해 주세요."),
+  // 빈 칸(null)은 "추가 금액 없음"으로 본다. 0을 일일이 지우고 쓰지 않도록 입력을 강제하지 않고 0으로 채운다.
   price: z
-    .number({
-      required_error: "추가 금액을 입력해 주세요.",
-      invalid_type_error: "추가 금액을 입력해 주세요.",
-    })
-    .min(0, "추가 금액은 0원 이상이어야 합니다."),
+    .number()
+    .min(0, "추가 금액은 0원 이상이어야 합니다.")
+    .nullable()
+    .transform((price) => price ?? 0),
   // 아직 입력 UI가 없지만, 선언해두지 않으면 parse에서 잘려나가 편집 시 서버 값이 지워진다.
   description: z.string().optional(),
 });

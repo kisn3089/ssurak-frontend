@@ -9,14 +9,10 @@ import {
   OptionValueForm,
 } from "../types/menu-form-payload.type";
 
-/**
- * MenuRequiredOptionValue는 MenuCustomOptionValue의 부분집합(trigger가 optional)이라
- * 필수/선택 옵션 Record를 같은 함수로 변환할 수 있다. 넓은 쪽인 MenuCustomOption을 기준으로 읽는다.
- */
 type MenuOptionRecord = MenuCustomOption;
 
 export function createEmptyOptionValue(): OptionValueForm {
-  return { key: "", price: 0 };
+  return { key: "", price: null };
 }
 
 export function createEmptyOptionGroup(): OptionGroupForm {

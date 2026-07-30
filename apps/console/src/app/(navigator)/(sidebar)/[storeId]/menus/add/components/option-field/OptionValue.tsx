@@ -50,11 +50,7 @@ export default function OptionValue({
           className="h-10 rounded-xl"
           aria-label={`옵션 값 ${index + 1} 이름`}
           aria-invalid={!!keyState.error}
-          name={keyField.name}
-          ref={keyField.ref}
-          value={keyField.value}
-          onChange={keyField.onChange}
-          onBlur={keyField.onBlur}
+          {...keyField}
         />
         <div className="text-xs text-muted-foreground">+</div>
         <Input
@@ -65,15 +61,14 @@ export default function OptionValue({
           className="h-10 rounded-xl"
           aria-label={`옵션 값 ${index + 1} 추가 금액`}
           aria-invalid={!!priceState.error}
-          name={priceField.name}
-          ref={priceField.ref}
+          {...priceField}
+          // 빈 입력을 0이 아니라 null로 넘겨야 칸이 비어 있는 채로 남는다. 제출 시 스키마가 0으로 채운다.
           value={priceField.value ?? ""}
           onChange={(event) =>
             priceField.onChange(
               event.target.value === "" ? null : Number(event.target.value)
             )
           }
-          onBlur={priceField.onBlur}
         />
         <div className="text-xs text-muted-foreground">원</div>
         <Button

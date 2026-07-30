@@ -269,6 +269,21 @@ describe("기본값 선택", () => {
 });
 
 describe("추가 금액 입력", () => {
+  it("새로 추가한 옵션 값의 추가 금액은 빈 칸으로 시작한다", async () => {
+    const user = userEvent.setup();
+    render(<OptionFormHarness />);
+
+    await user.click(
+      screen.getByRole("button", { name: "+ 필수 옵션 그룹 추가" })
+    );
+
+    expect(screen.getByLabelText("옵션 값 1 추가 금액")).toHaveValue(null);
+
+    await user.click(screen.getByRole("button", { name: "+ 옵션 값 추가" }));
+
+    expect(screen.getByLabelText("옵션 값 2 추가 금액")).toHaveValue(null);
+  });
+
   it("0을 지우면 빈 칸으로 남는다", async () => {
     const user = userEvent.setup();
     render(<OptionFormHarness requiredOptions={[buildGroup()]} />);
@@ -379,6 +394,23 @@ describe("제출 payload 변환", () => {
     });
   });
 
+  it("추가 금액을 비워두면 0으로 채워 보낸다", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    render(
+      <OptionFormHarness requiredOptions={[buildGroup()]} onSubmit={onSubmit} />
+    );
+
+    await user.clear(screen.getByLabelText("옵션 값 2 추가 금액"));
+    await user.click(screen.getByRole("button", { name: "저장" }));
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    expect(onSubmit.mock.calls[0][0].requiredOptions?.["원두"].options).toEqual([
+      { key: "케냐", price: 0 },
+      { key: "콜롬비아", price: 0 },
+    ]);
+  });
+
   it("노출 조건이 비어 있으면 trigger 필드 자체를 빼고 보낸다", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
@@ -455,19 +487,4 @@ describe("검증", () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
-  it("추가 금액을 비우면 제출되지 않는다", async () => {
-    const user = userEvent.setup();
-    const onSubmit = vi.fn();
-    render(
-      <OptionFormHarness requiredOptions={[buildGroup()]} onSubmit={onSubmit} />
-    );
-
-    await user.clear(screen.getByLabelText("옵션 값 1 추가 금액"));
-    await user.click(screen.getByRole("button", { name: "저장" }));
-
-    expect(
-      await screen.findByText("추가 금액을 입력해 주세요.")
-    ).toBeInTheDocument();
-    expect(onSubmit).not.toHaveBeenCalled();
-  });
 });
