@@ -199,6 +199,29 @@ describe("그룹 접힘 상태", () => {
     expect(within(collapsed).getByText("케냐")).toBeInTheDocument();
     expect(within(collapsed).getByText("콜롬비아")).toBeInTheDocument();
   });
+
+  /**
+   * 접힘은 높이를 자를 뿐 자식을 언마운트하지 않는다. 접은 채로 두면 에러 메시지가
+   * 화면 밖에 갇혀, 제출 버튼만 막히고 이유는 보이지 않는 상태가 된다.
+   */
+  it("에러가 생긴 그룹은 펼쳐지고 접기 버튼이 막힌다", async () => {
+    const user = userEvent.setup();
+    render(<OptionFormHarness requiredOptions={[buildGroup(), buildGroup()]} />);
+
+    expect(screen.getAllByRole("button", { name: "원두 펼치기" })).toHaveLength(
+      2
+    );
+
+    await user.click(screen.getByRole("button", { name: "저장" }));
+
+    expect(
+      await screen.findByText("이미 사용한 옵션 이름입니다.")
+    ).toBeInTheDocument();
+
+    const expanded = screen.getAllByRole("button", { name: "원두 접기" });
+    expect(expanded.length).toBeGreaterThan(0);
+    expanded.forEach((toggle) => expect(toggle).toBeDisabled());
+  });
 });
 
 describe("옵션 값 줄", () => {

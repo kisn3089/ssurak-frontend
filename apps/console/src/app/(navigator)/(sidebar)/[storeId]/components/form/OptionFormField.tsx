@@ -47,7 +47,8 @@ export default function OptionFormField({
           <OptionFields
             key={group.id}
             control={control}
-            name={`${id}.${index}`}
+            fieldName={id}
+            index={index}
             onRemove={() => remove(index)}
           />
         ))}

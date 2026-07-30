@@ -11,6 +11,8 @@ type OptionGroupProps = {
   /** 그룹에 들어있는 옵션 값 이름들. 접힌 상태에서 내용을 알려주는 역할이다. */
   optionKeys: string[];
   isRequiredOption: boolean;
+  /** 그룹 안에 검증 에러가 있는지. 제출이 막힌 이유는 접혀 있어도 보여야 한다. */
+  hasError: boolean;
   onRemove: () => void;
   children: React.ReactNode;
 };
@@ -19,11 +21,19 @@ export default function OptionGroup({
   title,
   optionKeys,
   isRequiredOption,
+  hasError,
   onRemove,
   children,
 }: OptionGroupProps) {
-  const [isOpen, setIsOpen] = useState(!title);
+  const [isExpanded, setIsExpanded] = useState(!title);
   const groupTitle = title || "새 옵션 그룹";
+
+  /**
+   * 접힘은 높이를 잘라낼 뿐 자식을 언마운트하지 않는다. 그래서 접은 채로 두면
+   * 그룹 안의 에러 메시지가 화면에서 사라지고, 제출 버튼만 disabled로 남아
+   * 이유를 알 수 없게 된다. 에러가 있는 동안에는 접기를 막는다.
+   */
+  const isOpen = isExpanded || hasError;
 
   return (
     <div
@@ -33,6 +43,7 @@ export default function OptionGroup({
         "h-14 rounded-2xl border px-4 transition-[height] duration-300 ease-in-out overflow-hidden",
         {
           "h-fit": isOpen,
+          "border-destructive": hasError,
         }
       )}
     >
@@ -65,7 +76,8 @@ export default function OptionGroup({
             size={"icon-sm"}
             aria-expanded={isOpen}
             aria-label={`${groupTitle} ${isOpen ? "접기" : "펼치기"}`}
-            onClick={() => setIsOpen(!isOpen)}
+            disabled={hasError}
+            onClick={() => setIsExpanded(!isExpanded)}
           >
             <ChevronDown
               width={16}
