@@ -25,7 +25,7 @@ export function isTrigger(
     return true;
   }
 
-  return trigger.some((t) => matchesTrigger(t, selectedOptions));
+  return trigger.every((t) => matchesTrigger(t, selectedOptions));
 }
 
 export function deleteNoneTriggeredOptions(
