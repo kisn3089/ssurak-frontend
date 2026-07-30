@@ -27,24 +27,46 @@ const FOCUSABLE_SELECTOR = [
  */
 export default function useSafariImeActivationRecovery() {
   useEffect(() => {
+    // WebKit 전용 증상이다. iOS의 Chrome·Firefox도 WebKit 기반이라 같은 벤더로
+    // 잡히는데, 같은 버그를 겪으므로 포함되는 게 맞다.
+    if (navigator.vendor !== "Apple Computer, Inc.") return;
+
     /** 마지막 조합 확정 시각. null이면 "복구할 것 없음". */
     let committedAt: number | null = null;
+    /** 이번 누름의 mousedown이 DOM까지 도달했는지. 도달했으면 복구할 게 없다. */
+    let didReceiveMouseDown = false;
 
     const markComposingCommitted = () => {
       committedAt = Date.now();
     };
 
-    // mousedown이 왔다는 건 브라우저가 삼키지 않았다는 뜻이다.
+    /**
+     * mousedown이 왔다는 건 브라우저가 삼키지 않았다는 뜻이다. 이 사실은
+     * 뒤늦게 도착하는 compositionend보다 우선한다 — committedAt만 비우면
+     * 그 compositionend가 다시 무장시켜, 브라우저의 진짜 click 위에 합성
+     * click이 겹치고 제출이 두 번 일어난다.
+     */
+    const markMouseDownReceived = () => {
+      didReceiveMouseDown = true;
+      committedAt = null;
+    };
+
     const forgetCommit = () => {
       committedAt = null;
     };
 
     const recoverActivation = (event: MouseEvent) => {
-      if (committedAt === null || event.button !== 0) return;
+      const shouldRecover =
+        !didReceiveMouseDown &&
+        committedAt !== null &&
+        Date.now() - committedAt <= COMMIT_TO_MOUSEUP_WINDOW_MS &&
+        event.button === 0;
 
-      const elapsed = Date.now() - committedAt;
+      // 다음 누름으로 상태가 새지 않도록 판정 직후 초기화한다.
+      didReceiveMouseDown = false;
       committedAt = null;
-      if (elapsed > COMMIT_TO_MOUSEUP_WINDOW_MS) return;
+
+      if (!shouldRecover) return;
 
       const target = event.target;
       if (!(target instanceof Element)) return;
@@ -76,7 +98,7 @@ export default function useSafariImeActivationRecovery() {
     };
 
     document.addEventListener("compositionend", markComposingCommitted, true);
-    document.addEventListener("mousedown", forgetCommit, true);
+    document.addEventListener("mousedown", markMouseDownReceived, true);
     document.addEventListener("click", forgetCommit, true);
     // mouseup은 버블 단계로 듣는다. React 핸들러보다 뒤에 실행돼야 실제 브라우저와
     // 같은 mouseup → click 순서가 된다. 놓치면 복구가 안 될 뿐 오작동은 없다.
@@ -88,7 +110,7 @@ export default function useSafariImeActivationRecovery() {
         markComposingCommitted,
         true
       );
-      document.removeEventListener("mousedown", forgetCommit, true);
+      document.removeEventListener("mousedown", markMouseDownReceived, true);
       document.removeEventListener("click", forgetCommit, true);
       document.removeEventListener("mouseup", recoverActivation);
     };

@@ -1,6 +1,16 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import SafariImeActivationRecovery from "./SafariImeActivationRecovery";
+
+const WEBKIT_VENDOR = "Apple Computer, Inc.";
+
+/** 훅이 마운트 시점에 읽으므로 render 전에 바꿔야 한다. */
+function setBrowserVendor(vendor: string) {
+  Object.defineProperty(navigator, "vendor", {
+    value: vendor,
+    configurable: true,
+  });
+}
 
 /**
  * Safari가 IME 조합 확정에 mousedown을 소비했을 때의 이벤트 흐름을 재현한다.
@@ -51,6 +61,11 @@ function renderFixture({
 }
 
 describe("SafariImeActivationRecovery", () => {
+  // jsdom 기본값에 기대지 않고, 복구가 도는 조건을 매번 명시한다.
+  beforeEach(() => {
+    setBrowserVendor(WEBKIT_VENDOR);
+  });
+
   afterEach(() => {
     vi.useRealTimers();
   });
@@ -107,6 +122,31 @@ describe("SafariImeActivationRecovery", () => {
     fireEvent.click(addOption, { button: 0 });
 
     expect(onButtonClick).toHaveBeenCalledTimes(1);
+  });
+
+  /**
+   * mousedown이 DOM까지 왔다면 브라우저가 삼키지 않았다는 뜻이고, 뒤이어 진짜
+   * click도 온다. 여기서 compositionend가 늦게 도착해 복구를 무장시키면 합성
+   * click이 겹쳐 제출이 두 번 일어난다.
+   */
+  it("mousedown 뒤에 도착한 compositionend는 복구를 되살리지 못한다", () => {
+    const { name, addOption, onButtonClick } = renderFixture();
+
+    fireEvent.mouseDown(addOption, { button: 0 });
+    fireEvent.compositionEnd(name, { data: "음료" });
+    fireEvent.mouseUp(addOption, { button: 0 });
+    fireEvent.click(addOption, { button: 0 });
+
+    expect(onButtonClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("WebKit이 아닌 브라우저에서는 복구하지 않는다", () => {
+    setBrowserVendor("Google Inc.");
+    const { name, addOption, onButtonClick } = renderFixture();
+
+    commitCompositionByMouseUp(name, addOption);
+
+    expect(onButtonClick).not.toHaveBeenCalled();
   });
 
   it("조합이 없었으면 mouseup만으로는 아무 일도 하지 않는다", () => {
