@@ -7,7 +7,7 @@ export default function DeleteCondition({
   return (
     <Button
       type="button"
-      className="text-xs bg-blue-primary-highlight text-background ml-auto border-none hover:bg-blue-700 dark:hover:bg-blue-400"
+      className="text-xs font-semibold bg-blue-primary-highlight text-background ml-auto border-none hover:bg-blue-700 dark:hover:bg-blue-400"
       size={"sm"}
       {...props}
     >

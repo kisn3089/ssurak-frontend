@@ -34,9 +34,7 @@ export default function InputFormField<Field extends FieldValues>({
   return (
     <div className="grid gap-2">
       <Field>
-        <FormLabel id={id} required={required}>
-          {label}
-        </FormLabel>
+        <FormLabel id={id} required={required} label={label} />
         <Input
           id={id}
           placeholder={placeholder}

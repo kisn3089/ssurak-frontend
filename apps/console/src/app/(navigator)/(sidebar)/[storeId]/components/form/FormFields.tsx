@@ -1,10 +1,11 @@
 import { FieldValues } from "react-hook-form";
 import { DynamicFormFields } from "./FormFields.type";
 import InputFormField from "@/app/(navigator)/(sidebar)/[storeId]/components/form/InputFormField";
-import SelectFormField from "@/app/(navigator)/(sidebar)/[storeId]/components/form/SelectFormField";
+import SelectFormField from "@/app/(navigator)/(sidebar)/[storeId]/components/form/select-form-field/SelectFormField";
 import ToggleFormField from "./ToggleFormField";
 import UploadFormField from "./UploadFormField";
 import OptionFormField from "./OptionFormField";
+import ReorderFormField from "./reorder-form-field/ReorderFormField";
 
 type FormFieldProps<Payload extends FieldValues> = {
   fields: DynamicFormFields<Payload>[];
@@ -29,11 +30,19 @@ export default function FormFields<Payload extends FieldValues>({
         }
 
         if (field.type === "select") {
-          return <SelectFormField key={field.id} {...field} />;
+          return (
+            <SelectFormField key={field.id} {...field}>
+              {field.children}
+            </SelectFormField>
+          );
         }
 
         if (field.type === "file") {
           return <UploadFormField key={field.id} {...field} />;
+        }
+
+        if (field.type === "reorder") {
+          return <ReorderFormField key={field.id} {...field} />;
         }
 
         return null;

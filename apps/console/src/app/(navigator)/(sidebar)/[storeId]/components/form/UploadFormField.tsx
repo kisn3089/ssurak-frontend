@@ -28,9 +28,7 @@ export default function UploadFormField<Payload extends FieldValues>({
   return (
     <div className="flex flex-col gap-2">
       <Field>
-        <FormLabel id={id} required={required}>
-          {label}
-        </FormLabel>
+        <FormLabel id={id} required={required} label={label} />
         <Controller
           control={control}
           name={id}

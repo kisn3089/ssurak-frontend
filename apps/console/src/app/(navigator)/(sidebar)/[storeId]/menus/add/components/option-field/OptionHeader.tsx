@@ -20,22 +20,22 @@ export default function OptionHeader({ control, name }: OptionHeaderProps) {
 
   return (
     <Field className="gap-2">
-      <FormLabel id={name} required={false}>
-        <FieldTitle className="text-xs font-bold text-muted-foreground">
-          {"옵션 이름"}
-        </FieldTitle>
-      </FormLabel>
+      <FormLabel
+        id={name}
+        required={false}
+        label={
+          <FieldTitle className="text-xs font-bold text-muted-foreground">
+            {"옵션 이름"}
+          </FieldTitle>
+        }
+      />
       <Input
         id={name}
         placeholder={"새 옵션 이름"}
         type={"text"}
         className="h-11 rounded-xl"
         aria-invalid={!!fieldState.error}
-        name={field.name}
-        ref={field.ref}
-        value={field.value}
-        onChange={field.onChange}
-        onBlur={field.onBlur}
+        {...field}
       />
       <ErrorMessage errorMessage={fieldState.error?.message} />
     </Field>

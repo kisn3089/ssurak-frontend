@@ -38,9 +38,7 @@ export default function OptionFormField({
 
   return (
     <Field className="gap-1 py-2">
-      <FormLabel id={id} required={required}>
-        {label}
-      </FormLabel>
+      <FormLabel id={id} required={required} label={label} />
       <FieldDescription className="whitespace-pre">
         {description}
       </FieldDescription>

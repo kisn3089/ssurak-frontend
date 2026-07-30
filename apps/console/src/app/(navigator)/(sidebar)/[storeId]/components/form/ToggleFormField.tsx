@@ -32,7 +32,7 @@ export default function ToggleFormField<Payload extends FieldValues>({
 }: CheckboxField<Payload>) {
   return (
     <FieldSet className="gap-3">
-      <FormLabel id={id}>{legend}</FormLabel>
+      <FormLabel id={id} label={legend} />
       <FieldDescription>{description}</FieldDescription>
       <Field orientation="horizontal" className="w-fit">
         <Controller

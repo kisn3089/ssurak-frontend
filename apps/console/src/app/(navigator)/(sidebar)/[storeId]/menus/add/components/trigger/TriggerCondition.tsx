@@ -3,7 +3,7 @@
 import { Select } from "@ssurak/ui/components/forms/select";
 import { Control, useController } from "react-hook-form";
 import ErrorMessage from "../../../../components/form/ErrorMessage";
-import { SelectOption } from "../../../../components/form/SelectFormField";
+import { SelectOption } from "../../../../components/form/select-form-field/SelectFormField";
 import {
   MenuFormPayload,
   OptionTriggerFieldName,
