@@ -49,7 +49,9 @@ export const nextJsConfig = [
     },
     settings: { react: { version: "detect" } },
     rules: {
-      ...pluginReactHooks.configs.recommended.rules,
+      // flat.recommended은 rules-of-hooks/exhaustive-deps에 더해 React Compiler 룰까지 포함한다.
+      // (set-state-in-effect, preserve-manual-memoization, refs, immutability 등)
+      ...pluginReactHooks.configs.flat.recommended.rules,
       // React scope no longer necessary with new JSX transform.
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off",
