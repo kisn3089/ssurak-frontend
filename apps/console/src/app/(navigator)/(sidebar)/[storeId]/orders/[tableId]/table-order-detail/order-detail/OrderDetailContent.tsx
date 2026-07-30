@@ -20,5 +20,5 @@ export function OrderDetailContent({ children }: OrderDetailContentProps) {
     return <EmptyOrderDetail />;
   }
 
-  return <>{children}</>;
+  return children;
 }

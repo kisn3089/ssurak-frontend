@@ -36,7 +36,7 @@ export default function ErrorFallback({
   }, [children, resetErrorBoundary, signOut]);
 
   if (children) {
-    return <>{children}</>;
+    return children;
   }
 
   return (

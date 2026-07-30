@@ -23,6 +23,9 @@ export function OrderDetailTable() {
     updateEditingQuantity,
   };
 
+  // useReactTable은 매 렌더 새 함수를 담은 인스턴스를 돌려주는데, 그 안에서 상태를 직접
+  // 갱신하기 때문에 컴파일러가 메모이즈할 수 없다.
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: orderItems,
     columns: tableOrderColumns,

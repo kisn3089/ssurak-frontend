@@ -34,5 +34,5 @@ export default function AxiosInterceptor({
     });
   }, [setAuthInfo, signOut]);
 
-  return <>{children}</>;
+  return children;
 }
