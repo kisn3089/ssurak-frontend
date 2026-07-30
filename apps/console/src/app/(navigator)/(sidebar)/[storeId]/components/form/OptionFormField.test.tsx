@@ -8,7 +8,7 @@ import {
   MenuFormPayload,
   OptionGroupForm,
 } from "../../menus/types/menu-form-payload.type";
-import { toMenuOptionRecord } from "../../menus/utils/menu-option-form";
+import { toMenuOptionRecords } from "../../menus/utils/menu-option-form";
 import useFormResolver from "../../menus/hooks/useFormResolver";
 import { NEW_MENU_ID } from "../../menus/utils/menu-sort-order";
 import OptionFormField from "./OptionFormField";
@@ -27,8 +27,13 @@ beforeAll(() => {
 /** cuid2 검증(소문자·숫자 24~32자)을 통과하는 값. 옵션과 무관한 필드를 막지 않기 위함이다. */
 const CATEGORY_ID = "category1abcdefghijklmnop";
 
+let groupIdSequence = 0;
+
 function buildGroup(overrides: Partial<OptionGroupForm> = {}): OptionGroupForm {
+  groupIdSequence += 1;
+
   return {
+    groupId: `testGroup-${groupIdSequence}`,
     groupKey: "원두",
     options: [
       { key: "케냐", price: 0 },
@@ -81,12 +86,14 @@ function OptionFormHarness({
 
   return (
     <form
-      onSubmit={form.handleSubmit((values) =>
+      onSubmit={form.handleSubmit((values) => {
+        const records = toMenuOptionRecords(values);
+
         onSubmit({
-          requiredOptions: toMenuOptionRecord(values.requiredOptions) ?? null,
-          customOptions: toMenuOptionRecord(values.customOptions) ?? null,
-        })
-      )}
+          requiredOptions: records.requiredOptions ?? null,
+          customOptions: records.customOptions ?? null,
+        });
+      })}
     >
       <OptionFormField
         id="requiredOptions"
@@ -345,13 +352,98 @@ describe("노출 조건", () => {
 
   it("조건을 삭제하면 줄이 사라진다", async () => {
     const user = userEvent.setup();
-    render(<OptionFormHarness customOptions={[buildGroup()]} />);
+    render(
+      <OptionFormHarness
+        requiredOptions={[buildGroup({ groupKey: "종류" })]}
+        customOptions={[buildGroup({ groupKey: "샷" })]}
+      />
+    );
 
     await user.click(screen.getByRole("button", { name: "+ 조건 추가" }));
     expect(screen.getByRole("combobox")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "삭제" }));
     expect(screen.queryByRole("combobox")).toBeNull();
+  });
+
+  it("이름 없는 그룹은 조건 선택지가 되지 못해 조건을 추가할 수 없다", async () => {
+    const user = userEvent.setup();
+    render(
+      <OptionFormHarness customOptions={[buildGroup({ groupKey: "샷" })]} />
+    );
+
+    // 이름이 없는 그룹을 하나 더 만들어도 선택지가 늘어나지 않는다.
+    await user.click(
+      screen.getByRole("button", { name: "+ 필수 옵션 그룹 추가" })
+    );
+
+    expect(screen.getByRole("button", { name: "+ 조건 추가" })).toBeDisabled();
+    expect(
+      screen.getByText(
+        "조건으로 쓸 다른 옵션 그룹이 없습니다. 먼저 다른 그룹의 이름을 입력해 주세요."
+      )
+    ).toBeInTheDocument();
+  });
+});
+
+describe("노출 조건 대상 추적", () => {
+  const temperatureGroup = buildGroup({
+    groupId: "temperature",
+    groupKey: "온도",
+    options: [
+      { key: "아이스", price: 0 },
+      { key: "핫", price: 0 },
+    ],
+  });
+  const shotGroup = buildGroup({
+    groupId: "shot",
+    groupKey: "샷",
+    trigger: [{ groupId: "temperature", in: ["아이스"] }],
+  });
+
+  it("대상 그룹 이름을 바꿔도 조건이 새 이름으로 따라간다", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    render(
+      <OptionFormHarness
+        requiredOptions={[temperatureGroup]}
+        customOptions={[shotGroup]}
+        onSubmit={onSubmit}
+      />
+    );
+
+    const groupNameInput = within(group("온도")).getByLabelText("옵션 이름");
+    await user.clear(groupNameInput);
+    await user.type(groupNameInput, "온도선택");
+
+    await user.click(screen.getByRole("button", { name: "저장" }));
+
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    expect(onSubmit.mock.calls[0][0].customOptions?.["샷"].trigger).toEqual([
+      { group: "온도선택", in: ["아이스"] },
+    ]);
+  });
+
+  it("조건으로 지정한 그룹을 지우면 제출되지 않고 메시지를 보여준다", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    render(
+      <OptionFormHarness
+        requiredOptions={[temperatureGroup]}
+        customOptions={[shotGroup]}
+        onSubmit={onSubmit}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "온도 삭제" }));
+    await user.click(screen.getByRole("button", { name: "저장" }));
+
+    expect(
+      await screen.findByText(
+        "조건으로 지정한 옵션 그룹이 없습니다. 다시 골라 주세요."
+      )
+    ).toBeInTheDocument();
+    expect(onSubmit).not.toHaveBeenCalled();
   });
 });
 
@@ -405,10 +497,12 @@ describe("제출 payload 변환", () => {
     await user.click(screen.getByRole("button", { name: "저장" }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit.mock.calls[0][0].requiredOptions?.["원두"].options).toEqual([
-      { key: "케냐", price: 0 },
-      { key: "콜롬비아", price: 0 },
-    ]);
+    expect(onSubmit.mock.calls[0][0].requiredOptions?.["원두"].options).toEqual(
+      [
+        { key: "케냐", price: 0 },
+        { key: "콜롬비아", price: 0 },
+      ]
+    );
   });
 
   it("노출 조건이 비어 있으면 trigger 필드 자체를 빼고 보낸다", async () => {
@@ -486,5 +580,4 @@ describe("검증", () => {
     ).toBeInTheDocument();
     expect(onSubmit).not.toHaveBeenCalled();
   });
-
 });

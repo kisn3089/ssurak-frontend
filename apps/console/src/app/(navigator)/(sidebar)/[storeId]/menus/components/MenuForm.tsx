@@ -20,7 +20,7 @@ import useBuildFormFields from "../hooks/useBuildFormFields";
 import useResetSortOrderOnCategoryChange from "../hooks/useResetSortOrderOnCategoryChange";
 import { menuFormPayloadSchema } from "@ssurak/api/schemas/model/menu-form-payload.schema";
 import { MenuFormPayload } from "../types/menu-form-payload.type";
-import { toMenuOptionRecord } from "../utils/menu-option-form";
+import { toMenuOptionRecords } from "../utils/menu-option-form";
 import {
   buildExpectedOrder,
   isSameOrder,
@@ -142,12 +142,14 @@ export default function MenuForm({
       };
     };
 
+    const { requiredOptions, customOptions } = toMenuOptionRecords(payload);
+
     const outcome = await formSubmit(
       {
         ...payload,
         categoryId,
-        requiredOptions: toMenuOptionRecord(payload.requiredOptions),
-        customOptions: toMenuOptionRecord(payload.customOptions),
+        requiredOptions,
+        customOptions,
       },
       { setError, resolveReorder }
     );
@@ -161,15 +163,16 @@ export default function MenuForm({
     reset();
   };
 
+  const previewOptions = toMenuOptionRecords(watchingMenuForm);
+
   const menu: DetailMenu = {
     publicId: "",
     name: watchingMenuForm.name || "",
     price: watchingMenuForm.price || 0,
     imageKey: watchingMenuForm.imageKey || null,
     description: watchingMenuForm.description || null,
-    requiredOptions:
-      toMenuOptionRecord(watchingMenuForm.requiredOptions) ?? null,
-    customOptions: toMenuOptionRecord(watchingMenuForm.customOptions) ?? null,
+    requiredOptions: previewOptions.requiredOptions ?? null,
+    customOptions: previewOptions.customOptions ?? null,
     isAvailable: watchingMenuForm.isAvailable ?? true,
   };
 

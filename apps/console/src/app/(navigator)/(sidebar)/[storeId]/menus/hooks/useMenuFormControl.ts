@@ -40,8 +40,8 @@ export default function useMenuFormControl({
       ...defaultFormValues,
       categoryId: defaultCategoryId,
       sortOrder: defaultSortOrder,
-      requiredOptions: toOptionGroupForms(defaultFormValues.requiredOptions),
-      customOptions: toOptionGroupForms(defaultFormValues.customOptions),
+      // trigger가 필수 ↔ 선택 옵션을 서로 참조할 수 있어 두 목록을 한 번에 변환한다.
+      ...toOptionGroupForms(defaultFormValues),
     },
   });
 

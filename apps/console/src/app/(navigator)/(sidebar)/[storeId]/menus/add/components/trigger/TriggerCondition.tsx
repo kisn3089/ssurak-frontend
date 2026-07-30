@@ -15,6 +15,9 @@ import TriggerSelectOptions from "./TriggerSelectOptions";
 
 /** 조건으로 고를 수 있는 다른 옵션 그룹과, 그 그룹이 가진 선택값들. */
 export type TriggerGroupChoice = {
+  /** 셀렉트에 저장되는 값. 이름이 바뀌어도 조건이 끊기지 않도록 식별자를 쓴다. */
+  groupId: string;
+  /** 화면에 보여줄 이름. */
   groupKey: string;
   optionKeys: string[];
 };
@@ -34,7 +37,7 @@ export default function TriggerCondition({
 }: TriggerConditionProps) {
   const { field: groupField, fieldState: groupState } = useController({
     control,
-    name: `${name}.group`,
+    name: `${name}.groupId`,
   });
   const { field: selectedKeysField, fieldState: selectedKeysState } =
     useController({ control, name: `${name}.in` });
@@ -42,15 +45,15 @@ export default function TriggerCondition({
   const selectedKeys = selectedKeysField.value ?? [];
   const groupOptions: SelectOption[] = groupChoices.map((choice) => ({
     label: choice.groupKey,
-    value: choice.groupKey,
+    value: choice.groupId,
   }));
   const optionKeys =
-    groupChoices.find((choice) => choice.groupKey === groupField.value)
+    groupChoices.find((choice) => choice.groupId === groupField.value)
       ?.optionKeys ?? [];
 
   // 조건 그룹을 바꾸면 앞 그룹의 선택값 이름은 의미가 없어지므로 같이 비운다.
-  const changeGroup = (nextGroupKey: string) => {
-    groupField.onChange(nextGroupKey);
+  const changeGroup = (nextGroupId: string) => {
+    groupField.onChange(nextGroupId);
     selectedKeysField.onChange([]);
   };
 

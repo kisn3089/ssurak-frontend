@@ -14,7 +14,8 @@ const optionValueFormSchema = z.object({
 });
 
 const triggerFormSchema = z.object({
-  group: z.string().min(1, "조건이 될 옵션 그룹을 선택해 주세요."),
+  // 대상 그룹은 이름이 아니라 폼 내부 식별자로 가리킨다. 이름은 편집 중 바뀌기 때문이다.
+  groupId: z.string().min(1, "조건이 될 옵션 그룹을 선택해 주세요."),
   in: z
     .array(z.string())
     .min(1, "노출 조건이 될 선택값을 1개 이상 골라 주세요."),
@@ -22,6 +23,8 @@ const triggerFormSchema = z.object({
 
 const optionGroupFormSchema = z
   .object({
+    // 폼 안에서만 쓰는 식별자. 선언하지 않으면 parse에서 잘려나가 trigger가 대상을 잃는다.
+    groupId: z.string().min(1),
     groupKey: z.string().trim().min(1, "옵션 이름을 입력해 주세요."),
     options: z
       .array(optionValueFormSchema)
@@ -78,4 +81,45 @@ export const menuFormPayloadSchema = createMenuPayloadSchema
     requiredOptions: optionGroupsFormSchema,
     customOptions: optionGroupsFormSchema,
     sortOrder: sortOrderFormSchema,
+  })
+  // trigger는 필수·선택 옵션을 서로 참조할 수 있어 두 목록을 다 볼 수 있는 여기서만 검증된다.
+  .superRefine((payload, ctx) => {
+    const optionKeysByGroupId = new Map(
+      [...payload.requiredOptions, ...payload.customOptions].map((group) => [
+        group.groupId,
+        new Set(group.options.map((option) => option.key)),
+      ])
+    );
+
+    (["requiredOptions", "customOptions"] as const).forEach((fieldName) => {
+      payload[fieldName].forEach((group, groupIndex) => {
+        group.trigger.forEach((trigger, triggerIndex) => {
+          const path = [fieldName, groupIndex, "trigger", triggerIndex];
+          const targetOptionKeys = optionKeysByGroupId.get(trigger.groupId);
+
+          // 조건으로 지정한 그룹을 지운 경우. 그대로 저장하면 성립 불가능한 조건이 되어 고객 앱에서 영구 미노출된다.
+          if (!targetOptionKeys) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: [...path, "groupId"],
+              message:
+                "조건으로 지정한 옵션 그룹이 없습니다. 다시 골라 주세요.",
+            });
+            return;
+          }
+
+          // 조건으로 고른 뒤 대상 그룹의 옵션 값 이름이 바뀐 경우.
+          const missingKeys = trigger.in.filter(
+            (optionKey) => !targetOptionKeys.has(optionKey)
+          );
+          if (missingKeys.length > 0) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: [...path, "in"],
+              message: `'${missingKeys.join(", ")}' 선택값이 더 이상 없습니다. 조건을 다시 골라 주세요.`,
+            });
+          }
+        });
+      });
+    });
   });
