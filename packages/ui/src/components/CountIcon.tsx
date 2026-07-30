@@ -1,3 +1,5 @@
+import { cn } from "../lib/utils";
+
 type CountIconProps = {
   count: number;
   className?: string;
@@ -23,7 +25,16 @@ export default function CountIcon({
 }: CountIconProps) {
   return (
     <div
-      className={`absolute ${sizeStyle[size] ?? "text-[0.5rem]"} grid place-content-center ${colorStyle[color] ?? ""} rounded-full  font-semibold ${className}`}
+      className={cn(
+        "absolute",
+        "rounded-full",
+        "font-semibold",
+        "grid place-content-center",
+        "text-[0.5rem]",
+        sizeStyle[size],
+        colorStyle[color],
+        className
+      )}
     >
       {count}
     </div>
