@@ -1,5 +1,6 @@
 import MenuImage from "@/app/stores/[storeId]/(navigator)/menus/components/MenuImage";
 import CountIcon from "@ssurak/ui/components/CountIcon";
+import { cn } from "@ssurak/ui/lib/utils";
 
 type OrderItemThumbnailProps = {
   menuImageUrl: string | null;
@@ -13,10 +14,10 @@ export default function OrderItemThumbnail({
 }: OrderItemThumbnailProps) {
   return (
     <div className="flex flex-col gap-y-2 w-fit">
-      <div className="relative w-fit">
+      <div className="relative w-full h-full">
         <MenuImage
           size="thumbnail"
-          src={menuImageUrl ?? "/coffee_sample.webp"}
+          src={menuImageUrl}
           alt={menuName}
           className="rounded-2xl"
         />
@@ -24,7 +25,9 @@ export default function OrderItemThumbnail({
           count={quantity}
           color="white"
           size="sm"
-          className="border-2 border-black -bottom-1 -right-1"
+          className={cn("border-2 border-black -bottom-1 -right-1", {
+            "relative grid place-content-center": !menuImageUrl,
+          })}
         />
       </div>
       <span className="font-semibold text-sm text-center">{menuName}</span>

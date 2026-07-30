@@ -42,7 +42,7 @@ export default function MenuDetailPage() {
           }
         >
           <MenuImage
-            src={menu.images?.hero ?? "/coffee_sample.webp"}
+            src={menu.images?.hero}
             priority={true}
             alt={menu.name}
             size="cover"

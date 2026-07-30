@@ -27,7 +27,7 @@ const sizeClassMap = {
 } satisfies Record<MenuImageSize, MenuImagePreset>;
 
 type MenuImageProps = {
-  src: string;
+  src: string | null | undefined;
   alt: string;
   size: MenuImageSize;
   className?: string;
@@ -40,6 +40,10 @@ export default function MenuImage({
   className = "",
   priority = false,
 }: MenuImageProps) {
+  if (!src) {
+    return null;
+  }
+
   return (
     <ItemMedia
       variant={"image"}
