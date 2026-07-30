@@ -1,57 +1,44 @@
 "use client";
 
-import React, { ReactNode, useEffect } from "react";
-import { refreshAccessToken } from "../app/common/servers/refreshAccessToken";
+import { ReactNode, useEffect } from "react";
 import { useAuthInfo } from "@ssurak/auth/providers/AuthenticationProvider";
 import { isExpired } from "@ssurak/auth/utils/decodedToken";
-import { getAccessToken } from "@/app/common/servers/getAccessToken";
-import { useQueryClient } from "@tanstack/react-query";
 import { updateAxiosAuthorizationHeader } from "@ssurak/api/core/axios/http";
-import { getRefreshToken } from "@/app/common/servers/getRefreshToken";
+import { useRouter } from "next/navigation";
+import ErrorFallback from "@/app/(navigator)/components/ErrorFallback";
+
+const AUTH_UNAVAILABLE_MESSAGE =
+  "로그인 상태를 갱신하지 못했어요. 네트워크를 확인한 뒤 다시 시도해 주세요.";
 
 type AuthGuardProps = {
+  accessToken: string | undefined;
   children: ReactNode;
 };
-export default function AuthGuard({ children }: AuthGuardProps) {
-  const { authInfo, setAuthInfo, signOut } = useAuthInfo();
-  const queryClient = useQueryClient();
+
+/** 서버가 확보한 access 토큰을 클라이언트 메모리에 주입한다. */
+export default function AuthGuard({ accessToken, children }: AuthGuardProps) {
+  const { authInfo, setAuthInfo } = useAuthInfo();
+  const router = useRouter();
+
+  const isUsableToken = !!accessToken && !isExpired(accessToken);
 
   useEffect(() => {
-    const signOutWithCacheClear = () => {
-      queryClient.clear();
-      signOut();
-    };
+    if (!accessToken || isExpired(accessToken)) {
+      return;
+    }
 
-    (async () => {
-      const accessToken = await getAccessToken();
+    setAuthInfo({ accessToken });
+    updateAxiosAuthorizationHeader(accessToken);
+  }, [accessToken, setAuthInfo]);
 
-      if (accessToken && !isExpired(accessToken)) {
-        setAuthInfo({ accessToken });
-        updateAxiosAuthorizationHeader(accessToken);
-        return;
-      }
-
-      if (!accessToken) {
-        signOutWithCacheClear();
-        return;
-      }
-
-      const refreshToken = await getRefreshToken();
-      if (!refreshToken) {
-        signOutWithCacheClear();
-        return;
-      }
-
-      try {
-        console.info("[AuthGuard] Refreshed access token...");
-        const refreshedAccessToken = await refreshAccessToken();
-        setAuthInfo({ accessToken: refreshedAccessToken.accessToken });
-      } catch (error: unknown) {
-        console.error("[AuthGuard] Failed to refresh access token", error);
-        signOutWithCacheClear();
-      }
-    })();
-  }, [queryClient, setAuthInfo, signOut]);
+  if (!isUsableToken) {
+    return (
+      <ErrorFallback
+        error={new Error(AUTH_UNAVAILABLE_MESSAGE)}
+        resetErrorBoundary={() => router.refresh()}
+      />
+    );
+  }
 
   if (!authInfo.accessToken) {
     return null;
