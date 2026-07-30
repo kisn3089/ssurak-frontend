@@ -7,6 +7,7 @@ import { isExpired } from "@ssurak/auth/utils/decodedToken";
 import { getAccessToken } from "@/app/common/servers/getAccessToken";
 import { useQueryClient } from "@tanstack/react-query";
 import { updateAxiosAuthorizationHeader } from "@ssurak/api/core/axios/http";
+import { getRefreshToken } from "@/app/common/servers/getRefreshToken";
 
 type AuthGuardProps = {
   children: ReactNode;
@@ -21,13 +22,23 @@ export default function AuthGuard({ children }: AuthGuardProps) {
       signOut();
     };
 
-    /** 새로고침 시 useAuthInfo 갱신 */
     (async () => {
       const accessToken = await getAccessToken();
 
       if (accessToken && !isExpired(accessToken)) {
         setAuthInfo({ accessToken });
         updateAxiosAuthorizationHeader(accessToken);
+        return;
+      }
+
+      if (!accessToken) {
+        signOutWithCacheClear();
+        return;
+      }
+
+      const refreshToken = await getRefreshToken();
+      if (!refreshToken) {
+        signOutWithCacheClear();
         return;
       }
 
@@ -46,5 +57,5 @@ export default function AuthGuard({ children }: AuthGuardProps) {
     return null;
   }
 
-  return <>{children}</>;
+  return children;
 }
