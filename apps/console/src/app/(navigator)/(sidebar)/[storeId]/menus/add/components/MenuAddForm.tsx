@@ -52,10 +52,11 @@ export default function MenuAddForm() {
 
     try {
       await reorderMenus.mutateAsync({ reorderMenusPayload });
-      invalidateQueries();
       return { reorderFailed: false };
     } catch {
       return { reorderFailed: true };
+    } finally {
+      invalidateQueries();
     }
   };
 
