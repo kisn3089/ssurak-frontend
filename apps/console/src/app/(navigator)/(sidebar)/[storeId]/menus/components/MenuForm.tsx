@@ -2,25 +2,34 @@
 
 import { Button } from "@ssurak/ui/components/buttons/button";
 import Link from "next/link";
-import FormSubmitLabel from "../../components/form/FormSubmitLabel";
-import { MenuFormProps } from "../../tables/types/menu-form.type";
-import FormFields from "../../components/form/FormFields";
-import PreviewMenu from "../add/components/PreviewMenu";
-import SortOrderPreview from "../add/components/sort-order-preview/SortOrderPreview";
-import { getNewSortOrder } from "../add/components/sort-order-preview/get-new-sort-order";
-import { DetailMenu } from "@ssurak/ui/components/menu/menu-detail/menu-detail.type";
 import { useState } from "react";
+import FormSubmitLabel from "../../components/form/FormSubmitLabel";
+import {
+  MenuFormProps,
+  MenuSubmitOutcome,
+} from "../../tables/types/menu-form.type";
+import FormFields from "../../components/form/FormFields";
+import { ReorderRowData } from "../../components/form/reorder-form-field/ReorderForm";
+import PreviewMenu from "../add/components/PreviewMenu";
+import { DetailMenu } from "@ssurak/ui/components/menu/menu-detail/menu-detail.type";
 import SuccessMenuDialog from "./success-create-menu/SuccessMenuDialog";
-import { buildRows } from "../add/components/sort-order-preview/build-rows";
 import useMenuForm from "../hooks/useMenuForm";
 import useFormResolver from "../hooks/useFormResolver";
 import useMenuFormControl from "../hooks/useMenuFormControl";
 import useBuildFormFields from "../hooks/useBuildFormFields";
-import useSetSortOrderFromCategoryEffect from "../hooks/useSetSortOrderFromCategoryEffect";
-import useSyncDefaultSortOrderEffect from "../hooks/useSyncDefaultSortOrderEffect";
+import useResetSortOrderOnCategoryChange from "../hooks/useResetSortOrderOnCategoryChange";
 import { menuFormPayloadSchema } from "@ssurak/api/schemas/model/menu-form-payload.schema";
 import { MenuFormPayload } from "../types/menu-form-payload.type";
 import { toMenuOptionRecord } from "../utils/menu-option-form";
+import {
+  buildExpectedOrder,
+  isSameOrder,
+  resolveMenuIds,
+} from "../utils/menu-sort-order";
+
+const NEW_MENU_NAME_PLACEHOLDER = "새 메뉴";
+/** 폼을 열어둔 사이 목록이 바뀌어 이름을 찾지 못한 행. 제출 시 서버가 409로 걸러낸다. */
+const UNKNOWN_MENU_NAME = "알 수 없는 메뉴";
 
 export default function MenuForm({
   formDefaultValues,
@@ -30,8 +39,6 @@ export default function MenuForm({
   mutation,
   formSubmit,
 }: MenuFormProps) {
-  const [isSortActive, setIsSortActive] = useState(false);
-
   const {
     categoryWithMenus,
     categoryOptions,
@@ -39,6 +46,7 @@ export default function MenuForm({
     defaultCategoryId,
     defaultSortOrder,
     existingMenuNames,
+    selfId,
   } = useMenuForm(formDefaultValues);
 
   const resolver = useFormResolver<MenuFormPayload>({
@@ -67,70 +75,91 @@ export default function MenuForm({
   });
 
   const { isSubmitting, isValid } = formState;
-  const { isSuccess, reset, isPending } = mutation;
+  const { reset, isPending } = mutation;
   const isLoading = isSubmitting || isPending;
+
+  // 제출 체인(메뉴 저장 → 필요 시 재정렬)이 모두 끝나야 성공 다이얼로그를 연다.
+  const [submitOutcome, setSubmitOutcome] = useState<MenuSubmitOutcome | null>(
+    null
+  );
 
   const selectedCategory = categoryWithMenus.find(
     (category) => category.publicId === watchingMenuForm.categoryId
   );
-
-  const filteredEditMenu = (selectedCategory?.menus ?? []).filter(
-    (menu) => menu.publicId !== formDefaultValues.publicId
+  const categoryMenuIds = (selectedCategory?.menus ?? []).map(
+    (menu) => menu.publicId
   );
 
-  useSetSortOrderFromCategoryEffect({
+  useResetSortOrderOnCategoryChange({
     watchingCategoryId: watchingMenuForm.categoryId,
-    defaultCategoryId,
-    defaultSortOrder,
-    filteredEditMenu,
+    categoryMenuIds,
+    selfId,
     setValue,
   });
 
-  useSyncDefaultSortOrderEffect({
-    persistedSortOrder: formDefaultValues.sortOrder,
-    defaultSortOrder,
-    setValue,
-  });
+  const menuNameById = new Map(
+    (selectedCategory?.menus ?? []).map((menu) => [menu.publicId, menu.name])
+  );
+
+  // 편집 중인 메뉴는 저장 전이라도 입력 중인 이름으로 보여줘야 어느 행이 자기 자신인지 알 수 있다.
+  const sortOrderRows: ReorderRowData[] = watchingMenuForm.sortOrder.map(
+    (id) => ({
+      id,
+      name:
+        id === selfId
+          ? watchingMenuForm.name || NEW_MENU_NAME_PLACEHOLDER
+          : (menuNameById.get(id) ?? UNKNOWN_MENU_NAME),
+    })
+  );
 
   const fields = useBuildFormFields({
     categoryOptions,
     control,
-    filteredEditMenu,
+    sortOrderRows,
     formState,
     getFieldState,
-    setIsSortActive,
     register,
     watchingMenuForm,
+    selfId,
   });
 
-  const addSetErrorOnSubmit = (payload: MenuFormPayload) => {
-    const isCategoryChanged = payload.categoryId !== defaultCategoryId;
-    const isSortOrderChanged =
-      payload.sortOrder !== undefined && payload.sortOrder !== defaultSortOrder;
-
-    const sortOrder =
-      selectedCategory && (isCategoryChanged || isSortOrderChanged)
-        ? getNewSortOrder(selectedCategory.menus, payload.sortOrder)
-        : formDefaultValues.sortOrder;
-
+  const addSetErrorOnSubmit = async ({
+    sortOrder,
+    ...payload
+  }: MenuFormPayload) => {
     const categoryId =
       defaultCategory?.publicId === payload.categoryId
         ? defaultCategory.id.toString()
         : payload.categoryId;
 
-    // 폼은 옵션을 배열로 들고 있으므로, 서버 페이로드인 Record로 되돌려 보낸다.
-    formSubmit(
+    const resolveReorder = (menuId: string) => {
+      const expectedOrder = buildExpectedOrder(categoryMenuIds, selfId);
+      if (isSameOrder(expectedOrder, sortOrder)) return null;
+
+      return {
+        categoryId: payload.categoryId,
+        menuIds: resolveMenuIds(sortOrder, menuId),
+      };
+    };
+
+    const outcome = await formSubmit(
       {
         ...payload,
-        sortOrder,
         categoryId,
         requiredOptions: toMenuOptionRecord(payload.requiredOptions),
         customOptions: toMenuOptionRecord(payload.customOptions),
       },
-      setError
+      { setError, resolveReorder }
     );
+
+    setSubmitOutcome(outcome ?? null);
   };
   const onSubmit = handleSubmit(addSetErrorOnSubmit);
+
+  const closeSuccessDialog = () => {
+    setSubmitOutcome(null);
+    reset();
+  };
 
   const menu: DetailMenu = {
     publicId: "",
@@ -144,17 +173,6 @@ export default function MenuForm({
     isAvailable: watchingMenuForm.isAvailable ?? true,
   };
 
-  const isChanged = watchingMenuForm.sortOrder !== defaultSortOrder;
-
-  const previewSortOrder = isChanged ? undefined : formDefaultValues.sortOrder;
-
-  const rows = buildRows(
-    filteredEditMenu,
-    watchingMenuForm.name || "새 메뉴",
-    watchingMenuForm.sortOrder,
-    previewSortOrder
-  );
-
   return (
     <form className="flex flex-col grow" noValidate onSubmit={onSubmit}>
       <div className="@container">
@@ -162,14 +180,7 @@ export default function MenuForm({
           <FormFields fields={fields} />
 
           <div className="flex flex-col w-full @3xl:max-w-100 @3xl:sticky @3xl:top-14 @3xl:h-fit">
-            {isSortActive && selectedCategory ? (
-              <SortOrderPreview
-                categoryName={selectedCategory.name}
-                rows={rows}
-              />
-            ) : (
-              <PreviewMenu menu={menu}>{children}</PreviewMenu>
-            )}
+            <PreviewMenu menu={menu}>{children}</PreviewMenu>
           </div>
         </div>
       </div>
@@ -177,7 +188,11 @@ export default function MenuForm({
         <Link href={linkToCancel}>
           <Button variant={"outline"}>취소</Button>
         </Link>
-        <SuccessMenuDialog menu={menu} isSuccess={isSuccess} reset={reset}>
+        <SuccessMenuDialog
+          menu={menu}
+          outcome={submitOutcome}
+          reset={closeSuccessDialog}
+        >
           <Button type="submit" disabled={!isValid || isLoading}>
             <FormSubmitLabel isLoading={isLoading} buttonText={buttonText} />
           </Button>

@@ -8,7 +8,7 @@ import { toOptionGroupForms } from "../utils/menu-option-form";
 
 type UseMenuFormControlProps = {
   defaultCategoryId: string | undefined;
-  defaultSortOrder: number | undefined;
+  defaultSortOrder: string[];
   defaultFormValues: Omit<MenuFormValues, "publicId">;
   resolver: Resolver<MenuFormPayload>;
 };
@@ -21,8 +21,8 @@ export type WatchingMenuForm = {
   requiredOptions: OptionGroupForm[];
   customOptions: OptionGroupForm[];
   categoryId: string | null;
-  sortOrder: number | undefined;
   isAvailable: boolean | undefined;
+  sortOrder: string[];
 };
 
 export default function useMenuFormControl({
@@ -53,8 +53,8 @@ export default function useMenuFormControl({
     requiredOptions,
     customOptions,
     categoryId,
-    sortOrder,
     isAvailable,
+    sortOrder,
   ] = useWatch({
     control: form.control,
     name: [
@@ -65,8 +65,8 @@ export default function useMenuFormControl({
       "requiredOptions",
       "customOptions",
       "categoryId",
-      "sortOrder",
       "isAvailable",
+      "sortOrder",
     ],
   });
 
@@ -78,8 +78,8 @@ export default function useMenuFormControl({
     requiredOptions,
     customOptions,
     categoryId,
-    sortOrder,
     isAvailable,
+    sortOrder,
   };
 
   return { ...form, watchingMenuForm };

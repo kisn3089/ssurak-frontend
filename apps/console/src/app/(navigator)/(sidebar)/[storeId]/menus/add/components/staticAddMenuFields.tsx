@@ -28,21 +28,20 @@ export const staticAddMenuFields: StaticFormField<MenuFormPayload>[] = [
   {
     id: "imageKey",
     label: "메뉴 이미지 업로드",
-    required: true,
     type: "file",
   },
   {
     id: "sortOrder",
     label: "정렬 순서",
-    placeholder: "아메리카노 다음",
-    type: "select",
+    type: "reorder",
+    preDescription: (
+      <span className="text-muted-foreground">
+        카테고리를 먼저 선택해주세요.
+      </span>
+    ),
     description: (
       <span className="text-muted-foreground">
-        <span>카테고리를 먼저 선택해주세요.</span>
-        <br />
-        <span className="font-semibold">
-          입력하지 않을 경우 카테고리 내 메뉴의 마지막 순서로 추가됩니다.
-        </span>
+        카테고리 안에서 이 메뉴를 끌어 원하는 순서로 정렬할 수 있습니다.
       </span>
     ),
   },

@@ -10,6 +10,7 @@ import {
 } from "../../menus/types/menu-form-payload.type";
 import { toMenuOptionRecord } from "../../menus/utils/menu-option-form";
 import useFormResolver from "../../menus/hooks/useFormResolver";
+import { NEW_MENU_ID } from "../../menus/utils/menu-sort-order";
 import OptionFormField from "./OptionFormField";
 
 /**
@@ -71,6 +72,8 @@ function OptionFormHarness({
       categoryId: CATEGORY_ID,
       imageKey: "menu/americano.png",
       isAvailable: true,
+      // 정렬 목록은 이 테스트와 무관하지만, 비어 있으면 폼 전체가 invalid라 제출이 막힌다.
+      sortOrder: [NEW_MENU_ID],
       requiredOptions,
       customOptions,
     },
@@ -149,10 +152,12 @@ describe("옵션 그룹 추가·삭제", () => {
 
     expect(screen.getAllByLabelText("옵션 이름")).toHaveLength(2);
     // 새 그룹은 필수 옵션 쪽에, 기존 "원두"는 선택 옵션 쪽에 그대로 남는다.
-    expect(within(group("새 옵션 그룹")).getByLabelText("옵션 이름")).toHaveValue(
-      ""
+    expect(
+      within(group("새 옵션 그룹")).getByLabelText("옵션 이름")
+    ).toHaveValue("");
+    expect(within(group("원두")).getByLabelText("옵션 이름")).toHaveValue(
+      "원두"
     );
-    expect(within(group("원두")).getByLabelText("옵션 이름")).toHaveValue("원두");
     expect(screen.queryByText("노출 조건")).toBeInTheDocument();
   });
 });
@@ -209,16 +214,21 @@ describe("옵션 값 줄", () => {
       />
     );
 
-    expect(screen.getByRole("button", { name: "옵션 값 1 삭제" })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "옵션 값 1 삭제" })
+    ).toBeDisabled();
 
     await user.click(screen.getByRole("button", { name: "+ 옵션 값 추가" }));
 
-    expect(screen.getByRole("button", { name: "옵션 값 1 삭제" })).toBeEnabled();
+    expect(
+      screen.getByRole("button", { name: "옵션 값 1 삭제" })
+    ).toBeEnabled();
   });
 });
 
 describe("기본값 선택", () => {
-  const defaultButtons = () => screen.getAllByRole("button", { name: "기본값" });
+  const defaultButtons = () =>
+    screen.getAllByRole("button", { name: "기본값" });
 
   it("기본값 버튼을 누르면 그 줄이 기본값이 된다", async () => {
     const user = userEvent.setup();
@@ -379,9 +389,9 @@ describe("제출 payload 변환", () => {
     await user.click(screen.getByRole("button", { name: "저장" }));
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
-    expect(onSubmit.mock.calls[0][0].customOptions?.["원두"]).not.toHaveProperty(
-      "trigger"
-    );
+    expect(
+      onSubmit.mock.calls[0][0].customOptions?.["원두"]
+    ).not.toHaveProperty("trigger");
   });
 });
 

@@ -1,7 +1,10 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { MenuFormValues } from "../../../tables/types/menu-form.type";
+import {
+  MenuFormValues,
+  MenuSubmitContext,
+} from "../../../tables/types/menu-form.type";
 import useMenuMutation from "@ssurak/api/core/store/menu/useMenuMutation";
 import { CreateMenuPayload } from "@ssurak/api/schemas/model/menu.schema";
 import MenuForm from "../../components/MenuForm";
@@ -12,7 +15,6 @@ const formDefaultValues: MenuFormValues = {
   name: "",
   price: undefined,
   categoryId: "",
-  sortOrder: undefined,
   isAvailable: true,
   customOptions: undefined,
   requiredOptions: undefined,
@@ -22,10 +24,39 @@ const formDefaultValues: MenuFormValues = {
 
 export default function MenuAddForm() {
   const { storeId } = useParams<{ storeId: string }>();
-  const { createMenu } = useMenuMutation(storeId);
+  const { createMenu, reorderMenus, invalidateQueries } = useMenuMutation(
+    storeId,
+    { ignoreInvalidation: true }
+  );
 
-  const formSubmit = (payload: CreateMenuPayload) => {
-    createMenu.mutate({ createMenuPayload: payload });
+  const formSubmit = async (
+    payload: CreateMenuPayload,
+    { resolveReorder }: MenuSubmitContext
+  ) => {
+    let createdMenuId: string;
+    try {
+      const createdMenu = await createMenu.mutateAsync({
+        createMenuPayload: payload,
+      });
+      createdMenuId = createdMenu.publicId;
+    } catch {
+      // 생성 실패는 createMenu.error를 읽는 FormErrorWithRetry가 폼 안에서 알린다.
+      return;
+    }
+
+    const reorderMenusPayload = resolveReorder(createdMenuId);
+    if (!reorderMenusPayload) {
+      invalidateQueries();
+      return { reorderFailed: false };
+    }
+
+    try {
+      await reorderMenus.mutateAsync({ reorderMenusPayload });
+      invalidateQueries();
+      return { reorderFailed: false };
+    } catch {
+      return { reorderFailed: true };
+    }
   };
 
   const errorMessage = createMenu.error

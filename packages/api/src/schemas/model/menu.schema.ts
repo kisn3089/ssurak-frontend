@@ -59,7 +59,6 @@ export const createMenuPayloadSchema = z
       .string()
       .min(1, "카테고리를 선택해 주세요.")
       .pipe(commonSchema.cuid2("Category")),
-    sortOrder: z.number().min(0, "정렬 순서는 0 이상이어야 합니다.").optional(),
     description: z
       .string()
       .max(100, "메뉴 설명은 최대 100자까지 가능합니다.")

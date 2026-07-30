@@ -63,6 +63,10 @@ const optionGroupsFormSchema = z
     });
   });
 
+const sortOrderFormSchema = z
+  .array(z.string())
+  .min(1, "정렬할 메뉴가 하나 이상 있어야 합니다.");
+
 /**
  * 폼 전용 스키마.
  * 옵션만 Record → 배열로 갈아끼우고 나머지 필드는 서버 스키마(createMenuPayloadSchema)를 그대로 쓴다.
@@ -73,4 +77,5 @@ export const menuFormPayloadSchema = createMenuPayloadSchema
   .extend({
     requiredOptions: optionGroupsFormSchema,
     customOptions: optionGroupsFormSchema,
+    sortOrder: sortOrderFormSchema,
   });

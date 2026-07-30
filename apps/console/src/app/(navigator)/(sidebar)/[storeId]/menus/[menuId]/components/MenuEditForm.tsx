@@ -5,21 +5,25 @@ import FormErrorWithRetry from "../../../components/FormErrorWithRetry";
 import MenuForm from "../../components/MenuForm";
 import useMenuMutation from "@ssurak/api/core/store/menu/useMenuMutation";
 import { httpMenuErrors } from "@ssurak/api/core/store/menu/httpMenuErrors";
-import { MenuFormValues } from "../../../tables/types/menu-form.type";
+import {
+  MenuFormValues,
+  MenuSubmitContext,
+} from "../../../tables/types/menu-form.type";
 import useSuspenseWithAuth from "@ssurak/api/hooks/useSuspenseWithAuth";
 import { Menu } from "@ssurak/api/types/menu/menu.interface";
 import {
   CreateMenuPayload,
   UpdateMenuPayload,
 } from "@ssurak/api/schemas/model/menu.schema";
-import { UseFormSetError } from "react-hook-form";
 import { parseImageUrlToImageKey } from "@utils/buildImageUrl";
 import { menuDiffFromDefaults } from "../../../tables/utils/menu-diff-from-defaults";
-import { MenuFormPayload } from "../../types/menu-form-payload.type";
 
 export default function MenuEditForm() {
   const { storeId, menuId } = useParams<{ storeId: string; menuId: string }>();
-  const { updateMenu } = useMenuMutation(storeId);
+  const { updateMenu, reorderMenus, invalidateQueries } = useMenuMutation(
+    storeId,
+    { ignoreInvalidation: true }
+  );
 
   const { data: menu } = useSuspenseWithAuth<Menu>(
     `/stores/v1/${storeId}/menus/${menuId}`
@@ -30,7 +34,6 @@ export default function MenuEditForm() {
     name: menu.name,
     price: menu.price,
     categoryId: menu.categoryId,
-    sortOrder: menu.sortOrder,
     isAvailable: menu.isAvailable,
     customOptions: menu.customOptions ?? undefined,
     requiredOptions: menu.requiredOptions ?? undefined,
@@ -38,16 +41,18 @@ export default function MenuEditForm() {
     imageKey: parseImageUrlToImageKey(menu.images?.hero),
   };
 
-  const formSubmit = (
+  const formSubmit = async (
     payload: CreateMenuPayload,
-    setError: UseFormSetError<MenuFormPayload>
+    { setError, resolveReorder }: MenuSubmitContext
   ) => {
     const updateMenuPayload: UpdateMenuPayload = menuDiffFromDefaults(
       payload,
       formDefaultValues
     );
+    const reorderMenusPayload = resolveReorder(menuId);
+    const hasMenuChanges = Object.keys(updateMenuPayload).length > 0;
 
-    if (Object.keys(updateMenuPayload).length === 0) {
+    if (!hasMenuChanges && !reorderMenusPayload) {
       setError(
         "name",
         {
@@ -59,7 +64,27 @@ export default function MenuEditForm() {
       return;
     }
 
-    updateMenu.mutate({ updateMenuPayload: updateMenuPayload, menuId });
+    // 카테고리를 옮기는 경우, 수정이 먼저 반영돼야 대상 카테고리의 메뉴 집합에 이 메뉴가 포함된다.
+    if (hasMenuChanges) {
+      try {
+        await updateMenu.mutateAsync({ updateMenuPayload, menuId });
+      } catch {
+        return;
+      }
+    }
+
+    if (!reorderMenusPayload) {
+      invalidateQueries();
+      return { reorderFailed: false };
+    }
+
+    try {
+      await reorderMenus.mutateAsync({ reorderMenusPayload });
+      invalidateQueries();
+      return { reorderFailed: false };
+    } catch {
+      return { reorderFailed: true };
+    }
   };
 
   const errorMessage = updateMenu.error

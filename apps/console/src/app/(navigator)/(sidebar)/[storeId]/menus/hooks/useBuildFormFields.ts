@@ -1,5 +1,6 @@
 import { DynamicFormFields } from "../../components/form/FormFields.type";
-import { SelectOption } from "../../components/form/SelectFormField";
+import { SelectOption } from "../../components/form/select-form-field/SelectFormField";
+import { ReorderRowData } from "../../components/form/reorder-form-field/ReorderForm";
 import { WatchingMenuForm } from "./useMenuFormControl";
 import { staticAddMenuFields } from "../add/components/staticAddMenuFields";
 import {
@@ -9,27 +10,26 @@ import {
   UseFormRegister,
   UseFormRegisterReturn,
 } from "react-hook-form";
-import { Dispatch, SetStateAction } from "react";
 import { MenuFormPayload } from "../types/menu-form-payload.type";
 
 type UseBuildFormFieldsProps = {
   categoryOptions: SelectOption[];
-  filteredEditMenu: { name: string; sortOrder: number }[];
+  sortOrderRows: ReorderRowData[];
   watchingMenuForm: WatchingMenuForm;
   control: Control<MenuFormPayload>;
   formState: FormState<MenuFormPayload>;
+  selfId: string;
   getFieldState: UseFormGetFieldState<MenuFormPayload>;
-  setIsSortActive: Dispatch<SetStateAction<boolean>>;
   register: UseFormRegister<MenuFormPayload>;
 };
 
 export default function useBuildFormFields({
   categoryOptions,
   control,
-  filteredEditMenu,
+  sortOrderRows,
   formState,
+  selfId,
   getFieldState,
-  setIsSortActive,
   register,
   watchingMenuForm,
 }: UseBuildFormFieldsProps) {
@@ -47,16 +47,7 @@ export default function useBuildFormFields({
     },
   };
 
-  const forefront: SelectOption = { label: "맨 앞에 표시", value: 0 };
-  const sortOptions: SelectOption[] = [
-    forefront,
-    ...filteredEditMenu.map((menu) => ({
-      label: `${menu.name} 다음`,
-      value: menu.sortOrder,
-    })),
-  ];
-  const isCategorySelect =
-    !watchingMenuForm.categoryId && watchingMenuForm.sortOrder === undefined;
+  const isCategoryUnselected = !watchingMenuForm.categoryId;
 
   const fields: DynamicFormFields<MenuFormPayload>[] = staticAddMenuFields.map(
     (field) => {
@@ -64,23 +55,13 @@ export default function useBuildFormFields({
       switch (field.type) {
         case "switch":
           return { ...field, control };
-        case "select": {
-          const fieldsWithoutOptions = {
+        case "select":
+          return {
             ...field,
             errorMessage,
             control,
+            options: categoryOptions,
           };
-          if (field.id === "categoryId") {
-            return { ...fieldsWithoutOptions, options: categoryOptions };
-          }
-          return {
-            ...fieldsWithoutOptions,
-            options: sortOptions,
-            disabled: isCategorySelect,
-            description: isCategorySelect ? field.description : null,
-            onActiveChange: setIsSortActive,
-          };
-        }
         case "file":
           return {
             ...field,
@@ -89,6 +70,20 @@ export default function useBuildFormFields({
           };
         case "option":
           return { ...field, control };
+        case "reorder":
+          return {
+            ...field,
+            control,
+            reorderRow: sortOrderRows,
+            disabled: isCategoryUnselected,
+            description: isCategoryUnselected
+              ? field.preDescription
+              : field.description,
+            isHighlightRow(rows) {
+              return rows.find((r) => r.id === selfId)?.id;
+            },
+            badgeLabel: "이 메뉴",
+          };
         default:
           return {
             ...field,
