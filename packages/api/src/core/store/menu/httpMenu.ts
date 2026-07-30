@@ -1,7 +1,9 @@
 import {
   CreateMenuPayload,
+  ReorderMenusPayload,
   UpdateMenuPayload,
 } from "../../../schemas/model/menu.schema";
+import { Menu } from "../../../types/menu/menu.interface";
 import { http } from "../../axios/http";
 
 function prefix(storeId: string) {
@@ -13,7 +15,7 @@ export type CreateMenuParams = {
   createMenuPayload: CreateMenuPayload;
 };
 async function createMenu({ storeId, createMenuPayload }: CreateMenuParams) {
-  const response = await http.post(prefix(storeId), createMenuPayload);
+  const response = await http.post<Menu>(prefix(storeId), createMenuPayload);
 
   return response.data;
 }
@@ -28,10 +30,26 @@ async function updateMenu({
   menuId,
   updateMenuPayload,
 }: UpdateMenuParams) {
-  const response = await http.patch(
+  const response = await http.patch<Menu>(
     `${prefix(storeId)}/${menuId}`,
     updateMenuPayload
   );
+  return response.data;
+}
+
+export type ReorderMenusParams = {
+  storeId: string;
+  reorderMenusPayload: ReorderMenusPayload;
+};
+async function reorderMenus({
+  storeId,
+  reorderMenusPayload,
+}: ReorderMenusParams) {
+  const response = await http.put(
+    `${prefix(storeId)}/reorder`,
+    reorderMenusPayload
+  );
+
   return response.data;
 }
 
@@ -46,5 +64,6 @@ async function deleteMenu({ storeId, menuId }: DeleteMenuParams) {
 export const httpMenus = {
   createMenu,
   updateMenu,
+  reorderMenus,
   deleteMenu,
 };
