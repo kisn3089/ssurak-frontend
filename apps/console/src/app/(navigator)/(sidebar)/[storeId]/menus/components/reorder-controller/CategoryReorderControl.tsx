@@ -8,11 +8,11 @@ import useInvokeReorderToCommitEffect from "./hooks/useInvokeReorderToCommitEffe
 
 export default function CategoryReorderControl({
   children,
-  isRenderChild,
+  renamingCategoryId,
   registerCommit,
 }: CategoryReorderControlProps) {
   const { categoryWithMenus, rows, field, getValues, setValue, resolver } =
-    useBuildControlForm(isRenderChild);
+    useBuildControlForm(renamingCategoryId);
 
   const { createRow, deleteRow, renameRow } = useCategoryMutations();
 

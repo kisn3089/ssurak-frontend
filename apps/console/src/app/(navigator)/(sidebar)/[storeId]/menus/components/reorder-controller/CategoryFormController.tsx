@@ -10,17 +10,18 @@ import CreateRowButton from "../../../components/form/category-form/CreateRowBut
 import ReorderController from "./ReorderController";
 
 export default function CategoryFormController({
-  isRenderChild,
-  setIsRenderChild,
   registerCommit,
   selectedValue,
   clearSelection,
 }: SelectFromChildrenProps) {
   const [isCreateRow, setIsCreateRow] = useState(false);
+  const [renamingCategoryId, setRenamingCategoryId] = useState<string | null>(
+    null
+  );
 
   return (
     <CategoryReorderControl
-      isRenderChild={isRenderChild}
+      renamingCategoryId={renamingCategoryId}
       registerCommit={registerCommit}
     >
       {({ rows, onReorder, deleteRow, createRow, renameRow, resolver }) => (
@@ -54,30 +55,31 @@ export default function CategoryFormController({
           }
         >
           {({ index, row, getHandleProps }) => {
-            return isRenderChild === index ? (
+            return renamingCategoryId === row.id ? (
               <RenamingRow
                 defaultName={row.name}
                 resolver={resolver}
                 updateRename={(newName) => {
                   renameRow(row.id, newName);
-                  setIsRenderChild(-1);
+                  setRenamingCategoryId(null);
                 }}
-                closeRenamingRow={() => setIsRenderChild(-1)}
+                closeRenamingRow={() => setRenamingCategoryId(null)}
               />
             ) : (
               <ReorderController
                 index={index}
                 row={row}
-                deleteRow={(categoryId, name) => {
-                  deleteRow(categoryId, name);
-                  /**
-                   * 선택 중인 카테고리를 지우면 폼에는 사라진 publicId가 남는다. 그대로
-                   * 제출하면 서버가 404로 거절하므로, 선택을 비워 "카테고리를 선택해
-                   * 주세요" 검증에 걸리게 한다.
-                   */
-                  if (selectedValue === categoryId) clearSelection();
-                }}
-                setIsRenderChild={setIsRenderChild}
+                deleteRow={(categoryId, name) =>
+                  deleteRow(categoryId, name, () => {
+                    /**
+                     * 선택 중인 카테고리를 지우면 폼에는 사라진 publicId가 남는다. 그대로
+                     * 제출하면 서버가 404로 거절하므로, 선택을 비워 "카테고리를 선택해
+                     * 주세요" 검증에 걸리게 한다. 삭제가 성공했을 때만 비워야 한다.
+                     */
+                    if (selectedValue === categoryId) clearSelection();
+                  })
+                }
+                onStartRename={() => setRenamingCategoryId(row.id)}
                 getHandleProps={getHandleProps}
               />
             );

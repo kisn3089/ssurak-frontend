@@ -6,7 +6,7 @@ import { PencilIcon, XIcon } from "lucide-react";
 import { cn } from "@ssurak/ui/lib/utils";
 
 type ReorderControllerProps = ReorderChildrenProps<CategoryReorderRow> & {
-  setIsRenderChild: (index: number | undefined) => void;
+  onStartRename: () => void;
   deleteRow: (id: string, name: string) => void;
 };
 export default function ReorderController({
@@ -14,7 +14,7 @@ export default function ReorderController({
   index,
   getHandleProps,
   deleteRow,
-  setIsRenderChild,
+  onStartRename,
 }: ReorderControllerProps) {
   const isDisabled = row.menus.length > 0;
   return (
@@ -28,7 +28,7 @@ export default function ReorderController({
           variant={"outline"}
           size={"icon-sm"}
           className="shadow-none text-muted-foreground h-8"
-          onClick={() => setIsRenderChild(index)}
+          onClick={onStartRename}
         >
           <PencilIcon />
         </Button>

@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import useFormResolver from "../../../hooks/useFormResolver";
 import { syncDraftOrder } from "../../../utils/menu-sort-order";
 
-export default function useBuildControlForm(isRenderChild: number | undefined) {
+export default function useBuildControlForm(renamingCategoryId: string | null) {
   const { storeId } = useParams<{ storeId: string }>();
   const { data: categoryWithMenus } = useSuspenseWithAuth<
     CategoryWithMenusResponse[]
@@ -52,8 +52,9 @@ export default function useBuildControlForm(isRenderChild: number | undefined) {
     }
   );
 
+  // 수정 중인 자기 이름은 중복 후보에서 뺀다.
   const existingCategoryNames = new Set<string>(
-    rows.filter((_, index) => index !== isRenderChild).map((row) => row.name)
+    rows.filter((row) => row.id !== renamingCategoryId).map((row) => row.name)
   );
 
   const resolver = useFormResolver<CreateCategoryPayload>({

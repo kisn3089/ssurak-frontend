@@ -37,15 +37,21 @@ export default function useCategoryMutations() {
       }
     );
 
-  const deleteRow = (categoryId: string, name: string) =>
+  const deleteRow = (
+    categoryId: string,
+    name: string,
+    onSuccess?: () => void
+  ) =>
     deleteCategory.mutate(
       { categoryId },
       {
+        onSuccess,
         onError: (error) =>
           notifyFailure(
             `'${name}' 카테고리를 삭제하지 못했어요.`,
             httpCategoryErrors.delete(error),
-            () => deleteRow(categoryId, name)
+            // 재시도로 성공했을 때도 뒷정리가 따라가야 한다.
+            () => deleteRow(categoryId, name, onSuccess)
           ),
       }
     );
