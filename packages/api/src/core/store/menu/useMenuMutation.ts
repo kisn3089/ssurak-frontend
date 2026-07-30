@@ -25,26 +25,26 @@ export default function useMenuMutation(
   const createMenu = useMutation({
     mutationFn: (args: Omit<CreateMenuParams, "storeId">) =>
       httpMenus.createMenu({ storeId, ...args }),
-    onSuccess: () => ignoreInvalidation && invalidateQueries,
+    onSuccess: () => !ignoreInvalidation && invalidateQueries(),
   });
 
   const updateMenu = useMutation({
     mutationFn: (args: Omit<UpdateMenuParams, "storeId">) =>
       httpMenus.updateMenu({ storeId, ...args }),
-    onSuccess: () => ignoreInvalidation && invalidateQueries,
+    onSuccess: () => !ignoreInvalidation && invalidateQueries(),
   });
 
   const reorderMenus = useMutation({
     mutationFn: (args: Omit<ReorderMenusParams, "storeId">) =>
       httpMenus.reorderMenus({ storeId, ...args }),
     // 서버가 카테고리 메뉴 집합 불일치를 409로 거절할 수 있으므로 실패해도 진짜 순서를 다시 가져온다.
-    onSettled: () => ignoreInvalidation && invalidateQueries,
+    onSettled: () => !ignoreInvalidation && invalidateQueries(),
   });
 
   const deleteMenu = useMutation({
     mutationFn: (args: Omit<DeleteMenuParams, "storeId">) =>
       httpMenus.deleteMenu({ storeId, ...args }),
-    onSuccess: () => ignoreInvalidation && invalidateQueries,
+    onSuccess: () => !ignoreInvalidation && invalidateQueries(),
   });
 
   return {
