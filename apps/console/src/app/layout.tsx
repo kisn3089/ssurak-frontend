@@ -4,6 +4,7 @@ import TanstackProvider from "@ssurak/api/core/TanstackProvider";
 import React from "react";
 import { ConsoleAuthProvider } from "@/providers/ConsoleAuthProvider";
 import { NextThemeProviders } from "@ssurak/ui/components/theme/ThemeProviders";
+import SafariImeActivationRecovery from "@/lib/ime/SafariImeActivationRecovery";
 
 const inter = Inter({
   variable: "--font-geist-sans",
@@ -25,6 +26,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${jetbrainsMono.variable} antialiased`}
       >
+        <SafariImeActivationRecovery />
         <ConsoleAuthProvider>
           <TanstackProvider>
             <NextThemeProviders
