@@ -77,7 +77,7 @@ export default function ImageUploader({
           <Button
             type="button"
             onClick={() => {
-              onChange("");
+              onChange(null);
               setFileName(null);
             }}
             variant={"outline"}

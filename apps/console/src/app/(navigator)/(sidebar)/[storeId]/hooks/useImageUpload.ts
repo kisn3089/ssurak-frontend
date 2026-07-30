@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { MAX_UPLOAD_SIZE, MAX_UPLOAD_SIZE_MB } from "../constants/upload-media";
 import { toast } from "@ssurak/ui/components/sonner";
 
-export type FileChange = (imageKey: string) => void;
+export type FileChange = (imageKey: string | null) => void;
 
 export default function useImageUpload(onChange: FileChange) {
   const inputRef = useRef<HTMLInputElement>(null);
