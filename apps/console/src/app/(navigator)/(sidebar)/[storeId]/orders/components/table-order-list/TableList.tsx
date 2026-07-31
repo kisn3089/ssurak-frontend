@@ -29,9 +29,14 @@ export default function TableList({ sanitizedTable }: TableListProps) {
   const isSelected = tableId === sanitizedTable.publicId;
   const orders = session?.orders ?? [];
 
+  const expiresAt = session?.expiresAt
+    ? new Date(session.expiresAt)
+    : undefined;
+
   const table: TableWithExpiresAt = {
     ...sanitizedTable,
-    expiresAt: session?.expiresAt ? new Date(session?.expiresAt) : undefined,
+    expiresAt:
+      expiresAt && !Number.isNaN(expiresAt.getTime()) ? expiresAt : undefined,
   };
 
   return (

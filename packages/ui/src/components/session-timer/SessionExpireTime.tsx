@@ -16,7 +16,9 @@ export default function SessionExpireTime({
   const remainingMinutes: string | number = (() => {
     if (!expiresAt) return "";
 
-    const expiryTime = new Date(expiresAt).getTime();
+    const expiryTime = expiresAt.getTime();
+    if (Number.isNaN(expiryTime)) return "";
+
     const timeDiff = expiryTime - currentTime;
 
     if (timeDiff < 0) return "만료";
