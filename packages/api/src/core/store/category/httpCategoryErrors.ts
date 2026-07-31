@@ -26,6 +26,16 @@ export const httpCategoryErrors = {
   delete: deleteCategoryErrors,
 };
 
+/**
+ * 재정렬 요청의 id 집합이 서버의 현재 목록과 어긋났는지 판단한다.
+ *
+ * 이 409는 "요청이 틀렸다"가 아니라 "내가 들고 있던 목록이 낡았다"는 신호다.
+ * 최신 목록을 다시 받아 순서를 재계산하면 회복할 수 있으므로 호출부가 재시도 판단에 쓴다.
+ */
+export function isCategoryOrderMismatch(error: HttpAxiosError) {
+  return error.response?.data?.code === "CATEGORY_ORDER_MISMATCH";
+}
+
 /** 모든 카테고리 요청에 공통으로 발생할 수 있는 인증/권한/서버 오류를 처리한다. */
 function commonCategoryError(error: HttpAxiosError, fallback: string): string {
   const status = error.response?.data?.status;

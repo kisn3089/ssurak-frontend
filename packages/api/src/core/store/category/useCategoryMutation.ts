@@ -9,10 +9,23 @@ import {
   UpdateCategoryParams,
 } from "./httpCategory";
 import { HttpAxiosError } from "../../axios/http";
+import { buildPendingCategory, isPendingCategoryId } from "./pendingCategory";
+import { isCategoryOrderMismatch } from "./httpCategoryErrors";
+import { isSameOrder, syncDraftOrder } from "../../../utils/reorder";
 
-export default function useCategoryMutation(storeId: string) {
+type CategoryMutationOptions = {
+  onReorderError?: (error: HttpAxiosError) => void;
+};
+
+type ReorderCategoriesVariables = Omit<ReorderCategoryParams, "storeId"> & {
+  isRetry?: boolean;
+};
+
+export default function useCategoryMutation(
+  storeId: string,
+  { onReorderError }: CategoryMutationOptions = {}
+) {
   const queryClient = useQueryClient();
-
   const menusQueryKey = makeQueryKey(`/stores/v1/${storeId}/menus`);
 
   const invalidQueryKeys = [
@@ -43,7 +56,6 @@ export default function useCategoryMutation(storeId: string) {
   };
 
   const rollbackMenus = (
-    // unknown으로 두면 TError 추론이 unknown으로 내려앉아 호출부가 HttpAxiosError를 못 읽는다.
     _error: HttpAxiosError,
     _variables: unknown,
     context?: { previousMenus?: CategoryWithMenusResponse[] }
@@ -56,7 +68,14 @@ export default function useCategoryMutation(storeId: string) {
   const createCategory = useMutation({
     mutationFn: (args: Omit<CreateCategoryParams, "storeId">) =>
       httpCategories.createCategory({ storeId, ...args }),
-    onSuccess: invalidateQueries,
+    onMutate: ({ createCategoryPayload }) =>
+      applyOptimisticMenus((categories) => [
+        ...categories,
+        buildPendingCategory(createCategoryPayload.name, categories),
+      ]),
+    onError: rollbackMenus,
+    // 자리표시자 publicId를 서버가 발급한 cuid2로 갈아 끼우려면 무효화가 반드시 필요하다.
+    onSettled: invalidateQueries,
   });
 
   const updateCategory = useMutation({
@@ -71,11 +90,32 @@ export default function useCategoryMutation(storeId: string) {
         )
       ),
     onError: rollbackMenus,
+    onSettled: invalidateQueries,
   });
 
+  /** 집합 불일치(409)는 최신 목록을 받아 원하던 순서를 다시 얹어 한 번만 재시도한다. */
+  const retryReorderWithFreshOrder = async (desiredIds: string[]) => {
+    await queryClient.refetchQueries({ queryKey: menusQueryKey });
+
+    const freshCategories =
+      queryClient.getQueryData<CategoryWithMenusResponse[]>(menusQueryKey) ??
+      [];
+    const freshServerIds = freshCategories
+      .map((category) => category.publicId)
+      .filter((publicId) => !isPendingCategoryId(publicId));
+    const retryIds = syncDraftOrder(desiredIds, freshServerIds);
+
+    if (isSameOrder(retryIds, freshServerIds)) return;
+
+    reorderCategories.mutate({
+      reorderCategoriesPayload: { categoryIds: retryIds },
+      isRetry: true,
+    });
+  };
+
   const reorderCategories = useMutation({
-    mutationFn: (args: Omit<ReorderCategoryParams, "storeId">) =>
-      httpCategories.reorderCategories({ storeId, ...args }),
+    mutationFn: ({ reorderCategoriesPayload }: ReorderCategoriesVariables) =>
+      httpCategories.reorderCategories({ storeId, reorderCategoriesPayload }),
     onMutate: ({ reorderCategoriesPayload }) =>
       applyOptimisticMenus((categories) => {
         const categoryByPublicId = new Map(
@@ -85,7 +125,18 @@ export default function useCategoryMutation(storeId: string) {
           .map((publicId) => categoryByPublicId.get(publicId))
           .filter((category) => category !== undefined);
       }),
-    onError: rollbackMenus,
+    onError: (error, variables, context) => {
+      rollbackMenus(error, variables, context);
+
+      if (!variables.isRetry && isCategoryOrderMismatch(error)) {
+        void retryReorderWithFreshOrder(
+          variables.reorderCategoriesPayload.categoryIds
+        );
+        return;
+      }
+
+      onReorderError?.(error);
+    },
     // 서버가 카테고리 집합 불일치를 409로 거절할 수 있으므로 실패해도 진짜 순서를 다시 가져온다.
     onSettled: invalidateQueries,
   });
@@ -93,7 +144,12 @@ export default function useCategoryMutation(storeId: string) {
   const deleteCategory = useMutation({
     mutationFn: (args: Omit<DeleteCategoryParams, "storeId">) =>
       httpCategories.deleteCategory({ storeId, ...args }),
-    onSuccess: invalidateQueries,
+    onMutate: ({ categoryId }) =>
+      applyOptimisticMenus((categories) =>
+        categories.filter((category) => category.publicId !== categoryId)
+      ),
+    onError: rollbackMenus,
+    onSettled: invalidateQueries,
   });
 
   return { createCategory, updateCategory, reorderCategories, deleteCategory };
