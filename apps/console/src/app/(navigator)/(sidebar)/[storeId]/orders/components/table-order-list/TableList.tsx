@@ -12,6 +12,7 @@ import ConditionalLink from "@/app/(navigator)/components/ConditionalLink";
 import QrButton from "@ssurak/ui/components/qr-scan/QrButton";
 import { useParams, usePathname } from "next/navigation";
 import { cn } from "@ssurak/ui/lib/utils";
+import { TableWithExpiresAt } from "@ssurak/ui/components/board-table/BoardTableContext";
 
 type TableListProps = {
   sanitizedTable: BoardTableWithSessionResponse;
@@ -28,13 +29,23 @@ export default function TableList({ sanitizedTable }: TableListProps) {
   const isSelected = tableId === sanitizedTable.publicId;
   const orders = session?.orders ?? [];
 
+  const expiresAt = session?.expiresAt
+    ? new Date(session.expiresAt)
+    : undefined;
+
+  const table: TableWithExpiresAt = {
+    ...sanitizedTable,
+    expiresAt:
+      expiresAt && !Number.isNaN(expiresAt.getTime()) ? expiresAt : undefined,
+  };
+
   return (
     <ConditionalLink
       condition={isActivatedTable && !isSelected}
       href={`${pathname}orders/${sanitizedTable.publicId}`}
       className="rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <BoardTable.Provider table={sanitizedTable}>
+      <BoardTable.Provider table={table}>
         <BoardTable.Layout
           className={cn(
             !isActivatedTable

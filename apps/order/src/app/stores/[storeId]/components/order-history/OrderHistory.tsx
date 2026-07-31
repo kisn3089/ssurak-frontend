@@ -4,7 +4,10 @@ import useSuspenseWithSession from "@ssurak/api/hooks/useSuspenseWithSession";
 import { OrderWithItemsResponse } from "@ssurak/api/types/order/order.interface";
 import { Badge } from "@ssurak/ui/components/forms/badge";
 import { BADGE_BY_ORDER_STATUS } from "@ssurak/ui/constants/badgeByOrderStatus.const";
-import OrderItemThumbnail from "./OrderItemThumbnail";
+import { formatDate } from "../../(navigator)/utils/date-format";
+import OrderedItem from "./OrderedItem";
+import { transCurrencyFormat } from "@ssurak/ui/utils/menu/priceFormatter";
+import { sumFromObjects } from "@ssurak/api/utils/price";
 
 export default function OrderHistory() {
   const { data: orders } = useSuspenseWithSession<OrderWithItemsResponse[]>(
@@ -19,30 +22,41 @@ export default function OrderHistory() {
   }
 
   return (
-    <div className="flex gap-x-4 overflow-x-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] py-2">
+    <div className="flex flex-col gap-4 overflow-x-scroll [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] py-2">
       {orders
         .filter((order) => order.orderItems.length > 0)
         .map((order) => (
           <div
             key={order.publicId}
-            className="flex rounded-4xl border border-border p-4 shadow-md"
+            className="flex rounded-4xl border border-border p-4 shadow-md w-full"
           >
-            <div className="flex flex-col gap-y-2 items-center w-fit">
-              <Badge
-                className="font-semibold text-center text-xs"
-                variant={BADGE_BY_ORDER_STATUS[order.status].badgeVariant}
-              >
-                {BADGE_BY_ORDER_STATUS[order.status].label}
-              </Badge>
-              <div className="flex gap-x-2">
+            <div className="flex flex-col gap-y-2 w-full">
+              <div className="flex justify-between">
+                <Badge
+                  className="font-semibold text-center text-xs w-fit"
+                  variant={BADGE_BY_ORDER_STATUS[order.status].badgeVariant}
+                >
+                  {BADGE_BY_ORDER_STATUS[order.status].label}
+                </Badge>
+                <p className="text-xs text-muted-foreground font-semibold tracking-tight">
+                  {formatDate(order.createdAt)}
+                </p>
+              </div>
+              <div className="flex flex-col gap-y-2 w-full">
                 {order.orderItems.map((orderItem) => (
-                  <OrderItemThumbnail
-                    key={orderItem.publicId}
-                    menuImageUrl={orderItem.menuImageUrl}
-                    menuName={orderItem.menuName}
-                    quantity={orderItem.quantity}
-                  />
+                  <OrderedItem key={orderItem.publicId} orderItem={orderItem} />
                 ))}
+              </div>
+              <div className="flex justify-between items-center py-3 px-4 rounded-2xl border border-border">
+                <span className="font-bold text-sm">주문 합계</span>
+                <div className="font-bold">
+                  {transCurrencyFormat(
+                    sumFromObjects(
+                      order.orderItems,
+                      (item) => item.unitPrice * item.quantity
+                    )
+                  )}
+                </div>
               </div>
             </div>
           </div>

@@ -7,14 +7,15 @@ type TableLike = {
   floor?: number | null;
 };
 
-export type Table = TableLike & {
+export type TableWithExpiresAt = TableLike & {
   publicId: string;
   qrCode: string;
   isActive: boolean;
   expiresAt: Date | undefined;
 };
 
-export const BoardTableContext = createContext<Partial<Table> | null>(null);
+export const BoardTableContext =
+  createContext<Partial<TableWithExpiresAt> | null>(null);
 
 export function useBoardTableContext(slot: string) {
   const context = useContext(BoardTableContext);

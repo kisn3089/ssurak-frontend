@@ -1,7 +1,7 @@
-import { Table, BoardTableContext } from "./BoardTableContext";
+import { TableWithExpiresAt, BoardTableContext } from "./BoardTableContext";
 
 type BoardTableProviderProps = {
-  table: Partial<Table>;
+  table: Partial<TableWithExpiresAt>;
   children: React.ReactNode;
 };
 

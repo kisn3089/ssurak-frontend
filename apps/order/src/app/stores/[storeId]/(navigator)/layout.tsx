@@ -12,6 +12,7 @@ import { OrderWithItemsResponse } from "@ssurak/api/types/order/order.interface"
 import { cookies } from "next/headers";
 import SyncDaemon from "./components/daemon/SyncDaemon";
 import { makeQueryKey } from "@ssurak/api/utils/makeQueryKey";
+import SessionExpiredError from "../components/SessionExpiredError";
 
 const STORE_CONTEXT_PATH = "/stores/v1/sessions/me/store-context";
 const CART_LIST_PATH = "/carts/v1/sessions/carts";
@@ -31,41 +32,47 @@ export default async function NavigatorLayout({
   const { storeId } = await params;
   const sessionToken = (await cookies()).get(COOKIE_TABLE.SESSION_TOKEN)?.value;
 
+  if (!sessionToken) {
+    return <SessionExpiredError />;
+  }
+
   const queryClient = new QueryClient();
 
-  if (sessionToken) {
-    await Promise.all([
-      queryClient.prefetchQuery({
-        queryKey: makeQueryKey(STORE_CONTEXT_PATH),
-        queryFn: async () =>
-          fetchWithSessionToken<StoreContextResponse>(
-            STORE_CONTEXT_PATH,
-            sessionToken
-          ),
-        staleTime: 60 * 1000,
-      }),
-      queryClient.prefetchQuery({
-        queryKey: makeQueryKey(CART_LIST_PATH),
-        queryFn: async () =>
-          fetchWithSessionToken<Cart>(CART_LIST_PATH, sessionToken, {
+  // store-context는 prefetchQuery가 아니라 직접 await한다. prefetchQuery는 에러를
+  // 삼켜버려 세션 만료를 감지할 수 없고, throwError: false인 나머지 조회는 401 에러
+  // 본문을 그대로 데이터로 캐시해 클라이언트에서 orders.filter 같은 호출이 깨진다.
+  const [storeContext] = await Promise.all([
+    fetchWithSessionToken<StoreContextResponse>(
+      STORE_CONTEXT_PATH,
+      sessionToken
+    ).catch(() => null),
+    queryClient.prefetchQuery({
+      queryKey: makeQueryKey(CART_LIST_PATH),
+      queryFn: async () =>
+        fetchWithSessionToken<Cart>(CART_LIST_PATH, sessionToken, {
+          throwError: false,
+        }),
+      staleTime: 60 * 1000,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: makeQueryKey(ORDER_HISTORY),
+      queryFn: async () =>
+        fetchWithSessionToken<OrderWithItemsResponse[]>(
+          ORDER_HISTORY,
+          sessionToken,
+          {
             throwError: false,
-          }),
-        staleTime: 60 * 1000,
-      }),
-      queryClient.prefetchQuery({
-        queryKey: makeQueryKey(ORDER_HISTORY),
-        queryFn: async () =>
-          fetchWithSessionToken<OrderWithItemsResponse[]>(
-            ORDER_HISTORY,
-            sessionToken,
-            {
-              throwError: false,
-            }
-          ),
-        staleTime: 60 * 1000,
-      }),
-    ]);
+          }
+        ),
+      staleTime: 60 * 1000,
+    }),
+  ]);
+
+  if (!storeContext) {
+    return <SessionExpiredError />;
   }
+
+  queryClient.setQueryData(makeQueryKey(STORE_CONTEXT_PATH), storeContext);
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
