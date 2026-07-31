@@ -4,6 +4,7 @@ import ReorderRow from "../../../components/form/reorder-form-field/ReorderRow";
 import { CategoryReorderRow } from "./category-reorder-control.type";
 import { PencilIcon, XIcon } from "lucide-react";
 import { cn } from "@ssurak/ui/lib/utils";
+import { isPendingCategoryId } from "@ssurak/api/core/store/category/pendingCategory";
 
 type ReorderControllerProps = ReorderChildrenProps<CategoryReorderRow> & {
   onStartRename: () => void;
@@ -16,7 +17,9 @@ export default function ReorderController({
   deleteRow,
   onStartRename,
 }: ReorderControllerProps) {
-  const isDisabled = row.menus.length > 0;
+  // 아직 서버가 id를 발급하지 않은 행이라 이름 변경·삭제 요청을 보낼 수 없다.
+  const isPending = isPendingCategoryId(row.id);
+  const isDisabled = isPending || row.menus.length > 0;
   return (
     <ReorderRow reorderName={row.name} dragHandleProps={getHandleProps(index)}>
       <div className="flex items-center gap-x-2">
@@ -29,6 +32,7 @@ export default function ReorderController({
           size={"icon-sm"}
           className="shadow-none text-muted-foreground h-8"
           onClick={onStartRename}
+          disabled={isPending}
         >
           <PencilIcon />
         </Button>

@@ -11,7 +11,7 @@ import {
 } from "@ssurak/api/schemas/model/category.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import useFormResolver from "../../../hooks/useFormResolver";
-import { syncDraftOrder } from "../../../utils/menu-sort-order";
+import { syncDraftOrder } from "@ssurak/api/utils/reorder";
 
 export default function useBuildControlForm(renamingCategoryId: string | null) {
   const { storeId } = useParams<{ storeId: string }>();
