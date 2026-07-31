@@ -15,7 +15,11 @@ import {
   StaticReorderField,
 } from "./reorder-form-field/ReorderFormField";
 
-export type DynamicFormFields<Payload extends FieldValues> =
+export type PresentationField =
+  | { type: "line"; label?: React.ReactNode }
+  | { type: "custom"; render: React.ReactNode };
+
+export type DynamicControlField<Payload extends FieldValues> =
   | DynamicInputField<Payload>
   | CheckboxField<Payload>
   | DynamicSelectField<Payload>
@@ -23,10 +27,18 @@ export type DynamicFormFields<Payload extends FieldValues> =
   | DynamicOptionField
   | DynamicReorderField<Payload>;
 
-export type StaticFormField<Payload extends FieldValues> =
+export type StaticControlField<Payload extends FieldValues> =
   | StaticInputField<Payload>
   | StaticCheckboxField<Payload>
   | StaticSelectField<Payload>
   | StaticUploadField<Payload>
   | StaticOptionField
   | (StaticReorderField<Payload> & { preDescription?: React.ReactNode });
+
+export type DynamicFormFields<Payload extends FieldValues> =
+  | DynamicControlField<Payload>
+  | PresentationField;
+
+export type StaticFormField<Payload extends FieldValues> =
+  | StaticControlField<Payload>
+  | PresentationField;

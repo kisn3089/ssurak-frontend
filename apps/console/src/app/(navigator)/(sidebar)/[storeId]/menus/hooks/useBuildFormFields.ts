@@ -51,6 +51,8 @@ export default function useBuildFormFields({
 
   const fields: DynamicFormFields<MenuFormPayload>[] = staticAddMenuFields.map(
     (field) => {
+      if (!("id" in field)) return field;
+
       const errorMessage = getFieldState(field.id, formState).error?.message;
       switch (field.type) {
         case "switch":

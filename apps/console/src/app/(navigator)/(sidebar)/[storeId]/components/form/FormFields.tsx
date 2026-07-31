@@ -1,4 +1,6 @@
+import { Fragment } from "react";
 import { FieldValues } from "react-hook-form";
+import { FieldSeparator } from "@ssurak/ui/components/forms/field";
 import { DynamicFormFields } from "./FormFields.type";
 import InputFormField from "@/app/(navigator)/(sidebar)/[storeId]/components/form/InputFormField";
 import SelectFormField from "@/app/(navigator)/(sidebar)/[storeId]/components/form/select-form-field/SelectFormField";
@@ -16,9 +18,17 @@ export default function FormFields<Payload extends FieldValues>({
 }: FormFieldProps<Payload>) {
   return (
     <div className="flex flex-col gap-y-2 mb-6 grow">
-      {fields.map((field) => {
-        if (field.type === "option") {
-          return <OptionFormField key={field.id} {...field} />;
+      {fields.map((field, index) => {
+        if (field.type === "line") {
+          return (
+            <FieldSeparator key={`line-${index}`} className="my-4">
+              {field.label}
+            </FieldSeparator>
+          );
+        }
+
+        if (field.type === "custom") {
+          return <Fragment key={`custom-${index}`}>{field.render}</Fragment>;
         }
 
         if (field.type === "switch") {
@@ -43,6 +53,10 @@ export default function FormFields<Payload extends FieldValues>({
 
         if (field.type === "reorder") {
           return <ReorderFormField key={field.id} {...field} />;
+        }
+
+        if (field.type === "option") {
+          return <OptionFormField key={field.id} {...field} />;
         }
 
         return null;
