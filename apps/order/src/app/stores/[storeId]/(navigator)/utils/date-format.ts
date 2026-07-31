@@ -3,9 +3,7 @@ export function formatDate(
   options?: Intl.DateTimeFormatOptions,
   overrideLocale?: string
 ): string {
-  const locale: Intl.LocalesArgument =
-    overrideLocale ??
-    (typeof window !== "undefined" ? window.navigator.language : "ko-KR");
+  const locale: Intl.LocalesArgument = overrideLocale ?? "ko-KR";
 
   const defaultOptions: Intl.DateTimeFormatOptions = {
     hour: "2-digit",
