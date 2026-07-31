@@ -50,12 +50,15 @@ export default function ErrorFallback({
 function DefaultErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   const { signOut } = useAuthInfo();
 
+  const isServerError = error instanceof Error && error.message === "Error";
+  const errorMessage = isServerError
+    ? "서버와 연결할 수 없습니다. 네트워크를 확인한 뒤 다시 시도해 주세요."
+    : error.message || "알 수 없는 오류가 발생했습니다.";
+
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-3.5rem)] gap-2">
       <h2 className="text-xl font-semibold">오류가 발생했습니다.</h2>
-      <p className="text-muted-foreground">
-        {error.message || "알 수 없는 오류가 발생했습니다."}
-      </p>
+      <p className="text-muted-foreground">{errorMessage}</p>
       <div className="flex gap-4">
         <Button onClick={resetErrorBoundary}>다시 시도</Button>
         <Button onClick={signOut} variant={"secondary"}>
