@@ -7,6 +7,7 @@ import SessionExpireTime from "../session-timer/SessionExpireTime";
 
 export function BoardTableFooter() {
   const { expiresAt } = useBoardTableContext("BoardTableFooter");
+
   return (
     <CardFooter className="p-2 min-h-9">
       <ActivityRender value={expiresAt}>
