@@ -22,7 +22,7 @@ export default function OrderedItem({ orderItem }: { orderItem: OrderItem }) {
         size="thumbnail"
         className="rounded-xl"
       />
-      <ItemContent className="">
+      <ItemContent>
         <ItemTitle className="font-bold text-lg">
           {orderItem.menuName}
         </ItemTitle>
@@ -32,7 +32,7 @@ export default function OrderedItem({ orderItem }: { orderItem: OrderItem }) {
             <span className="font-semibold">{orderItem.quantity}</span>
           </div>
         </ItemFooter>
-        <div className="flex gap-x-1">
+        <div className="flex flex-wrap gap-1">
           {options.map(([key, option], index) => (
             <Badge key={index} variant={"secondary"}>
               {`${key} - ${option.key}`}

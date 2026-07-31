@@ -31,7 +31,7 @@ export default function OrderHistory() {
             className="flex rounded-4xl border border-border p-4 shadow-md w-full"
           >
             <div className="flex flex-col gap-y-2 w-full">
-              <div id="header" className="flex justify-between">
+              <div className="flex justify-between">
                 <Badge
                   className="font-semibold text-center text-xs w-fit"
                   variant={BADGE_BY_ORDER_STATUS[order.status].badgeVariant}
