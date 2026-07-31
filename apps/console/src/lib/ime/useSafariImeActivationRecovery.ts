@@ -27,8 +27,6 @@ const FOCUSABLE_SELECTOR = [
  */
 export default function useSafariImeActivationRecovery() {
   useEffect(() => {
-    // WebKit 전용 증상이다. iOS의 Chrome·Firefox도 WebKit 기반이라 같은 벤더로
-    // 잡히는데, 같은 버그를 겪으므로 포함되는 게 맞다.
     if (navigator.vendor !== "Apple Computer, Inc.") return;
 
     /** 마지막 조합 확정 시각. null이면 "복구할 것 없음". */
@@ -40,12 +38,6 @@ export default function useSafariImeActivationRecovery() {
       committedAt = Date.now();
     };
 
-    /**
-     * mousedown이 왔다는 건 브라우저가 삼키지 않았다는 뜻이다. 이 사실은
-     * 뒤늦게 도착하는 compositionend보다 우선한다 — committedAt만 비우면
-     * 그 compositionend가 다시 무장시켜, 브라우저의 진짜 click 위에 합성
-     * click이 겹치고 제출이 두 번 일어난다.
-     */
     const markMouseDownReceived = () => {
       didReceiveMouseDown = true;
       committedAt = null;

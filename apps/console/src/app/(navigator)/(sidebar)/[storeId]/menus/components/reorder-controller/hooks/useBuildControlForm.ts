@@ -52,7 +52,6 @@ export default function useBuildControlForm(renamingCategoryId: string | null) {
     }
   );
 
-  // 수정 중인 자기 이름은 중복 후보에서 뺀다.
   const existingCategoryNames = new Set<string>(
     rows.filter((row) => row.id !== renamingCategoryId).map((row) => row.name)
   );
