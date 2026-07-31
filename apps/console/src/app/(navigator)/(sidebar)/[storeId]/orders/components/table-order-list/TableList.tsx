@@ -11,6 +11,7 @@ import SheetQrCode from "../SheetQrCode";
 import ConditionalLink from "@/app/(navigator)/components/ConditionalLink";
 import QrButton from "@ssurak/ui/components/qr-scan/QrButton";
 import { useParams, usePathname } from "next/navigation";
+import { cn } from "@ssurak/ui/lib/utils";
 
 type TableListProps = {
   sanitizedTable: BoardTableWithSessionResponse;
@@ -25,14 +26,6 @@ export default function TableList({ sanitizedTable }: TableListProps) {
 
   const isActivatedTable = sanitizedTable.isActive === true;
   const isSelected = tableId === sanitizedTable.publicId;
-
-  const inactiveStyle = !isActivatedTable
-    ? "opacity-20 cursor-not-allowed"
-    : "hover:shadow-md hover:shadow-destructive/50";
-  const selectedStyle = isSelected
-    ? "shadow-lg hover:shadow-lg shadow-destructive/50"
-    : "";
-
   const orders = session?.orders ?? [];
 
   return (
@@ -42,7 +35,16 @@ export default function TableList({ sanitizedTable }: TableListProps) {
       className="rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <BoardTable.Provider table={sanitizedTable}>
-        <BoardTable.Layout className={`${inactiveStyle} ${selectedStyle}`}>
+        <BoardTable.Layout
+          className={cn(
+            !isActivatedTable
+              ? "opacity-20 cursor-not-allowed"
+              : "hover:shadow-md hover:shadow-stone-500",
+            {
+              "shadow-lg shadow-stone-500 hover:shadow-lg": isSelected,
+            }
+          )}
+        >
           <BoardTable.Header>
             <BoardTable.LeftLayout>
               <SheetQrCode

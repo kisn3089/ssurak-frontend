@@ -20,5 +20,5 @@ export default function AwaitFetch({
     return null;
   }
 
-  return <>{children}</>;
+  return children;
 }

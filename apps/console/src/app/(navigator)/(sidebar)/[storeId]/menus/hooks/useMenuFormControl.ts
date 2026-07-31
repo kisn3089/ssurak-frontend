@@ -1,24 +1,28 @@
-import { CreateMenuPayload } from "@ssurak/api/schemas/model/menu.schema";
 import { Resolver, useForm, useWatch } from "react-hook-form";
 import { MenuFormValues } from "../../tables/types/menu-form.type";
+import {
+  MenuFormPayload,
+  OptionGroupForm,
+} from "../types/menu-form-payload.type";
+import { toOptionGroupForms } from "../utils/menu-option-form";
 
 type UseMenuFormControlProps = {
   defaultCategoryId: string | undefined;
-  defaultSortOrder: number | undefined;
+  defaultSortOrder: string[];
   defaultFormValues: Omit<MenuFormValues, "publicId">;
-  resolver: Resolver<CreateMenuPayload>;
+  resolver: Resolver<MenuFormPayload>;
 };
 
 export type WatchingMenuForm = {
   name: string;
   price: number | null;
-  imageKey: string | null;
+  imageKey: string | null | undefined;
   description: string | null | undefined;
-  // requiredOptions: string[] | null;
-  // customOptions: string[] | null;
+  requiredOptions: OptionGroupForm[];
+  customOptions: OptionGroupForm[];
   categoryId: string | null;
-  sortOrder: number | undefined;
   isAvailable: boolean | undefined;
+  sortOrder: string[];
 };
 
 export default function useMenuFormControl({
@@ -29,13 +33,15 @@ export default function useMenuFormControl({
 }: UseMenuFormControlProps) {
   "use no memo";
 
-  const form = useForm<CreateMenuPayload>({
+  const form = useForm<MenuFormPayload>({
     resolver,
     mode: "all",
     defaultValues: {
       ...defaultFormValues,
       categoryId: defaultCategoryId,
       sortOrder: defaultSortOrder,
+      // trigger가 필수 ↔ 선택 옵션을 서로 참조할 수 있어 두 목록을 한 번에 변환한다.
+      ...toOptionGroupForms(defaultFormValues),
     },
   });
 
@@ -44,11 +50,11 @@ export default function useMenuFormControl({
     price,
     imageKey,
     description,
-    // requiredOptions,
-    // customOptions,
+    requiredOptions,
+    customOptions,
     categoryId,
-    sortOrder,
     isAvailable,
+    sortOrder,
   ] = useWatch({
     control: form.control,
     name: [
@@ -56,11 +62,11 @@ export default function useMenuFormControl({
       "price",
       "imageKey",
       "description",
-      //   "requiredOptions",
-      //   "customOptions",
+      "requiredOptions",
+      "customOptions",
       "categoryId",
-      "sortOrder",
       "isAvailable",
+      "sortOrder",
     ],
   });
 
@@ -69,11 +75,11 @@ export default function useMenuFormControl({
     price,
     imageKey,
     description,
-    // requiredOptions,
-    // customOptions,
+    requiredOptions,
+    customOptions,
     categoryId,
-    sortOrder,
     isAvailable,
+    sortOrder,
   };
 
   return { ...form, watchingMenuForm };

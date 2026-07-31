@@ -14,9 +14,6 @@ export function menuDiffFromDefaults(
   if (form.name !== defaults.name) {
     changed.name = form.name;
   }
-  if (form.sortOrder !== defaults.sortOrder) {
-    changed.sortOrder = form.sortOrder;
-  }
   if (form.price !== defaults.price) {
     changed.price = form.price;
   }

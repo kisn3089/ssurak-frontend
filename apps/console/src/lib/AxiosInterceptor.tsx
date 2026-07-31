@@ -4,7 +4,7 @@ import { refreshAccessToken } from "@/app/common/servers/refreshAccessToken";
 import { setupAuthInterceptor } from "@ssurak/api/core/axios/http";
 import { useAuthInfo } from "@ssurak/auth/providers/AuthenticationProvider";
 import { toast } from "@ssurak/ui/components/sonner";
-import React, { ReactNode, useEffect, useRef } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 
 export default function AxiosInterceptor({
   children,
@@ -34,5 +34,5 @@ export default function AxiosInterceptor({
     });
   }, [setAuthInfo, signOut]);
 
-  return <>{children}</>;
+  return children;
 }

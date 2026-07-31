@@ -1,8 +1,9 @@
 import useSuspenseWithAuth from "@ssurak/api/hooks/useSuspenseWithAuth";
 import { CategoryWithMenusResponse } from "@ssurak/api/types/category/category.interface";
 import { useParams } from "next/navigation";
-import { SelectOption } from "../../components/form/FormSelectField";
+import { SelectOption } from "../../components/form/select-form-field/SelectFormField";
 import { MenuFormValues } from "../../tables/types/menu-form.type";
+import { buildExpectedOrder, NEW_MENU_ID } from "../utils/menu-sort-order";
 
 export default function useMenuForm(formDefaultValues: MenuFormValues) {
   const { storeId } = useParams<{ storeId: string }>();
@@ -24,19 +25,15 @@ export default function useMenuForm(formDefaultValues: MenuFormValues) {
   const defaultCategoryId =
     defaultCategory?.publicId ?? formDefaultValues.categoryId;
 
-  // 수정 화면: 편집 중인 메뉴의 현재 위치를 정렬 셀렉트 초기값으로 잡는다.
-  // (맨 앞이면 0 = "맨 앞에 표시", 아니면 바로 앞 메뉴의 sortOrder = "그 메뉴 다음")
-  const menusBeforeEdit = defaultCategory?.menus ?? [];
-  const editingMenuIndex = menusBeforeEdit.findIndex(
-    (menu) => menu.publicId === formDefaultValues.publicId
-  );
+  // 생성 화면의 메뉴는 아직 publicId가 없으므로 자리표시자로 자리를 잡는다.
+  const selfId = formDefaultValues.publicId ?? NEW_MENU_ID;
 
-  const defaultSortOrder =
-    editingMenuIndex === -1
-      ? formDefaultValues.sortOrder
-      : editingMenuIndex === 0
-        ? 0
-        : menusBeforeEdit[editingMenuIndex - 1].sortOrder;
+  // 정렬 목록의 초기값은 "지금 제출하면 서버가 갖게 될 순서"다.
+  // 수정 화면이면 편집 중인 메뉴가 제자리에 있고, 생성 화면이면 맨 뒤에 붙는다.
+  const defaultSortOrder = buildExpectedOrder(
+    (defaultCategory?.menus ?? []).map((menu) => menu.publicId),
+    selfId
+  );
 
   const existingMenuNames = new Set<string>(
     categoryWithMenus.flatMap((cat) => cat.menus).map((menu) => menu.name)
@@ -53,5 +50,6 @@ export default function useMenuForm(formDefaultValues: MenuFormValues) {
     defaultCategoryId,
     defaultSortOrder,
     existingMenuNames,
+    selfId,
   };
 }

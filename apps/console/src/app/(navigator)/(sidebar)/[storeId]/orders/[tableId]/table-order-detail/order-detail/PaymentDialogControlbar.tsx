@@ -41,7 +41,7 @@ export default function PaymentDialogControlbar({
   const tryPayment = async (e: React.MouseEvent<HTMLButtonElement>) => {
     try {
       setIsError(false);
-      await paymentTransaction(e);
+      await paymentTransaction.run(e);
       setOpen(false);
     } catch {
       e.preventDefault();

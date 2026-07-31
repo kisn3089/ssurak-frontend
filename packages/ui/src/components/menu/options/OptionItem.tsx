@@ -22,12 +22,13 @@ export default function OptionItem({
     <Item className="flex-nowrap flex-col py-1 px-2 gap-1 items-start">
       <ItemTitle className="font-bold text-sm whitespace-pre">{key}</ItemTitle>
       <div className="grid grid-cols-[repeat(auto-fill,minmax(6rem,1fr))] gap-1 w-full">
-        {optionInfo.options.map((opt) => {
+        {optionInfo.options.map((opt, index) => {
           const selected = selectedOptions.get(key) === opt.key;
 
           return (
             <Button
-              key={opt.key}
+              key={`${opt.key}-${index}`}
+              type="button"
               variant={selected ? "default" : "outline"}
               className={`h-14 min-w-fit font-semibold border rounded-2xl`}
               onClick={() => changeOption(key, opt.key)}

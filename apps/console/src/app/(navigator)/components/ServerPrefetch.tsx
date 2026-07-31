@@ -68,7 +68,7 @@ export default async function ServerPrefetch<T>({
            * 에러가 담긴 queryClient를 hydrate하지 않고 children만 렌더해, 클라이언트 쿼리 훅이
            * 재요청 → axios 인터셉터가 토큰을 갱신한 뒤 재시도하도록 위임한다.
            */
-          return <>{children}</>;
+          return children;
         } else {
           console.error(error);
         }

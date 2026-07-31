@@ -15,5 +15,5 @@ export default function ConditionalLink({
     return <Link {...props}>{children}</Link>;
   }
 
-  return <>{children}</>;
+  return children;
 }

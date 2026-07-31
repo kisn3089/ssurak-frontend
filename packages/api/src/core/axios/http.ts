@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import type { RefreshAccessTokenResult } from "../auth/auth.type";
 
 declare module "@tanstack/react-query" {
   interface Register {
@@ -45,7 +46,7 @@ type HttpError = {
 export type HttpAxiosError = AxiosError<HttpError, AxiosRequestConfig>;
 
 type AuthCallbacks = {
-  refreshAccessToken: () => Promise<{ accessToken: string }>;
+  refreshAccessToken: () => Promise<RefreshAccessTokenResult>;
   setAuthInfo: (authInfo: { accessToken: string }) => void;
   signOut: () => void;
   forbiddenNotice: () => void;
@@ -57,15 +58,22 @@ export function setupAuthInterceptor(callbacks: AuthCallbacks) {
   authCallbacks = callbacks;
 }
 
-let refreshPromise: Promise<{ accessToken: string }> | null = null;
+let refreshPromise: Promise<RefreshAccessTokenResult> | null = null;
 
 function refreshAccessTokenOnce(
   callbacks: AuthCallbacks
-): Promise<{ accessToken: string }> {
+): Promise<RefreshAccessTokenResult> {
   if (!refreshPromise) {
-    refreshPromise = callbacks.refreshAccessToken().finally(() => {
-      refreshPromise = null;
-    });
+    refreshPromise = callbacks
+      .refreshAccessToken()
+      // 갱신 요청 자체가 닿지 못한 경우(오프라인 등)도 세션 파기로 몰지 않는다.
+      .catch((error: unknown): RefreshAccessTokenResult => {
+        console.error("[http] Failed to reach the refresh endpoint", error);
+        return { status: "unavailable" };
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
   }
   return refreshPromise;
 }
@@ -75,19 +83,19 @@ http.interceptors.response.use(
   async (error: AxiosError<HttpError, AxiosRequestConfig>) => {
     if (error instanceof AxiosError && error.config) {
       if (error.response?.status === 419 && authCallbacks) {
-        try {
-          const newAccessToken = await refreshAccessTokenOnce(authCallbacks);
+        const refreshed = await refreshAccessTokenOnce(authCallbacks);
 
-          authCallbacks.setAuthInfo({
-            accessToken: newAccessToken.accessToken,
-          });
-          updateAxiosAuthorizationHeader(newAccessToken.accessToken);
+        if (refreshed.status === "refreshed") {
+          authCallbacks.setAuthInfo({ accessToken: refreshed.accessToken });
+          updateAxiosAuthorizationHeader(refreshed.accessToken);
 
           error.config.headers["Authorization"] =
-            `Bearer ${newAccessToken.accessToken}`;
+            `Bearer ${refreshed.accessToken}`;
           return http(error.config);
-        } catch {
-          authCallbacks?.signOut();
+        }
+
+        if (refreshed.status === "unauthorized") {
+          authCallbacks.signOut();
         }
       }
 

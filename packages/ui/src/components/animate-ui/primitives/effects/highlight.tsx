@@ -233,6 +233,9 @@ function Highlight<T extends React.ElementType = "div">({
   }, []);
 
   React.useEffect(() => {
+    // controlled/uncontrolled 값을 내부 상태로 내려받는 구조라 이펙트에서 반영한다.
+    // animate-ui에서 그대로 들여온 파일이라 손대지 않는다.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (value !== undefined) setActiveValue(value);
     else if (defaultValue !== undefined) setActiveValue(defaultValue);
   }, [value, defaultValue]);

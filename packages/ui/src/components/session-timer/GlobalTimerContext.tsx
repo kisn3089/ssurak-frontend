@@ -9,7 +9,8 @@ export function GlobalTimerProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [currentTime, setCurrentTime] = useState(Date.now());
+  // 초기값 계산은 지연시킨다. 렌더마다 Date.now()를 부르면 결과가 불안정한 순수하지 않은 렌더가 된다.
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
 
   useEffect(() => {
     // 전역 타이머 1개만 생성

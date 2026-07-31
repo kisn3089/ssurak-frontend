@@ -6,7 +6,7 @@ type AsyncFunction<TArgs extends unknown[], TReturn> = (
 ) => Promise<TReturn>;
 
 type CancelableAsyncReturn<TArgs extends unknown[], TReturn> = {
-  (...args: TArgs): Promise<TReturn | undefined>;
+  run: (...args: TArgs) => Promise<TReturn | undefined>;
   isPending: boolean;
   abort: () => void;
 };
@@ -36,9 +36,7 @@ export function useCancelableAsync<TArgs extends unknown[], TReturn>(
     };
   }, []);
 
-  const promiseFunctionCall = async (
-    ...args: TArgs
-  ): Promise<TReturn | undefined> => {
+  const run = async (...args: TArgs): Promise<TReturn | undefined> => {
     // 이전 요청이 있으면 취소
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -47,8 +45,6 @@ export function useCancelableAsync<TArgs extends unknown[], TReturn>(
     abortControllerRef.current = new AbortController();
 
     return new Promise((resolve, reject) => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore -- async startTransition is supported at runtime (React 18.3+)
       startTransition(async () => {
         try {
           const result = await promiseFunction(
@@ -76,8 +72,5 @@ export function useCancelableAsync<TArgs extends unknown[], TReturn>(
     }
   };
 
-  return Object.assign(promiseFunctionCall, {
-    isPending,
-    abort,
-  });
+  return { run, isPending, abort };
 }

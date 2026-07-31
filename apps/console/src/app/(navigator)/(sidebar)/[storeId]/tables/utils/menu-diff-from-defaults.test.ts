@@ -8,7 +8,6 @@ const defaults: MenuFormValues = {
   name: "아메리카노",
   price: 4000,
   categoryId: "category-1",
-  sortOrder: 1,
   isAvailable: true,
   imageKey: "menu/americano.png",
   description: "깔끔한 아메리카노",
@@ -20,7 +19,6 @@ const baseForm: CreateMenuPayload = {
   name: "아메리카노",
   price: 4000,
   categoryId: "category-1",
-  sortOrder: 1,
   isAvailable: true,
   imageKey: "menu/americano.png",
   description: "깔끔한 아메리카노",
@@ -42,15 +40,6 @@ describe("menuDiffFromDefaults", () => {
     );
 
     expect(result).toEqual({ name: "카페라떼", price: 4500 });
-  });
-
-  it("sortOrder를 0으로 바꾸면 0을 보낸다", () => {
-    const result = menuDiffFromDefaults(
-      { ...baseForm, sortOrder: 0 },
-      defaults
-    );
-
-    expect(result).toEqual({ sortOrder: 0 });
   });
 
   it("price를 0으로 바꾸면 0을 보낸다", () => {

@@ -1,17 +1,20 @@
 import useMenuMutation from "@ssurak/api/core/store/menu/useMenuMutation";
-import { CreateMenuPayload } from "@ssurak/api/schemas/model/menu.schema";
+import {
+  CreateMenuPayload,
+  ReorderMenusPayload,
+} from "@ssurak/api/schemas/model/menu.schema";
 import {
   MenuCustomOption,
   MenuRequiredOption,
 } from "@ssurak/api/types/menu/menuOptions.interface";
 import { UseFormSetError } from "react-hook-form";
+import { MenuFormPayload } from "../../menus/types/menu-form-payload.type";
 
 export interface MenuFormValues {
   name: string;
   publicId?: string;
   price?: number;
   categoryId?: string;
-  sortOrder?: number;
   requiredOptions?: MenuRequiredOption;
   customOptions?: MenuCustomOption;
   description?: string;
@@ -21,15 +24,23 @@ export interface MenuFormValues {
 
 type MenuMutations = ReturnType<typeof useMenuMutation>;
 
+export type MenuSubmitOutcome = { reorderFailed: boolean };
+
+export type MenuSubmitContext = {
+  setError: UseFormSetError<MenuFormPayload>;
+  resolveReorder: (menuId: string) => ReorderMenusPayload | null;
+};
+
 type MenuBaseForm = {
   formDefaultValues: MenuFormValues;
   linkToCancel: string;
   children: React.ReactNode;
   buttonText: string;
+  /** payload는 이미 폼 배열 → 서버 Record로 변환된 상태로 넘어온다. */
   formSubmit: (
     payload: CreateMenuPayload,
-    setError: UseFormSetError<CreateMenuPayload>
-  ) => void;
+    context: MenuSubmitContext
+  ) => Promise<MenuSubmitOutcome | void>;
 };
 
 export type MenuFormProps = MenuBaseForm & {

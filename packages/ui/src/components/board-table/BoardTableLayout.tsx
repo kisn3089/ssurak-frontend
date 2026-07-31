@@ -1,3 +1,4 @@
+import { cn } from "@ssurak/ui/lib/utils";
 import { Card } from "../layouts/card";
 
 type BoardTableLayoutProps = {
@@ -11,7 +12,10 @@ export default function BoardTableLayout({
 }: BoardTableLayoutProps) {
   return (
     <Card
-      className={`cursor-pointer rounded-2xl h-full min-h-[220px] flex flex-col transition-shadow duration-300 bg-accent ${className}`}
+      className={cn(
+        "cursor-pointer rounded-2xl h-full min-h-[220px] flex flex-col transition-shadow duration-300 bg-accent",
+        className
+      )}
     >
       {children}
     </Card>

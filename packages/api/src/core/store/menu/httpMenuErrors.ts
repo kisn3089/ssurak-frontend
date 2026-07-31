@@ -19,6 +19,7 @@ export const httpMenuErrors = {
   post: postMenuErrors,
   get: getMenuErrors,
   patch: patchMenuErrors,
+  reorder: reorderMenusErrors,
   delete: deleteMenuErrors,
 };
 
@@ -87,6 +88,30 @@ function patchMenuErrors(error: HttpAxiosError) {
       return commonMenuError(
         error,
         "일시적인 서버 오류로 수정하지 못했어요. 잠시 후 다시 시도해 주세요."
+      );
+  }
+}
+
+/**
+ * 재정렬은 카테고리의 살아 있는 메뉴 집합 전체를 보내고 서버가 대조하므로,
+ * 그 사이 다른 곳에서 메뉴가 추가·삭제·이동됐다면 409로 거절된다.
+ */
+function reorderMenusErrors(error: HttpAxiosError) {
+  const status = error.response?.data?.status;
+  switch (status) {
+    case 400:
+      return "정렬 정보가 올바르지 않아요. 새로고침 후 다시 시도해 주세요.";
+    case 404:
+      if (isCategoryNotFound(error)) {
+        return "정렬할 카테고리를 찾을 수 없어요. 새로고침 후 다시 시도해 주세요.";
+      }
+      return "정렬할 메뉴를 찾을 수 없어요. 새로고침 후 다시 시도해 주세요.";
+    case 409:
+      return "그 사이 메뉴 목록이 바뀌어 순서를 저장하지 못했어요. 메뉴 목록에서 다시 정렬해 주세요.";
+    default:
+      return commonMenuError(
+        error,
+        "일시적인 서버 오류로 순서를 저장하지 못했어요. 메뉴 목록에서 다시 정렬해 주세요."
       );
   }
 }
