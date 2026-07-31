@@ -206,7 +206,9 @@ describe("그룹 접힘 상태", () => {
    */
   it("에러가 생긴 그룹은 펼쳐지고 접기 버튼이 막힌다", async () => {
     const user = userEvent.setup();
-    render(<OptionFormHarness requiredOptions={[buildGroup(), buildGroup()]} />);
+    render(
+      <OptionFormHarness requiredOptions={[buildGroup(), buildGroup()]} />
+    );
 
     expect(screen.getAllByRole("button", { name: "원두 펼치기" })).toHaveLength(
       2

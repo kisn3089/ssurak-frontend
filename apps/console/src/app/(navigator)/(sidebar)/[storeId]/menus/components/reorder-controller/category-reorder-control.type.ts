@@ -13,11 +13,7 @@ export type CategoryReorderChildrenProps = {
   createRow: (name: string) => void;
   renameRow: (categoryId: string, name: string) => void;
   resolver: Resolver<CreateCategoryPayload>;
-  deleteRow: (
-    categoryId: string,
-    name: string,
-    onSuccess?: () => void
-  ) => void;
+  deleteRow: (categoryId: string, name: string, onSuccess?: () => void) => void;
 };
 
 export type CategoryReorderControlProps = Pick<

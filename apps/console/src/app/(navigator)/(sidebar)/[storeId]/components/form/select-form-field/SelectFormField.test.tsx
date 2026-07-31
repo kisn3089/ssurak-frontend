@@ -3,9 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import ReorderForm, {
-  ReorderRowData,
-} from "../reorder-form-field/ReorderForm";
+import ReorderForm, { ReorderRowData } from "../reorder-form-field/ReorderForm";
 import SelectFormField from "./SelectFormField";
 
 /** jsdom에는 포인터 캡처가 없다. (OptionFormField.test.tsx와 같은 이유) */
