@@ -1,3 +1,18 @@
+/**
+ * 날짜를 ko-KR / Asia/Seoul 기준 문자열로 포맷한다.
+ *
+ * `"use client"` 컴포넌트도 서버에서 프리렌더되므로 이 함수는 SSR 경로에서도
+ * 실행된다. 서버와 브라우저가 같은 문자열을 만들어야 hydration이 어긋나지 않으므로
+ * 두 가지를 지킨다.
+ *
+ * 1. locale과 timeZone을 런타임 환경이 아니라 상수로 고정한다. `navigator.language`나
+ *    호스트 TZ에 의존하면 서버(TZ 미지정 컨테이너 = UTC)와 단말이 갈린다.
+ * 2. **호출부는 고정된 타임스탬프를 넘겨야 한다.** `Date.now()`처럼 렌더 시점마다
+ *    달라지는 값을 넣으면 상수 고정과 무관하게 서버·클라이언트 출력이 어긋난다.
+ *    경과 시간처럼 흐르는 값이 필요하면 마운트 이후 계산하는 별도 컴포넌트를 쓴다.
+ *
+ * @param options 지정하면 기본 필드(시:분)를 대체한다. timeZone은 항상 적용된다.
+ */
 export function formatDate(
   date: Date | string,
   options?: Intl.DateTimeFormatOptions,
@@ -10,5 +25,8 @@ export function formatDate(
     minute: "2-digit",
   };
 
-  return new Date(date).toLocaleString(locale, options || defaultOptions);
+  return new Date(date).toLocaleString(locale, {
+    timeZone: "Asia/Seoul",
+    ...(options ?? defaultOptions),
+  });
 }
