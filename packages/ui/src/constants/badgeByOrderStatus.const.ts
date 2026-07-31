@@ -9,7 +9,7 @@ export const BADGE_BY_ORDER_STATUS = {
   },
   PREPARING: {
     label: "준비중",
-    badgeVariant: "default",
+    badgeVariant: "hilight",
   },
   COMPLETED: {
     label: "서빙 완료",
