@@ -50,6 +50,23 @@ export const staticAddMenuFields: StaticFormField<MenuFormPayload>[] = [
     ),
   },
   {
+    id: "description",
+    label: "메뉴 설명",
+    placeholder: "맛있는 아메리카노",
+    type: "text",
+  },
+  {
+    id: "isAvailable",
+    label: "활성화",
+    type: "switch",
+    legend: "활성화 여부",
+    description:
+      "활성화 여부를 설정합니다. 비활성화된 메뉴는 주문이 불가능합니다.",
+  },
+  {
+    type: "line",
+  },
+  {
     id: "requiredOptions",
     label: "필수 옵션",
     description:
@@ -64,19 +81,5 @@ export const staticAddMenuFields: StaticFormField<MenuFormPayload>[] = [
       "고객이 원할 때 추가로 선택하는 옵션입니다. 다른 옵션 선택값에 따른 노출 조건을 걸 수 있어요.",
     type: "option",
     addOptionGroupButtonLabel: "+ 선택 옵션 그룹 추가",
-  },
-  {
-    id: "description",
-    label: "메뉴 설명",
-    placeholder: "맛있는 아메리카노",
-    type: "text",
-  },
-  {
-    id: "isAvailable",
-    label: "활성화",
-    type: "switch",
-    legend: "활성화 여부",
-    description:
-      "활성화 여부를 설정합니다. 비활성화된 메뉴는 주문이 불가능합니다.",
   },
 ];
