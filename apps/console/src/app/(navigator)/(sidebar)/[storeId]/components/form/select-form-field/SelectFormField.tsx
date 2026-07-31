@@ -16,9 +16,7 @@ export type SelectFromChildrenProps = {
   isRenderChild: number | undefined;
   setIsRenderChild: (index: number | undefined) => void;
   registerCommit: (handler: (() => void) | null) => void;
-  /** 지금 선택된 값. 관리 모드에서 선택 중인 항목을 지웠는지 판단하는 데 쓴다. */
   selectedValue: string;
-  /** 선택을 비운다. 값이 비면 스키마가 "선택해 주세요"로 막아 유효하지 않은 제출을 걸러낸다. */
   clearSelection: () => void;
 };
 

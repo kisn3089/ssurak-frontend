@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { isSameOrder, syncDraftOrder } from "../../../utils/menu-sort-order";
+import { isSameOrder, syncDraftOrder } from "@ssurak/api/utils/reorder";
 import { UseFormGetValues, UseFormSetValue } from "react-hook-form";
 import { CategoryWithMenusResponse } from "@ssurak/api/types/category/category.interface";
 

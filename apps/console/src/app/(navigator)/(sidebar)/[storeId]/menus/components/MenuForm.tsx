@@ -21,11 +21,8 @@ import useResetSortOrderOnCategoryChange from "../hooks/useResetSortOrderOnCateg
 import { menuFormPayloadSchema } from "@ssurak/api/schemas/model/menu-form-payload.schema";
 import { MenuFormPayload } from "../types/menu-form-payload.type";
 import { toMenuOptionRecords } from "../utils/menu-option-form";
-import {
-  buildExpectedOrder,
-  isSameOrder,
-  resolveMenuIds,
-} from "../utils/menu-sort-order";
+import { buildExpectedOrder, resolveMenuIds } from "../utils/menu-sort-order";
+import { isSameOrder } from "@ssurak/api/utils/reorder";
 
 const NEW_MENU_NAME_PLACEHOLDER = "새 메뉴";
 /** 폼을 열어둔 사이 목록이 바뀌어 이름을 찾지 못한 행. 제출 시 서버가 409로 걸러낸다. */

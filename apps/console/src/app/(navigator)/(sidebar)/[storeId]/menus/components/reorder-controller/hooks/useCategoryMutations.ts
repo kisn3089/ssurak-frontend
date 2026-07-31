@@ -7,7 +7,13 @@ export default function useCategoryMutations() {
   const { storeId } = useParams<{ storeId: string }>();
 
   const { createCategory, deleteCategory, updateCategory, reorderCategories } =
-    useCategoryMutation(storeId);
+    useCategoryMutation(storeId, {
+      onReorderError: (error) =>
+        notifyFailure(
+          "카테고리 순서를 저장하지 못했어요.",
+          httpCategoryErrors.reorder(error)
+        ),
+    });
 
   const { mutate: reorderCategoriesMutate } = reorderCategories;
 
