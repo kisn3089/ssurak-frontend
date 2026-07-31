@@ -10,9 +10,11 @@ import { transCurrencyFormat } from "@ssurak/ui/utils/menu/priceFormatter";
 import { Badge } from "@ssurak/ui/components/forms/badge";
 
 export default function OrderedItem({ orderItem }: { orderItem: OrderItem }) {
-  const options = Object.values(orderItem.optionsSnapshot ?? {}).flatMap(
-    (option) => Object.entries(option)
-  );
+  const { requiredOptions, customOptions } = orderItem.optionsSnapshot ?? {};
+  const options = [
+    ...Object.entries(requiredOptions ?? {}),
+    ...Object.entries(customOptions ?? {}),
+  ];
 
   return (
     <Item className="p-0 pb-2 w-full">
