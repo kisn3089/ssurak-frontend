@@ -12,6 +12,7 @@ import { OrderWithItemsResponse } from "@ssurak/api/types/order/order.interface"
 import { cookies } from "next/headers";
 import SyncDaemon from "./components/daemon/SyncDaemon";
 import { makeQueryKey } from "@ssurak/api/utils/makeQueryKey";
+import SessionExpiredError from "../components/SessionExpiredError";
 
 const STORE_CONTEXT_PATH = "/stores/v1/sessions/me/store-context";
 const CART_LIST_PATH = "/carts/v1/sessions/carts";
@@ -65,6 +66,10 @@ export default async function NavigatorLayout({
         staleTime: 60 * 1000,
       }),
     ]);
+  }
+
+  if (!sessionToken) {
+    return <SessionExpiredError />;
   }
 
   return (
