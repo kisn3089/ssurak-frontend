@@ -6,10 +6,7 @@ const PENDING_CATEGORY_ID_PREFIX = "pending-category:";
 /** 카테고리 sortOrder는 Sparse 패턴(10, 20, 30...)이므로 새 항목은 마지막 값 다음 칸에 붙인다. */
 const SORT_ORDER_STEP = 10;
 
-/**
- * 낙관적으로 먼저 그려 둔, 아직 서버가 모르는 카테고리인지 판단한다.
- * 이 publicId는 재정렬·이름 변경·삭제 요청에 실어 보내면 안 된다.
- */
+/** 낙관적으로 먼저 그려 둔, 아직 서버가 모르는 카테고리인지 판단한다. */
 export function isPendingCategoryId(publicId: string) {
   return publicId.startsWith(PENDING_CATEGORY_ID_PREFIX);
 }
