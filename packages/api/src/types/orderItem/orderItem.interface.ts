@@ -13,7 +13,7 @@ export interface OrderItem {
   /** 단가 (기본 가격 + 옵션 가격) */
   unitPrice: number;
   quantity: number;
-  /** 고객이 선택한 필수·선택 옵션 스냅샷 */
+  /** 고객이 선택한 옵션의 확정 스냅샷. 옵션을 고르지 않았으면 null이다. */
   optionsSnapshot: OrderItemOptionSnapshot | null;
   createdAt: string;
 }
