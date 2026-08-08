@@ -1,63 +1,30 @@
-import { MenuDetail } from "@ssurak/ui/components/menu/menu-detail";
 import { useCreateOrderContext } from "../CreateOrderProvider";
-import AddMenuButton from "./AddMenuButton";
-import { Card, CardHeader } from "@ssurak/ui/components/layouts/card";
 import AddedMenuList from "./added-menu-list/AddedMenuList";
 import CreateOrderButton, {
   CloseDialogProps,
 } from "./added-menu-list/CreateOrderButton";
+import AddMenuDetailLayout from "./AddMenuDetailLayout";
+import SelectedMenuDetail from "./SelectedMenuDetail";
 
 export default function AddMenuDetail({ closeDialog }: CloseDialogProps) {
   const {
     state: { selectedMenu },
   } = useCreateOrderContext();
 
-  if (!selectedMenu) {
-    return (
-      <AddMenuDetailLayout
-        title={<CreateOrderTitle />}
-        button={<CreateOrderButton closeDialog={closeDialog} />}
-      >
-        <AddedMenuList />
-      </AddMenuDetailLayout>
-    );
+  if (selectedMenu) {
+    return <SelectedMenuDetail />;
   }
 
   return (
-    <MenuDetail.Provider menu={selectedMenu} key={selectedMenu.publicId}>
-      <AddMenuDetailLayout
-        title={<MenuDetail.Info />}
-        button={<AddMenuButton />}
-      >
-        <MenuDetail.RequiredOptions />
-        <MenuDetail.CustomOptions />
-      </AddMenuDetailLayout>
-    </MenuDetail.Provider>
+    <AddMenuDetailLayout
+      title={<CreateOrderTitle />}
+      button={<CreateOrderButton closeDialog={closeDialog} />}
+    >
+      <AddedMenuList />
+    </AddMenuDetailLayout>
   );
 }
 
 function CreateOrderTitle() {
   return <h3 className="font-bold text-xl px-2">추가한 주문</h3>;
-}
-
-type AddMenuDetailLayoutProps = {
-  children: React.ReactNode;
-  button: React.ReactNode;
-  title: React.ReactNode;
-};
-
-function AddMenuDetailLayout({
-  children,
-  button,
-  title,
-}: AddMenuDetailLayoutProps) {
-  return (
-    <Card className="min-w-[360px] h-full flex flex-col justify-between bg-background rounded-3xl shadow-md  overflow-hidden">
-      <div className="overflow-y-scroll scrollbar-hide">
-        <CardHeader className="py-3 px-1">{title}</CardHeader>
-        {children}
-      </div>
-      {button}
-    </Card>
-  );
 }

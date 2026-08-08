@@ -4,6 +4,7 @@ import useSuspenseWithAuth from "@ssurak/api/hooks/useSuspenseWithAuth";
 import { CreateOrderPayload } from "@ssurak/api/schemas/model/order.schema";
 import { CategoryWithMenusResponse } from "@ssurak/api/types/category/category.interface";
 import { Menu } from "@ssurak/api/types/menu/menu.interface";
+import { SnapshotGroup } from "@ssurak/ui/utils/menu/optionSnapshot";
 import { generateFingerprint } from "@utils/fingerprint";
 import { useParams } from "next/navigation";
 import { createContext, useContext, useState } from "react";
@@ -11,17 +12,22 @@ import { createContext, useContext, useState } from "react";
 type CreateOrderProviderProps = {
   children: React.ReactNode;
 };
+/**
+ * 주문 생성 전 단계의 항목.
+ *
+ * 전송용 필드(`options`는 선택 id 목록)에 표시용 `optionSnapshot`을 함께 들고 있다 —
+ * 아직 주문 전이라 서버 스냅샷이 없어서 이름·금액을 화면에 보여줄 방법이 이것뿐이다.
+ */
 export type SnapshotMenu = CreateOrderPayload["orderItems"][number] &
-  Pick<Menu, "price"> & { menuName: string };
+  Pick<Menu, "price"> & {
+    menuName: string;
+    optionSnapshot: SnapshotGroup[];
+  };
+
+/** 메뉴 카드가 들고 있는 최소 정보. 옵션은 선택 시점에 옵션 API로 따로 받아온다. */
 type MenuLike = Pick<
   Menu,
-  | "publicId"
-  | "name"
-  | "price"
-  | "customOptions"
-  | "requiredOptions"
-  | "description"
-  | "isAvailable"
+  "publicId" | "name" | "price" | "description" | "isAvailable"
 > &
   Partial<Pick<SnapshotMenu, "quantity">>;
 
@@ -63,11 +69,7 @@ export function CreateOrderProvider({ children }: CreateOrderProviderProps) {
   const clearAddedMenus = () => setAddedMenus(new Map());
 
   const deleteMenu = (menu: SnapshotMenu) => {
-    const fingerprint = generateFingerprint([
-      menu.menuPublicId,
-      menu.requiredOptions,
-      menu.customOptions,
-    ]);
+    const fingerprint = generateFingerprint(menu.menuPublicId, menu.options);
 
     setAddedMenus((prev) => {
       const updatedMenus = new Map(prev);
@@ -77,11 +79,10 @@ export function CreateOrderProvider({ children }: CreateOrderProviderProps) {
   };
 
   const addMenu = (menuSnapshot: SnapshotMenu, menu: MenuLike) => {
-    const fingerprint = generateFingerprint([
+    const fingerprint = generateFingerprint(
       menuSnapshot.menuPublicId,
-      menuSnapshot.requiredOptions,
-      menuSnapshot.customOptions,
-    ]);
+      menuSnapshot.options
+    );
 
     setAddedMenus((prev) => {
       const next = new Map(prev);
@@ -110,16 +111,14 @@ export function CreateOrderProvider({ children }: CreateOrderProviderProps) {
     menu: MenuLike,
     originalItem: SnapshotMenu
   ) => {
-    const originalFingerprint = generateFingerprint([
+    const originalFingerprint = generateFingerprint(
       originalItem.menuPublicId,
-      originalItem.requiredOptions,
-      originalItem.customOptions,
-    ]);
-    const nextFingerprint = generateFingerprint([
+      originalItem.options
+    );
+    const nextFingerprint = generateFingerprint(
       menuSnapshot.menuPublicId,
-      menuSnapshot.requiredOptions,
-      menuSnapshot.customOptions,
-    ]);
+      menuSnapshot.options
+    );
 
     setAddedMenus((prev) => {
       const next = new Map(prev);

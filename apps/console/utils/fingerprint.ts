@@ -1,32 +1,34 @@
-type OptionGroup = Record<string, string> | undefined;
-type FingerprintArgs = [id: string, ...optionGroups: OptionGroup[]];
+import { MenuOptionSelection } from "@ssurak/api/types/menu/menuOptions.interface";
 
 /**
- * 옵션 그룹을 키 기준으로 정렬한 [key, value] 튜플 배열로 정규화한다.
- * 구분자 문자열로 합치지 않고 구조(배열)를 그대로 유지하므로,
- * 키/값에 `=`, `&`, `|` 같은 문자가 포함돼도 충돌하지 않는다.
+ * 옵션 선택을 정규화한다.
+ *
+ * 서버(장바구니 지문)와 같은 규칙이다: 옵션·선택지 id로 정렬하고 **수량까지 포함**한다.
+ * 샷 2개와 1개는 서로 다른 항목이므로, 수량을 빼면 합쳐지면 안 될 것이 합쳐진다.
  */
-const canonical = (obj?: Record<string, string>): [string, string][] =>
-  obj
-    ? Object.keys(obj)
-        .sort()
-        .map((k) => [k, obj[k]])
+const canonical = (options?: MenuOptionSelection[]): unknown[] =>
+  options
+    ? [...options]
+        .sort((a, b) => a.optionId.localeCompare(b.optionId))
+        .map((option) => [
+          option.optionId,
+          [...option.choices]
+            .sort((a, b) => a.choiceId.localeCompare(b.choiceId))
+            .map((choice) => [choice.choiceId, choice.quantity]),
+        ])
     : [];
 
 /**
- * 인자 배열의 첫 번째 요소로 식별자(id)를 넣고,
- * 그 뒤에 옵션 그룹들을 순서대로 전달한다.
+ * 같은 메뉴 + 같은 옵션 조합을 한 항목으로 합치기 위한 식별자.
  *
- * 정규화한 구조를 JSON.stringify로 직렬화해 구분자 주입(injection)으로 인한
- * 서로 다른 옵션 조합의 fingerprint 충돌을 방지한다.
+ * 정규화한 구조를 JSON.stringify로 직렬화한다 — 구분자 문자열로 이어 붙이면
+ * id에 그 문자가 섞였을 때 서로 다른 조합이 같은 지문을 낼 수 있다.
  *
- * @param args - `[id, ...optionGroups]` 형태의 튜플. 첫 번째 요소는 id 문자열.
- * @example
- * generateFingerprint([menu.menuPublicId, menu.requiredOptions, menu.customOptions]);
+ * @example generateFingerprint(item.menuPublicId, item.options);
  */
-export function generateFingerprint<T extends FingerprintArgs>([
-  id,
-  ...optionGroups
-]: T) {
-  return JSON.stringify([id, ...optionGroups.map(canonical)]);
+export function generateFingerprint(
+  menuPublicId: string,
+  options?: MenuOptionSelection[]
+) {
+  return JSON.stringify([menuPublicId, canonical(options)]);
 }
