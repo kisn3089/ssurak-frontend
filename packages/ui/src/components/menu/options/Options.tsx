@@ -1,25 +1,19 @@
-import type { MenuOptionEntry } from "../menu-detail/menu-detail.type";
+import type { DetailOptionGroup } from "../menu-detail/menu-detail.type";
 import OptionItem from "./OptionItem";
 
 type OptionsProps = {
-  options: MenuOptionEntry[];
-  selectedOptions: Map<string, string>;
-  changeOption: (optionGroupKey: string, optionKey: string) => void;
+  options: DetailOptionGroup[];
+  visibleOptionIds: Set<string>;
 };
 
-export default function Options({
-  options,
-  selectedOptions,
-  changeOption,
-}: OptionsProps) {
+export default function Options({ options, visibleOptionIds }: OptionsProps) {
   return (
     <>
       {options.map((option) => (
         <OptionItem
-          key={option.key}
+          key={option.publicId}
           option={option}
-          selectedOptions={selectedOptions}
-          changeOption={changeOption}
+          visible={visibleOptionIds.has(option.publicId)}
         />
       ))}
     </>
