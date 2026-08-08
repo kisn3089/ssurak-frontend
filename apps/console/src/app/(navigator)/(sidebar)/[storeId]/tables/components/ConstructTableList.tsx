@@ -30,7 +30,10 @@ export default function ConstructTableList({
 
   return (
     <>
-      <FilterTabs tabs={tabs} />
+      <FilterTabs
+        tabs={tabs}
+        allTab={{ section: "전체 구역", floor: "전체 층" }}
+      />
       <ConstructTableListLayout
         body={
           <TableListView
