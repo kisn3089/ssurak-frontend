@@ -20,7 +20,10 @@ export default function MenuEditPage({ params }: MenuDetailPageProps) {
     <SectionLayout title="메뉴 수정" description={description}>
       <ServerPrefetch url={`/stores/v1/${storeId}/menus`}>
         <ServerPrefetch url={`/stores/v1/${storeId}/menus/${menuId}`}>
-          <MenuEditForm />
+          {/* 옵션은 메뉴 응답에 실리지 않으므로 옵션 API로 따로 prefetch한다. */}
+          <ServerPrefetch url={`/stores/v1/${storeId}/menus/${menuId}/options`}>
+            <MenuEditForm />
+          </ServerPrefetch>
         </ServerPrefetch>
       </ServerPrefetch>
     </SectionLayout>

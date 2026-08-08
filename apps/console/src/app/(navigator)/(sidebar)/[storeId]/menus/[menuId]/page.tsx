@@ -16,11 +16,13 @@ export default function MenuDetailPage({ params }: MenuDetailPageProps) {
   const { storeId, menuId } = use(params);
 
   return (
-    <ServerPrefetch url={`/stores/v1/${storeId}/menus/${menuId}`}>
-      <NoticeScheduledOpen
-        content="추후 메뉴의 상세한 지표를 확인할 수 있습니다."
-        title="메뉴 상세 정보"
-      />
-    </ServerPrefetch>
+    <div className="flex flex-col gap-6">
+      <ServerPrefetch url={`/stores/v1/${storeId}/menus/${menuId}`}>
+        <NoticeScheduledOpen
+          content="추후 메뉴의 상세한 지표를 확인할 수 있습니다."
+          title="메뉴 상세 정보"
+        />
+      </ServerPrefetch>
+    </div>
   );
 }

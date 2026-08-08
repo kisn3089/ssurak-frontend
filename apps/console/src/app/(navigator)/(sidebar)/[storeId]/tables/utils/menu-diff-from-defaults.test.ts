@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import { menuDiffFromDefaults } from "./menu-diff-from-defaults";
 import { MenuFormValues } from "../types/menu-form.type";
 import { CreateMenuPayload } from "@ssurak/api/schemas/model/menu.schema";
-import { MenuCustomOption } from "@ssurak/api/types/menu/menuOptions.interface";
 
 const defaults: MenuFormValues = {
   name: "아메리카노",
@@ -11,8 +10,6 @@ const defaults: MenuFormValues = {
   isAvailable: true,
   imageKey: "menu/americano.png",
   description: "깔끔한 아메리카노",
-  requiredOptions: undefined,
-  customOptions: undefined,
 };
 
 const baseForm: CreateMenuPayload = {
@@ -22,8 +19,6 @@ const baseForm: CreateMenuPayload = {
   isAvailable: true,
   imageKey: "menu/americano.png",
   description: "깔끔한 아메리카노",
-  requiredOptions: undefined,
-  customOptions: undefined,
 };
 
 describe("menuDiffFromDefaults", () => {
@@ -75,41 +70,6 @@ describe("menuDiffFromDefaults", () => {
     expect(result).toEqual({ imageKey: null });
   });
 
-  it("customOptions를 새로 설정하면 해당 객체를 보낸다", () => {
-    const customOptions: MenuCustomOption = {
-      shot: {
-        options: [{ key: "extra", price: 500 }],
-        defaultKey: "extra",
-      },
-    };
-
-    const result = menuDiffFromDefaults(
-      { ...baseForm, customOptions },
-      defaults
-    );
-
-    expect(result).toEqual({ customOptions });
-  });
-
-  it("customOptions를 제거하면 값 해제 의미의 null을 보낸다", () => {
-    const withOptions: MenuFormValues = {
-      ...defaults,
-      customOptions: {
-        shot: {
-          options: [{ key: "extra", price: 500 }],
-          defaultKey: "extra",
-        },
-      },
-    };
-
-    const result = menuDiffFromDefaults(
-      { ...baseForm, customOptions: undefined },
-      withOptions
-    );
-
-    expect(result).toEqual({ customOptions: null });
-  });
-
   it("description을 비우면 값 해제 의미의 null을 보낸다", () => {
     const result = menuDiffFromDefaults(
       { ...baseForm, description: undefined },
@@ -126,115 +86,6 @@ describe("menuDiffFromDefaults", () => {
     );
 
     expect(result).toEqual({ description: null });
-  });
-
-  it("옵션 내용이 같으면 인스턴스가 달라도 변경으로 치지 않는다", () => {
-    const withOptions: MenuFormValues = {
-      ...defaults,
-      customOptions: {
-        shot: {
-          options: [{ key: "extra", price: 500 }],
-          defaultKey: "extra",
-        },
-      },
-    };
-
-    // 서버 defaults 와 내용은 같지만 새로 만들어진 별개 인스턴스(RHF 클론 상황 재현)
-    const result = menuDiffFromDefaults(
-      {
-        ...baseForm,
-        customOptions: {
-          shot: {
-            options: [{ key: "extra", price: 500 }],
-            defaultKey: "extra",
-          },
-        },
-      },
-      withOptions
-    );
-
-    expect(result).toEqual({});
-  });
-
-  it("record 키 순서만 다르면 변경으로 치지 않는다", () => {
-    const withOptions: MenuFormValues = {
-      ...defaults,
-      customOptions: {
-        shot: { options: [{ key: "extra", price: 500 }], defaultKey: "extra" },
-        size: { options: [{ key: "large", price: 700 }], defaultKey: "large" },
-      },
-    };
-
-    const result = menuDiffFromDefaults(
-      {
-        ...baseForm,
-        customOptions: {
-          size: {
-            options: [{ key: "large", price: 700 }],
-            defaultKey: "large",
-          },
-          shot: {
-            options: [{ key: "extra", price: 500 }],
-            defaultKey: "extra",
-          },
-        },
-      },
-      withOptions
-    );
-
-    expect(result).toEqual({});
-  });
-
-  it("옵션 내용이 실제로 바뀌면 변경으로 감지한다", () => {
-    const withOptions: MenuFormValues = {
-      ...defaults,
-      customOptions: {
-        shot: { options: [{ key: "extra", price: 500 }], defaultKey: "extra" },
-      },
-    };
-
-    const changedOptions: MenuCustomOption = {
-      shot: { options: [{ key: "extra", price: 800 }], defaultKey: "extra" },
-    };
-
-    const result = menuDiffFromDefaults(
-      { ...baseForm, customOptions: changedOptions },
-      withOptions
-    );
-
-    expect(result).toEqual({ customOptions: changedOptions });
-  });
-
-  it("옵션 배열 순서가 바뀌면 변경으로 감지한다", () => {
-    const withOptions: MenuFormValues = {
-      ...defaults,
-      customOptions: {
-        shot: {
-          options: [
-            { key: "extra", price: 500 },
-            { key: "double", price: 900 },
-          ],
-          defaultKey: "extra",
-        },
-      },
-    };
-
-    const reordered: MenuCustomOption = {
-      shot: {
-        options: [
-          { key: "double", price: 900 },
-          { key: "extra", price: 500 },
-        ],
-        defaultKey: "extra",
-      },
-    };
-
-    const result = menuDiffFromDefaults(
-      { ...baseForm, customOptions: reordered },
-      withOptions
-    );
-
-    expect(result).toEqual({ customOptions: reordered });
   });
 
   it("description이 양쪽 모두 비어 있으면(undefined) 변경으로 치지 않는다", () => {

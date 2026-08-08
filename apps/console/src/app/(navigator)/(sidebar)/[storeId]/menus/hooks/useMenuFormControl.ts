@@ -1,10 +1,6 @@
 import { Resolver, useForm, useWatch } from "react-hook-form";
 import { MenuFormValues } from "../../tables/types/menu-form.type";
-import {
-  MenuFormPayload,
-  OptionGroupForm,
-} from "../types/menu-form-payload.type";
-import { toOptionGroupForms } from "../utils/menu-option-form";
+import { MenuFormPayload } from "../types/menu-form-payload.type";
 
 type UseMenuFormControlProps = {
   defaultCategoryId: string | undefined;
@@ -18,8 +14,6 @@ export type WatchingMenuForm = {
   price: number | null;
   imageKey: string | null | undefined;
   description: string | null | undefined;
-  requiredOptions: OptionGroupForm[];
-  customOptions: OptionGroupForm[];
   categoryId: string | null;
   isAvailable: boolean | undefined;
   sortOrder: string[];
@@ -40,8 +34,6 @@ export default function useMenuFormControl({
       ...defaultFormValues,
       categoryId: defaultCategoryId,
       sortOrder: defaultSortOrder,
-      // trigger가 필수 ↔ 선택 옵션을 서로 참조할 수 있어 두 목록을 한 번에 변환한다.
-      ...toOptionGroupForms(defaultFormValues),
     },
   });
 
@@ -50,8 +42,6 @@ export default function useMenuFormControl({
     price,
     imageKey,
     description,
-    requiredOptions,
-    customOptions,
     categoryId,
     isAvailable,
     sortOrder,
@@ -62,8 +52,6 @@ export default function useMenuFormControl({
       "price",
       "imageKey",
       "description",
-      "requiredOptions",
-      "customOptions",
       "categoryId",
       "isAvailable",
       "sortOrder",
@@ -75,8 +63,6 @@ export default function useMenuFormControl({
     price,
     imageKey,
     description,
-    requiredOptions,
-    customOptions,
     categoryId,
     isAvailable,
     sortOrder,

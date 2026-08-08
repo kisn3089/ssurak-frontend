@@ -9,7 +9,6 @@ import {
 } from "./select-form-field/SelectFormField";
 import { CheckboxField, StaticCheckboxField } from "./ToggleFormField";
 import { DynamicUploadField, StaticUploadField } from "./UploadFormField";
-import { DynamicOptionField, StaticOptionField } from "./OptionFormField";
 import {
   DynamicReorderField,
   StaticReorderField,
@@ -24,7 +23,6 @@ export type DynamicControlField<Payload extends FieldValues> =
   | CheckboxField<Payload>
   | DynamicSelectField<Payload>
   | DynamicUploadField<Payload>
-  | DynamicOptionField
   | DynamicReorderField<Payload>;
 
 export type StaticControlField<Payload extends FieldValues> =
@@ -32,7 +30,6 @@ export type StaticControlField<Payload extends FieldValues> =
   | StaticCheckboxField<Payload>
   | StaticSelectField<Payload>
   | StaticUploadField<Payload>
-  | StaticOptionField
   | (StaticReorderField<Payload> & { preDescription?: React.ReactNode });
 
 export type DynamicFormFields<Payload extends FieldValues> =

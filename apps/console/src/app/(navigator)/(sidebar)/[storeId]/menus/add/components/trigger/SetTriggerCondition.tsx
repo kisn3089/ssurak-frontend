@@ -15,7 +15,7 @@ export default function SetTriggerCondition({
       type="button"
       aria-pressed={isActive}
       className={cn(
-        "font-bold bg-background text-blue-primary-foreground hover:bg-blue-50 rounded-3xl text-xs border-blue-primary-edge hover:border-blue-300 dark:hover:bg-slate-800 dark:hover:border-blue-600",
+        "font-bold bg-background text-blue-primary-foreground  hover:bg-blue-50 rounded-3xl text-xs border-blue-primary-edge hover:border-blue-300 dark:hover:bg-slate-800 dark:hover:border-blue-600 px-3",
         {
           "bg-blue-primary-highlight text-background hover:bg-blue-700 dark:hover:bg-blue-400":
             isActive,

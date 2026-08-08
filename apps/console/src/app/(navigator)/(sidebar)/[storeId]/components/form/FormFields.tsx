@@ -6,7 +6,6 @@ import InputFormField from "@/app/(navigator)/(sidebar)/[storeId]/components/for
 import SelectFormField from "@/app/(navigator)/(sidebar)/[storeId]/components/form/select-form-field/SelectFormField";
 import ToggleFormField from "./ToggleFormField";
 import UploadFormField from "./UploadFormField";
-import OptionFormField from "./OptionFormField";
 import ReorderFormField from "./reorder-form-field/ReorderFormField";
 
 type FormFieldProps<Payload extends FieldValues> = {
@@ -53,10 +52,6 @@ export default function FormFields<Payload extends FieldValues>({
 
         if (field.type === "reorder") {
           return <ReorderFormField key={field.id} {...field} />;
-        }
-
-        if (field.type === "option") {
-          return <OptionFormField key={field.id} {...field} />;
         }
 
         return null;

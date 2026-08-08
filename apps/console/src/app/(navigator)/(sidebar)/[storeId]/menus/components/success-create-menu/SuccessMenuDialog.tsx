@@ -3,6 +3,7 @@ import SuccessDialogHeader from "./SuccessDialogHeader";
 import CreatedMenuThumbnail, { CreatedMenu } from "./CreatedMenuThumbnail";
 import SuccessDialogFooter from "./SuccessDialogFooter";
 import ReorderFailedNotice from "./ReorderFailedNotice";
+import OptionSaveFailedNotice from "./OptionSaveFailedNotice";
 import { usePathname } from "next/navigation";
 import { MenuSubmitOutcome } from "../../../tables/types/menu-form.type";
 
@@ -34,6 +35,7 @@ export default function SuccessMenuDialog({
         {outcome?.reorderFailed && (
           <ReorderFailedNotice actionText={actionText} />
         )}
+        {outcome?.optionsFailed && <OptionSaveFailedNotice />}
         <SuccessDialogFooter>{`계속 ${actionText}`}</SuccessDialogFooter>
       </DialogContent>
     </Dialog>
