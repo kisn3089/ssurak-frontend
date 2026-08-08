@@ -26,17 +26,11 @@ export default function useCategoryMutation(
   { onReorderError }: CategoryMutationOptions = {}
 ) {
   const queryClient = useQueryClient();
+  /** 점주 카테고리 목록은 별도 엔드포인트가 아니라 이 메뉴판 응답(`CategoryWithMenusResponse[]`)에 실려 온다. */
   const menusQueryKey = makeQueryKey(`/stores/v1/${storeId}/menus`);
 
-  const invalidQueryKeys = [
-    makeQueryKey(`/stores/v1/${storeId}/categories`),
-    menusQueryKey,
-  ];
-
   const invalidateQueries = () => {
-    invalidQueryKeys.forEach((queryKey) => {
-      queryClient.invalidateQueries({ queryKey });
-    });
+    queryClient.invalidateQueries({ queryKey: menusQueryKey, exact: true });
   };
 
   const applyOptimisticMenus = async (
@@ -44,7 +38,7 @@ export default function useCategoryMutation(
       categories: CategoryWithMenusResponse[]
     ) => CategoryWithMenusResponse[]
   ) => {
-    await queryClient.cancelQueries({ queryKey: menusQueryKey });
+    await queryClient.cancelQueries({ queryKey: menusQueryKey, exact: true });
 
     const previousMenus =
       queryClient.getQueryData<CategoryWithMenusResponse[]>(menusQueryKey);
@@ -95,7 +89,7 @@ export default function useCategoryMutation(
 
   /** 집합 불일치(409)는 최신 목록을 받아 원하던 순서를 다시 얹어 한 번만 재시도한다. */
   const retryReorderWithFreshOrder = async (desiredIds: string[]) => {
-    await queryClient.refetchQueries({ queryKey: menusQueryKey });
+    await queryClient.refetchQueries({ queryKey: menusQueryKey, exact: true });
 
     const freshCategories =
       queryClient.getQueryData<CategoryWithMenusResponse[]>(menusQueryKey) ??
