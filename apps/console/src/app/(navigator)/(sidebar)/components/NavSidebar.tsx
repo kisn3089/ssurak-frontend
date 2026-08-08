@@ -17,7 +17,7 @@ export default function NavSidebar() {
       <SidebarContent>
         <SidebarGroups />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className="pb-2">
         <SidebarFooterLayout />
       </SidebarFooter>
     </Sidebar>

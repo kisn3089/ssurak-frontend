@@ -1,5 +1,3 @@
-import { SidebarProvider } from "@ssurak/ui/components/layouts/sidebar";
-import { cookies } from "next/headers";
 import NavSidebar from "./components/NavSidebar";
 import AuthGuard from "@/providers/AuthGuard";
 import { getAccessToken } from "@/app/common/servers/getAccessToken";
@@ -11,20 +9,16 @@ export default async function SidebarLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
   const accessToken = await getAccessToken();
 
   return (
-    <section className="antialiased">
+    <section className="antialiased flex w-full flex-1">
       <AuthGuard accessToken={accessToken}>
         <ServerPrefetch url="/identity/v1/me" shouldSuccess>
           <ServerPrefetch url="/stores/v1">
-            <SidebarProvider defaultOpen={defaultOpen}>
-              <NavSidebar />
-              <main className="w-full">{children}</main>
-              <OrderNoticeDaemon />
-            </SidebarProvider>
+            <NavSidebar />
+            <main className="w-full">{children}</main>
+            <OrderNoticeDaemon />
           </ServerPrefetch>
         </ServerPrefetch>
       </AuthGuard>

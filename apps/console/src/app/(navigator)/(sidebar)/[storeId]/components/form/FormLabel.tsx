@@ -14,7 +14,7 @@ export default function FormLabel({
   children,
 }: FormLabelProps) {
   return (
-    <div className="flex">
+    <div className="flex items-center justify-between">
       <FieldLabel className="gap-0 font-bold" htmlFor={id}>
         {label}
         {required && (
