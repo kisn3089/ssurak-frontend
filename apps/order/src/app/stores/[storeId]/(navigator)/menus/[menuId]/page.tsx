@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { Menu } from "@ssurak/api/types/menu/menu.interface";
+import { MenuWithOptions } from "@ssurak/api/types/menu/menu.interface";
 import { StoreContextResponse } from "@ssurak/api/types/store/store.interface";
 import useSuspenseWithSession from "@ssurak/api/hooks/useSuspenseWithSession";
 import MenuDetailAddCart from "./components/MenuDetailAddCart";
@@ -14,7 +14,7 @@ export default function MenuDetailPage() {
 
   const { data: menu } = useSuspenseWithSession<
     StoreContextResponse,
-    Menu | undefined
+    MenuWithOptions | undefined
   >("/stores/v1/sessions/me/store-context", {
     queryOptions: {
       select: (storeContext) =>
@@ -53,8 +53,7 @@ export default function MenuDetailPage() {
           className="bg-white py-4 pb-[81px]"
           aria-label="메뉴 옵션 선택"
         >
-          <MenuDetail.RequiredOptions />
-          <MenuDetail.CustomOptions />
+          <MenuDetail.Options />
         </section>
         <MenuDetailAddCart />
       </main>

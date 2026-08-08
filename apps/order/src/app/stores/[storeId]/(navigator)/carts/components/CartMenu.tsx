@@ -6,7 +6,7 @@ import MenuImage from "@/app/stores/[storeId]/(navigator)/menus/components/MenuI
 import { useCart } from "./CartProvider";
 import CartMenuContent from "./CartMenuContent";
 import DeleteMenuButton from "./DeleteMenuButton";
-import MenuCounter from "@ssurak/ui/components/menu/menu-detail/MenuCounter";
+import Counter from "@ssurak/ui/components/menu/menu-detail/Counter";
 
 type CartMenuProps = {
   menu: CartItem;
@@ -29,9 +29,9 @@ export default function CartMenu({ menu }: CartMenuProps) {
           <DeleteMenuButton menuId={menu.id} />
         </div>
         <div className="flex justify-end pt-3">
-          <MenuCounter
+          <Counter
             quantity={menu.quantity}
-            changeQuantity={(newQuantity) =>
+            onChange={(newQuantity) =>
               actions.changeQuantity(menu.id, newQuantity)
             }
           />
