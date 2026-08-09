@@ -5,7 +5,7 @@ export default function OptionAddButton({ onClick }: { onClick: () => void }) {
     <Button
       type="button"
       variant={"outline"}
-      className="border border-dashed text-muted-foreground bg-zinc-50 shadow-sm"
+      className="border border-dashed text-muted-foreground bg-background shadow-sm"
       onClick={onClick}
     >
       + 옵션 값 추가

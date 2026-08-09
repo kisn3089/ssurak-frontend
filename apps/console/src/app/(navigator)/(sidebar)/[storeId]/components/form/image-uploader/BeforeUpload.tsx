@@ -20,7 +20,7 @@ export default function BeforeUpload({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center gap-y-1 h-32 rounded-xl border border-dashed bg-accent-subtle/80 cursor-pointer transition-colors duration-300 hover:bg-accent",
+        "flex flex-col items-center justify-center gap-y-1 h-32 rounded-xl border border-dashed bg-background cursor-pointer transition-colors duration-300 hover:bg-accent",
         "aria-invalid:border-destructive",
         { "bg-accent border-solid border-blue-600": isDragActive },
         { "pointer-events-none opacity-60": disabled }

@@ -44,7 +44,7 @@ export default function PreviewMenu({ menu, children }: PreviewMenuProps) {
                 priority={true}
                 alt={menu.name}
                 size="cover"
-                className="rounded-3xl shadow-2xl"
+                className="rounded-3xl shadow-xl"
               />
             </MenuDetail.Info>
             <MenuDetail.DivideLine label="옵션 선택" labelPosition="center" />
