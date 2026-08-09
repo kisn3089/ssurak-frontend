@@ -11,12 +11,7 @@ export const createMenuPayloadSchema = z
       .trim()
       .min(1, "메뉴 이름은 필수입니다.")
       .max(30, "메뉴 이름은 최대 30자까지 가능합니다."),
-    price: z
-      .number({
-        required_error: "메뉴 가격은 필수입니다.",
-        invalid_type_error: "메뉴 가격은 숫자로 입력해 주세요.",
-      })
-      .min(0, "메뉴 가격은 0원 이상이어야 합니다."),
+    price: commonSchema.menuPrice,
     categoryId: z
       .string()
       .min(1, "카테고리를 선택해 주세요.")
