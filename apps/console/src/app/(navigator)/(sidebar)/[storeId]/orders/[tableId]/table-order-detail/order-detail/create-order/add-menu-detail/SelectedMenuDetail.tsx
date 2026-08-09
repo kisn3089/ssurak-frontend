@@ -9,6 +9,7 @@ import { useParams } from "next/navigation";
 import { useCreateOrderContext } from "../CreateOrderProvider";
 import AddMenuButton from "./AddMenuButton";
 import AddMenuDetailLayout from "./AddMenuDetailLayout";
+import DivideLine from "@ssurak/ui/components/menu/menu-detail/DivideLine";
 
 /**
  * 고른 메뉴의 옵션을 옵션 API로 따로 받아온다.
@@ -49,6 +50,7 @@ export default function SelectedMenuDetail() {
         title={<MenuDetail.Info />}
         button={<AddMenuButton />}
       >
+        <DivideLine label="옵션 선택" labelPosition="center" />
         <MenuDetail.Options />
       </AddMenuDetailLayout>
     </MenuDetail.Provider>

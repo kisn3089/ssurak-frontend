@@ -14,10 +14,12 @@ import { MenuDetailProvider } from "./MenuDetailProvider";
 import { MenuDetailOptions } from "./MenuDetailOptions";
 import { MenuDetailContext } from "./MenuDetailContext";
 import MenuDetailInfo from "./MenuDetailInfo";
+import DivideLine from "./DivideLine";
 
 export const MenuDetail = {
   Provider: MenuDetailProvider,
   Info: MenuDetailInfo,
   Options: MenuDetailOptions,
+  DivideLine: DivideLine,
   Context: MenuDetailContext,
 };

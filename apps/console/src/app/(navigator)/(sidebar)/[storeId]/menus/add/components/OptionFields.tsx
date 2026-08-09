@@ -15,7 +15,6 @@ import {
 } from "../../utils/menu-option-form";
 import OptionGroup from "./option-field/OptionGroup";
 import OptionHeader from "./option-field/OptionHeader";
-import OptionLine from "./option-field/OptionLine";
 import OptionSettings from "./option-field/OptionSettings";
 import OptionValues from "./option-field/OptionValues";
 import { TriggerGroupChoice } from "./trigger/TriggerCondition";
@@ -30,6 +29,7 @@ import {
   CreateMenuOptionPayload,
   UpdateMenuOptionPayload,
 } from "@ssurak/api/schemas/model/menuOption.schema";
+import DivideLine from "@ssurak/ui/components/menu/menu-detail/DivideLine";
 
 type OptionFieldsProps = {
   menuId?: string;
@@ -217,9 +217,9 @@ export default function OptionFields({
       }
     >
       <OptionHeader control={control} formId={formId} />
-      <OptionLine label="옵션 설정" />
+      <DivideLine label="옵션 설정" labelClassName="font-bold" />
       <OptionSettings control={control} setValue={setValue} formId={formId} />
-      <OptionLine label="선택지" />
+      <DivideLine label="선택지" labelClassName="font-bold" />
       <OptionValues
         control={control}
         setValue={setValue}
