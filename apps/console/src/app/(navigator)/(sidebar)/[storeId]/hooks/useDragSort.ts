@@ -30,6 +30,28 @@ export type DragItemProps = {
   style?: React.CSSProperties;
 };
 
+/** 한 행을 끌 수 있게 만드는 데 필요한 것 전부. 끌 수 없는 행에는 통째로 주지 않는다. */
+export type DragRowProps = {
+  handleProps: DragHandleProps;
+  itemProps: DragItemProps;
+  isDragging: boolean;
+  /** 끌고 있는 행이 이 행의 어느 쪽으로 들어오는지. 자리바꿈이 확정될 경계선을 그린다. */
+  dropEdge: "top" | "bottom" | null;
+  /** 자리는 그대로 두고 그립만 잠근다(앞선 재정렬이 아직 서버에 닿지 않았을 때). */
+  isDisabled?: boolean;
+};
+
+export function resolveDropEdge(
+  draggingIndex: number | null,
+  targetIndex: number | null,
+  index: number
+): DragRowProps["dropEdge"] {
+  if (draggingIndex === null || targetIndex !== index) return null;
+  if (draggingIndex === index) return null;
+
+  return draggingIndex < index ? "bottom" : "top";
+}
+
 export function reorder<Item>(items: Item[], from: number, to: number) {
   const moved = items[from];
   if (moved === undefined || from === to) return items;
@@ -46,9 +68,14 @@ type DragState = {
   offsetY: number;
 };
 
+type UseDragSortOptions = {
+  disabled?: boolean;
+};
+
 export default function useDragSort(
   itemCount: number,
-  onReorder: (from: number, to: number) => void
+  onReorder: (from: number, to: number) => void,
+  { disabled = false }: UseDragSortOptions = {}
 ) {
   const listRef = useRef<HTMLDivElement>(null);
   const startRef = useRef<{ index: number; y: number } | null>(null);
@@ -73,8 +100,9 @@ export default function useDragSort(
    * 삼아 이웃 행을 COMMIT_RATIO 만큼만 침범해도 자리바꿈이 확정되게 합니다.
    */
   const resolveTargetIndex = (from: number, offsetY: number) => {
+    // 옵션 그룹 목록 안에 선택지 목록이 또 들어앉으므로, 자기 자식 행만 센다.
     const rows = listRef.current?.querySelectorAll<HTMLElement>(
-      `[${DRAG_ITEM_ATTRIBUTE}]`
+      `:scope > [${DRAG_ITEM_ATTRIBUTE}]`
     );
     if (!rows?.length) return from;
 
@@ -99,7 +127,7 @@ export default function useDragSort(
 
   const getHandleProps = (index: number): DragHandleProps => ({
     onPointerDown: (e) => {
-      if (e.button !== 0) return;
+      if (disabled || e.button !== 0) return;
       // 드래그 중 텍스트 선택과 스크롤 제스처를 막습니다.
       // 기본 동작인 포커스 이동까지 막히므로 직접 포커스를 옮깁니다.
       e.preventDefault();
@@ -131,7 +159,7 @@ export default function useDragSort(
     onPointerCancel: endDrag,
     onKeyDown: (e) => {
       const step = ARROW_STEP[e.key];
-      if (step === undefined) return;
+      if (disabled || step === undefined) return;
 
       const to = index + step;
       if (to < 0 || to >= itemCount) return;

@@ -42,7 +42,10 @@ export default function ConstructMenuList({
 
   return (
     <>
-      <FilterTabs tabs={{ categoryId: categoryList }} />
+      <FilterTabs
+        tabs={{ categoryId: categoryList }}
+        allTab={{ categoryId: "전체" }}
+      />
       <ConstructTableListLayout
         body={<MenuListView menuList={slicedMenuList} />}
       >

@@ -1,68 +1,85 @@
 "use client";
 
-import { Control, useController, useFieldArray } from "react-hook-form";
+import { OptionSelectionType } from "@ssurak/api/types/menu/menuOptions.interface";
 import {
-  MenuFormPayload,
-  OptionGroupFieldName,
-  OptionValuesFieldName,
-} from "../../../types/menu-form-payload.type";
+  Control,
+  useFieldArray,
+  UseFormSetValue,
+  useWatch,
+} from "react-hook-form";
+import useDragSort, { resolveDropEdge } from "../../../../hooks/useDragSort";
+import { OptionGroupForm } from "../../../types/option-form.type";
 import { createEmptyOptionValue } from "../../../utils/menu-option-form";
+import TriggerController from "../trigger/TriggerController";
+import { TriggerGroupChoice } from "../trigger/TriggerCondition";
 import OptionAddButton from "./OptionAddButton";
 import OptionValue from "./OptionValue";
-import TriggerController from "../trigger/TriggerController";
 
 type OptionValuesProps = {
-  control: Control<MenuFormPayload>;
-  groupName: OptionGroupFieldName;
+  control: Control<OptionGroupForm>;
+  setValue: UseFormSetValue<OptionGroupForm>;
+  groupChoices: TriggerGroupChoice[];
 };
 
 export default function OptionValues({
   control,
-  groupName,
+  setValue,
+  groupChoices,
 }: OptionValuesProps) {
   "use no memo";
 
-  const name: OptionValuesFieldName = `${groupName}.options`;
-
-  const { fields, append, remove } = useFieldArray({ control, name });
-  const { field: defaultIndexField } = useController({
+  const { fields, append, remove, move } = useFieldArray({
     control,
-    name: `${groupName}.defaultIndex`,
+    name: "choices",
   });
+  const selectionType = useWatch({ control, name: "selectionType" });
+  const choices = useWatch({ control, name: "choices" });
+  const minSelect = useWatch({ control, name: "minSelect" });
+  const maxSelect = useWatch({ control, name: "maxSelect" });
 
-  const defaultIndex = defaultIndexField.value ?? 0;
-  const isCustomOption = groupName.startsWith("customOptions");
+  const { listRef, draggingIndex, targetIndex, getHandleProps, getItemProps } =
+    useDragSort(fields.length, move);
 
-  const removeOptionValue = (index: number) => {
-    remove(index);
+  const toggleDefault = (index: number) => {
+    const nextIsDefault = !choices[index]?.isDefault;
 
-    if (index === defaultIndex) {
-      defaultIndexField.onChange(0);
+    if (nextIsDefault && selectionType === OptionSelectionType.SINGLE) {
+      choices.forEach((_, at) =>
+        setValue(`choices.${at}.isDefault`, at === index)
+      );
       return;
     }
-    if (index < defaultIndex) {
-      defaultIndexField.onChange(defaultIndex - 1);
-    }
+
+    setValue(`choices.${index}.isDefault`, nextIsDefault);
+  };
+
+  const clampSelectRange = (remaining: number) => {
+    setValue("maxSelect", Math.min(maxSelect ?? 1, remaining));
+    setValue("minSelect", Math.min(minSelect ?? 0, remaining));
   };
 
   return (
-    <div className="flex flex-col gap-y-2 pb-4">
-      {fields.map((optionValue, index) => (
+    <div ref={listRef} className="flex flex-col gap-y-2 pb-2">
+      {fields.map((choice, index) => (
         <OptionValue
-          key={optionValue.id}
+          key={choice.id}
           control={control}
-          name={`${name}.${index}`}
+          name={`choices.${index}`}
           index={index}
-          isDefault={index === defaultIndex}
           removable={fields.length > 1}
-          onSelectDefault={() => defaultIndexField.onChange(index)}
-          onRemove={() => removeOptionValue(index)}
+          dragHandleProps={getHandleProps(index)}
+          dragItemProps={getItemProps(index)}
+          isDragging={draggingIndex === index}
+          dropEdge={resolveDropEdge(draggingIndex, targetIndex, index)}
+          onSelectDefault={() => toggleDefault(index)}
+          onRemove={() => {
+            remove(index);
+            clampSelectRange(fields.length - 1);
+          }}
         />
       ))}
       <OptionAddButton onClick={() => append(createEmptyOptionValue())} />
-      {isCustomOption && (
-        <TriggerController control={control} groupName={groupName} />
-      )}
+      <TriggerController control={control} groupChoices={groupChoices} />
     </div>
   );
 }

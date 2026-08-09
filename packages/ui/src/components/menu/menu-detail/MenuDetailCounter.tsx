@@ -1,6 +1,6 @@
 "use client";
 
-import MenuCounter from "./MenuCounter";
+import Counter from "./Counter";
 import { useMenuDetailContext } from "./MenuDetailContext";
 
 export function MenuDetailCounter() {
@@ -10,10 +10,10 @@ export function MenuDetailCounter() {
   } = useMenuDetailContext();
 
   return (
-    <MenuCounter
+    <Counter
       isAvailable={menu.isAvailable}
       quantity={quantity}
-      changeQuantity={setQuantity}
+      onChange={setQuantity}
     />
   );
 }

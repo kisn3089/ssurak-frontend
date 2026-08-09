@@ -1,31 +1,38 @@
 "use client";
 
 import { createContext, useContext } from "react";
+import type { SnapshotGroup } from "@ssurak/ui/utils/menu/optionSnapshot";
 import {
+  ChangeChoiceQuantity,
   DetailMenu,
-  MenuOptionEntry,
+  DetailOptionGroup,
+  OptionSelections,
   SnapshotToFetch,
-  SelectedOptions,
-  SelectOption,
+  ToggleChoice,
 } from "./menu-detail.type";
 
 export interface MenuDetailState {
   menu: DetailMenu;
   quantity: number;
-  selectedOptions: SelectedOptions;
+  selections: OptionSelections;
 }
 
 export interface MenuDetailActions {
   setQuantity: (next: number) => void;
-  selectRequiredOption: SelectOption;
-  selectCustomOption: SelectOption;
+  toggleChoice: ToggleChoice;
+  changeChoiceQuantity: ChangeChoiceQuantity;
   snapshotToFetch: SnapshotToFetch;
 }
 
 export interface MenuDetailMeta {
-  requiredOptions: MenuOptionEntry[];
-  customOptions: MenuOptionEntry[];
-  allSelectedOptions: Map<string, string>;
+  /** 메뉴에 걸린 옵션 전체(표시 순서). 조건 미충족 옵션도 들어 있다. */
+  options: DetailOptionGroup[];
+  /** 지금 고를 수 있는 옵션의 publicId. 조건부 노출 평가 결과다. */
+  visibleOptionIds: Set<string>;
+  /** 아직 채우지 못한 필수 옵션. 비어 있어야 담기 버튼이 열린다. */
+  unsatisfiedOptions: DetailOptionGroup[];
+  /** 지금 고른 옵션을 이름·금액까지 담아 표시용으로 만든 것. 주문 스냅샷과 같은 모양이다. */
+  selectedSnapshot: SnapshotGroup[];
   price: number;
 }
 

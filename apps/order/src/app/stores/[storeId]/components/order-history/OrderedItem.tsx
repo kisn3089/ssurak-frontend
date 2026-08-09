@@ -7,15 +7,9 @@ import {
 } from "@ssurak/ui/components/item";
 import MenuImage from "../../(navigator)/menus/components/MenuImage";
 import { transCurrencyFormat } from "@ssurak/ui/utils/menu/priceFormatter";
-import { Badge } from "@ssurak/ui/components/forms/badge";
+import OptionTags from "@ssurak/ui/components/menu/options/OptionTags";
 
 export default function OrderedItem({ orderItem }: { orderItem: OrderItem }) {
-  const { requiredOptions, customOptions } = orderItem.optionsSnapshot ?? {};
-  const options = [
-    ...Object.entries(requiredOptions ?? {}),
-    ...Object.entries(customOptions ?? {}),
-  ];
-
   return (
     <Item className="p-0 pb-2 w-full">
       <MenuImage
@@ -34,13 +28,10 @@ export default function OrderedItem({ orderItem }: { orderItem: OrderItem }) {
             <span className="font-semibold">{orderItem.quantity}</span>
           </div>
         </ItemFooter>
-        <div className="flex flex-wrap gap-1">
-          {options.map(([key, option], index) => (
-            <Badge key={index} variant={"secondary"}>
-              {`${key} - ${option.key}`}
-            </Badge>
-          ))}
-        </div>
+        <OptionTags
+          options={orderItem.optionsSnapshot?.options}
+          variant="secondary"
+        />
       </ItemContent>
       <div className="font-bold">
         {transCurrencyFormat(orderItem.unitPrice * orderItem.quantity)}

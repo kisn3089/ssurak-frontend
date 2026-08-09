@@ -17,11 +17,18 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@ssurak/ui/components/forms/tooltip";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "./sheet";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SIDEBAR_WIDTH = "12rem";
-// const SIDEBAR_WIDTH_MOBILE = "18rem";
+const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "4rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
@@ -140,7 +147,8 @@ const SidebarProvider = React.forwardRef<
               } as React.CSSProperties
             }
             className={cn(
-              "group/sidebar-wrapper flex min-h-[calc(100svh-4rem)] w-full has-[[data-variant=inset]]:bg-sidebar relative",
+              "group/sidebar-wrapper flex min-h-[calc(100svh-4rem)] w-full has-data-[variant=inset]:bg-sidebar relative",
+              { "flex-col": isMobile },
               className
             )}
             ref={ref}
@@ -174,51 +182,51 @@ const Sidebar = React.forwardRef<
     },
     ref
   ) => {
-    const { state } = useSidebar();
+    const { state, isMobile, openMobile, setOpenMobile } = useSidebar();
 
-    // if (collapsible === "none") {
-    //   return (
-    //     <div
-    //       className={cn(
-    //         "flex h-full w-[--sidebar-width] flex-col bg-sidebar text-sidebar-foreground",
-    //         className
-    //       )}
-    //       ref={ref}
-    //       {...props}
-    //     >
-    //       {children}
-    //     </div>
-    //   );
-    // }
+    if (collapsible === "none") {
+      return (
+        <div
+          className={cn(
+            "flex h-full w-(--sidebar-width) flex-col bg-sidebar text-sidebar-foreground",
+            className
+          )}
+          ref={ref}
+          {...props}
+        >
+          {children}
+        </div>
+      );
+    }
 
-    // if (isMobile) {
-    //   return (
-    //     <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
-    //       <SheetContent
-    //         data-sidebar="sidebar"
-    //         data-mobile="true"
-    //         className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
-    //         style={
-    //           {
-    //             "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-    //           } as React.CSSProperties
-    //         }
-    //         side={side}
-    //       >
-    //         <SheetHeader className="sr-only">
-    //           <SheetTitle>Sidebar</SheetTitle>
-    //           <SheetDescription>Displays the mobile sidebar.</SheetDescription>
-    //         </SheetHeader>
-    //         <div className="flex h-full w-full flex-col">{children}</div>
-    //       </SheetContent>
-    //     </Sheet>
-    //   );
-    // }
+    if (isMobile) {
+      return (
+        <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
+          <SheetContent
+            data-sidebar="sidebar"
+            data-mobile="true"
+            className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+            style={
+              {
+                "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
+              } as React.CSSProperties
+            }
+            side={side}
+          >
+            <SheetHeader className="sr-only">
+              <SheetTitle>Sidebar</SheetTitle>
+              <SheetDescription>Displays the mobile sidebar.</SheetDescription>
+            </SheetHeader>
+            <div className="flex h-full w-full flex-col">{children}</div>
+          </SheetContent>
+        </Sheet>
+      );
+    }
 
     return (
       <div
         ref={ref}
-        className={cn("group peer text-sidebar-foreground md:block")}
+        className={cn("group peer text-sidebar-foreground md:block hidden")}
         data-state={state}
         data-collapsible={state === "collapsed" ? collapsible : ""}
         data-variant={variant}
@@ -243,7 +251,7 @@ const Sidebar = React.forwardRef<
               : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
             // Adjust the padding for floating and inset variants.
             variant === "floating" || variant === "inset"
-              ? "p-2 group-data-[collapsible=icon]:w-(--sidebar-width-icon)"
+              ? "group-data-[collapsible=icon]:w-(--sidebar-width-icon)"
               : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
             className
           )}
@@ -264,8 +272,8 @@ Sidebar.displayName = "Sidebar";
 
 const SidebarTrigger = React.forwardRef<
   React.ElementRef<typeof Button>,
-  React.ComponentProps<typeof Button>
->(({ className, onClick, ...props }, ref) => {
+  React.ComponentProps<typeof Button> & { overrideIcon?: React.ReactNode }
+>(({ className, onClick, overrideIcon, ...props }, ref) => {
   const { toggleSidebar } = useSidebar();
 
   return (
@@ -281,7 +289,7 @@ const SidebarTrigger = React.forwardRef<
       }}
       {...props}
     >
-      <PanelLeft />
+      {overrideIcon || <PanelLeft />}
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );

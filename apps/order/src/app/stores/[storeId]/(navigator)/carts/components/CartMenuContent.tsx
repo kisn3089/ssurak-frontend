@@ -10,10 +10,7 @@ export default function CartMenuContent({ menu }: { menu: CartItem }) {
       <CardContent className="p-0 font-semibold">
         {transCurrencyFormat(menu.unitPrice)}
       </CardContent>
-      <CartMenuOptions
-        required={menu.requiredOptions}
-        custom={menu.customOptions}
-      />
+      <CartMenuOptions options={menu.options} />
     </div>
   );
 }

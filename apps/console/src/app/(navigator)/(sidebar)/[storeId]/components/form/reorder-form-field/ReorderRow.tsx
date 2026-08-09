@@ -1,6 +1,6 @@
-import { GripVertical } from "lucide-react";
 import { DragHandleProps } from "../../../hooks/useDragSort";
 import { cn } from "@ssurak/ui/lib/utils";
+import DragReorder from "./DragReorder";
 
 type ReorderRowProps = {
   reorderName: string;
@@ -17,17 +17,11 @@ export default function ReorderRow({
 }: ReorderRowProps) {
   return (
     <>
-      <button
-        type="button"
+      <DragReorder
+        className={cn({ "text-green-700": isHighlighted })}
         aria-label={`${reorderName} 순서 변경`}
-        className={cn(
-          "mr-2 p-1 -ml-1 touch-none text-zinc-300 hover:text-gray-500 cursor-grab active:cursor-grabbing",
-          { "text-green-700": isHighlighted }
-        )}
-        {...dragHandleProps}
-      >
-        <GripVertical size={12} />
-      </button>
+        dragHandleProps={dragHandleProps}
+      />
       <span
         className={cn("mr-auto font-bold text-sm", {
           "text-green-700 dark:text-green-400": isHighlighted,

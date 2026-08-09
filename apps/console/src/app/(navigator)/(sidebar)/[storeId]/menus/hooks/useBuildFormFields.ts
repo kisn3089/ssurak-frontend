@@ -70,8 +70,6 @@ export default function useBuildFormFields({
             errorMessage,
             control,
           };
-        case "option":
-          return { ...field, control };
         case "reorder":
           return {
             ...field,

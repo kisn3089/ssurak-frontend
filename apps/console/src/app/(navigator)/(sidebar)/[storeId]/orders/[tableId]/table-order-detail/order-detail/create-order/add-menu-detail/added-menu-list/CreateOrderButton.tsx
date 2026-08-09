@@ -26,8 +26,7 @@ export default function CreateOrderButton({ closeDialog }: CloseDialogProps) {
         ({ snapshot }) => ({
           menuPublicId: snapshot.menuPublicId,
           quantity: snapshot.quantity,
-          requiredOptions: snapshot.requiredOptions,
-          customOptions: snapshot.customOptions,
+          options: snapshot.options,
         })
       );
 

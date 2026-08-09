@@ -16,9 +16,12 @@ export default function MenuDetailAddCart() {
 
   const {
     state: { menu },
-    meta: { price },
+    meta: { price, unsatisfiedOptions },
     actions: { snapshotToFetch },
   } = useMenuDetailContext();
+
+  // 필수 옵션을 덜 고른 채 보내면 서버가 400으로 거절한다. 눌리기 전에 이유를 알려준다.
+  const [missingOption] = unsatisfiedOptions;
 
   const addCartThenOpenDrawer = async () => {
     try {
@@ -47,13 +50,17 @@ export default function MenuDetailAddCart() {
         <RequestButton
           mutate={addCartMutate}
           message={{
-            disabled: "현재 주문이 불가능한 메뉴입니다.",
+            disabled: missingOption
+              ? `'${missingOption.name}' 옵션을 선택해 주세요.`
+              : "현재 주문이 불가능한 메뉴입니다.",
             error: `${transCurrencyFormat(price)}원 - 장바구니 다시 담기`,
             loading: "장바구니에 추가 중...",
           }}
           className="w-full h-12 font-bold tracking-wide rounded-3xl"
           onClick={addCartThenOpenDrawer}
-          disabled={!menu.isAvailable || addCartMutate.isPending}
+          disabled={
+            !menu.isAvailable || !!missingOption || addCartMutate.isPending
+          }
         >
           {`${transCurrencyFormat(price)}원 - 장바구니 담기`}
         </RequestButton>

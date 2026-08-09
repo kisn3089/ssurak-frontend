@@ -2,7 +2,6 @@
 
 import { Item } from "@ssurak/ui/components/item";
 import MenuContent from "./MenuContent";
-import { useMenuDetailContext } from "./MenuDetailContext";
 import { MenuDetailCounter } from "./MenuDetailCounter";
 
 export default function MenuDetailInfo({
@@ -14,16 +13,12 @@ export default function MenuDetailInfo({
   className?: string;
   description?: React.ReactNode;
 }) {
-  const {
-    state: { menu },
-  } = useMenuDetailContext();
-
   return (
     <Item
       className={`flex flex-col items-center p-0 rounded-none ${className || ""}`}
     >
       {children}
-      <MenuContent menu={menu} description={description}>
+      <MenuContent description={description}>
         <MenuDetailCounter />
       </MenuContent>
     </Item>

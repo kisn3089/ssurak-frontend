@@ -20,7 +20,6 @@ import useBuildFormFields from "../hooks/useBuildFormFields";
 import useResetSortOrderOnCategoryChange from "../hooks/useResetSortOrderOnCategoryChange";
 import { menuFormPayloadSchema } from "@ssurak/api/schemas/model/menu-form-payload.schema";
 import { MenuFormPayload } from "../types/menu-form-payload.type";
-import { toMenuOptionRecords } from "../utils/menu-option-form";
 import { buildExpectedOrder, resolveMenuIds } from "../utils/menu-sort-order";
 import { isSameOrder } from "@ssurak/api/utils/reorder";
 
@@ -34,6 +33,8 @@ export default function MenuForm({
   children,
   linkToCancel,
   mutation,
+  options,
+  renderError,
   formSubmit,
 }: MenuFormProps) {
   const {
@@ -139,15 +140,8 @@ export default function MenuForm({
       };
     };
 
-    const { requiredOptions, customOptions } = toMenuOptionRecords(payload);
-
     const outcome = await formSubmit(
-      {
-        ...payload,
-        categoryId,
-        requiredOptions,
-        customOptions,
-      },
+      { ...payload, categoryId },
       { setError, resolveReorder }
     );
 
@@ -160,16 +154,13 @@ export default function MenuForm({
     reset();
   };
 
-  const previewOptions = toMenuOptionRecords(watchingMenuForm);
-
   const menu: DetailMenu = {
     publicId: "",
     name: watchingMenuForm.name || "",
     price: watchingMenuForm.price || 0,
     imageKey: watchingMenuForm.imageKey || null,
     description: watchingMenuForm.description || null,
-    requiredOptions: previewOptions.requiredOptions ?? null,
-    customOptions: previewOptions.customOptions ?? null,
+    options: options ?? [],
     isAvailable: watchingMenuForm.isAvailable ?? true,
   };
 
@@ -177,10 +168,13 @@ export default function MenuForm({
     <form className="flex flex-col grow" noValidate onSubmit={onSubmit}>
       <div className="@container">
         <div className="flex gap-6 flex-col @3xl:flex-row pb-10">
-          <FormFields fields={fields} />
+          <div className="flex-1">
+            <FormFields fields={fields} />
+            {children}
+          </div>
 
           <div className="flex flex-col w-full @3xl:max-w-100 @3xl:sticky @3xl:top-14 @3xl:h-fit">
-            <PreviewMenu menu={menu}>{children}</PreviewMenu>
+            <PreviewMenu menu={menu}>{renderError}</PreviewMenu>
           </div>
         </div>
       </div>

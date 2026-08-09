@@ -158,7 +158,7 @@ export default function SelectFormField<Field extends FieldValues>({
           )}
         />
         {description && (
-          <FieldDescription className="whitespace-pre">
+          <FieldDescription className="whitespace-pre-wrap">
             {description}
           </FieldDescription>
         )}

@@ -2,6 +2,8 @@
 
 import { reconnectRealtime } from "@/lib/realtime/socket";
 import { useRealtimeConnectionStatus } from "@/lib/realtime/useRealtimeConnectionStatus";
+import { useSidebar } from "@ssurak/ui/components/layouts/sidebar";
+import { cn } from "@ssurak/ui/lib/utils";
 
 const COLOR_BY_STATUS = {
   connected: "bg-emerald-500",
@@ -18,9 +20,10 @@ const LABEL_BY_STATUS = {
 } as const;
 
 const CONTAINER_CLASS =
-  "flex items-center justify-center gap-1.5 px-2 py-1 text-xs text-muted-foreground";
+  "flex items-center justify-center gap-1.5 py-1 text-xs text-muted-foreground";
 
 export default function RealtimeStatusDot() {
+  const { open } = useSidebar();
   const status = useRealtimeConnectionStatus();
 
   const indicator = (
@@ -54,7 +57,7 @@ export default function RealtimeStatusDot() {
 
   return (
     <div
-      className={CONTAINER_CLASS}
+      className={cn(CONTAINER_CLASS, { "block px-3": !open })}
       title={LABEL_BY_STATUS[status]}
       aria-label={LABEL_BY_STATUS[status]}
     >

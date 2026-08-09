@@ -42,7 +42,10 @@ export function useCartMutations() {
           if (menu.id !== cartItemId) {
             return menu;
           }
-          return { ...menu, ...payload };
+          // 옵션 선택(id 목록)만으로는 장바구니가 들고 있는 스냅샷(이름·금액)을 만들 수 없다.
+          // 수량만 낙관적으로 반영하고 옵션은 서버 응답이 오면 통째로 갈아끼운다.
+          const { options: _options, ...optimistic } = payload;
+          return { ...menu, ...optimistic };
         });
 
         return { ...oldCart, menus: updatedMenus };

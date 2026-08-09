@@ -40,6 +40,7 @@ export default function InputFormField<Field extends FieldValues>({
           placeholder={placeholder}
           required={required}
           type={type}
+          {...(type === "number" && { inputMode: "numeric" as const })}
           aria-invalid={!!errorMessage}
           {...registration}
           disabled={disabled}

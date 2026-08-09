@@ -2,7 +2,6 @@
 
 import { Menu } from "@ssurak/api/types/menu/menu.interface";
 import { transCurrencyFormat } from "@ssurak/ui/utils/menu/priceFormatter";
-import { Badge } from "@ssurak/ui/components/forms/badge";
 import EntityListView, {
   EntityRow,
 } from "../../components/table-view/table/EntityListView";
@@ -34,13 +33,8 @@ export default function MenuListView({ menuList }: MenuListViewProps) {
     publicId: menu.publicId,
     isActive: menu.isAvailable,
     name: menu.name,
-    cells: [
-      { content: transCurrencyFormat(menu.price) },
-      {
-        content: <MenuOptionBadges menu={menu} />,
-        overwriteOverflow: "flex flex-wrap gap-1",
-      },
-    ],
+    // 옵션은 메뉴 응답에 실리지 않는다. 메뉴 상세 화면의 옵션 관리에서 확인·수정한다.
+    cells: [{ content: transCurrencyFormat(menu.price) }],
   });
 
   return (
@@ -53,25 +47,5 @@ export default function MenuListView({ menuList }: MenuListViewProps) {
       httpErrors={httpMenuErrors}
       activeBadge={activeBadge(["판매중", "미판매중"])}
     />
-  );
-}
-
-function MenuOptionBadges({ menu }: { menu: Menu }) {
-  const requiredOptions = Object.keys(menu.requiredOptions ?? {});
-  const customOptions = Object.keys(menu.customOptions ?? {});
-
-  return (
-    <>
-      {requiredOptions.map((option) => (
-        <Badge key={option} variant="destructive">
-          {option}
-        </Badge>
-      ))}
-      {customOptions.map((option) => (
-        <Badge key={option} variant="secondary">
-          {option}
-        </Badge>
-      ))}
-    </>
   );
 }

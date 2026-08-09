@@ -1,188 +1,279 @@
 import {
-  MenuCustomOption,
-  MenuCustomOptionValue,
-  MenuOptionValue,
-  MenuRequiredOption,
+  CreateMenuOptionPayload,
+  CreateOptionChoicePayload,
+  UpdateOptionChoicePayload,
+} from "@ssurak/api/schemas/model/menuOption.schema";
+import {
+  MenuOptionChoice,
+  MenuOptionGroup,
+  OptionChoiceState,
+  OptionSelectionType,
 } from "@ssurak/api/types/menu/menuOptions.interface";
+import { FieldPath } from "react-hook-form";
 import {
   OptionGroupForm,
   OptionTriggerForm,
   OptionValueForm,
-} from "../types/menu-form-payload.type";
-
-/** 서버 Record 한 쌍. 편집 화면의 초기값과 제출 payload가 모두 이 모양이다. */
-type MenuOptionRecords = {
-  requiredOptions?: MenuRequiredOption | null;
-  customOptions?: MenuCustomOption | null;
-};
-
-/** 폼 배열 한 쌍. trigger가 두 목록을 서로 참조할 수 있어 항상 같이 다룬다. */
-type OptionGroupForms = {
-  requiredOptions: OptionGroupForm[];
-  customOptions: OptionGroupForm[];
-};
-
-type IdentifiedGroup = {
-  groupId: string;
-  groupKey: string;
-  optionInfo: MenuCustomOptionValue;
-};
+} from "../types/option-form.type";
 
 /**
  * 폼 수명 동안만 유일하면 되는 값이다(서버로 나가지 않는다).
  * 랜덤 대신 순번을 쓰면 테스트에서 값을 예측할 수 있다.
  */
 let optionGroupSequence = 0;
-function createOptionGroupId(): string {
+export function createOptionGroupId(): string {
   optionGroupSequence += 1;
   return `optionGroup-${optionGroupSequence}`;
 }
 
 export function createEmptyOptionValue(): OptionValueForm {
-  return { key: "", price: null };
+  return {
+    name: "",
+    priceDelta: null,
+    quantityEnabled: false,
+    maxQuantity: 1,
+    isDefault: false,
+    state: OptionChoiceState.AVAILABLE,
+  };
 }
 
 export function createEmptyOptionGroup(): OptionGroupForm {
   return {
-    groupId: createOptionGroupId(),
-    groupKey: "",
-    options: [createEmptyOptionValue()],
-    defaultIndex: 0,
+    name: "",
+    selectionType: OptionSelectionType.SINGLE,
+    required: false,
+    minSelect: 0,
+    maxSelect: 1,
+    enabled: true,
+    choices: [createEmptyOptionValue()],
     trigger: [],
   };
 }
 
 export function createEmptyOptionTrigger(): OptionTriggerForm {
-  return { groupId: "", in: [] };
+  return { optionId: "", choiceIds: [] };
 }
 
-function identifyGroups(
-  record: MenuRequiredOption | MenuCustomOption | null | undefined
-): IdentifiedGroup[] {
-  if (!record) return [];
-
-  return Object.entries(record).map(([groupKey, optionInfo]) => ({
-    groupId: createOptionGroupId(),
-    groupKey,
-    optionInfo,
-  }));
-}
-
-function toOptionGroupForm(
-  { groupId, groupKey, optionInfo }: IdentifiedGroup,
-  groupIdByGroupKey: Map<string, string>
-): OptionGroupForm {
-  const defaultIndex = optionInfo.options.findIndex(
-    (option) => option.key === optionInfo.defaultKey
-  );
-
+function toOptionValueForm(choice: MenuOptionChoice): OptionValueForm {
   return {
-    groupId,
-    groupKey,
-    options: optionInfo.options.map((option) => ({
-      key: option.key,
-      price: option.price,
-      ...(option.description === undefined
-        ? {}
-        : { description: option.description }),
-    })),
-    defaultIndex: defaultIndex === -1 ? 0 : defaultIndex,
-    // 대상 그룹이 사라진 조건은 폼에서 되살릴 방법이 없으므로 버린다.
-    trigger: (optionInfo.trigger ?? []).flatMap((trigger) => {
-      const targetGroupId = groupIdByGroupKey.get(trigger.group);
-      if (!targetGroupId) return [];
-
-      return [{ groupId: targetGroupId, in: trigger.in }];
-    }),
+    publicId: choice.publicId,
+    name: choice.name,
+    priceDelta: choice.priceDelta,
+    quantityEnabled: choice.quantityEnabled,
+    maxQuantity: choice.maxQuantity,
+    isDefault: choice.isDefault,
+    state: choice.state,
   };
+}
+
+export function toOptionGroupForm(option: MenuOptionGroup): OptionGroupForm {
+  return {
+    name: option.name,
+    selectionType: option.selectionType,
+    required: option.required,
+    minSelect: option.minSelect,
+    maxSelect: option.maxSelect,
+    enabled: option.enabled,
+    choices: option.choices.map(toOptionValueForm),
+    trigger: option.trigger ?? [],
+  };
+}
+
+/** 폼 값 → 옵션 본문. 빈 입력은 서버 기본값과 같은 값으로 채운다. */
+export function toOptionPayload(
+  form: OptionGroupForm
+): Omit<CreateMenuOptionPayload, "choices"> {
+  return {
+    name: form.name.trim(),
+    selectionType: form.selectionType,
+    required: form.required,
+    minSelect: form.minSelect ?? 0,
+    maxSelect: form.maxSelect ?? 1,
+    enabled: form.enabled,
+    // 빈 배열이 아니라 null을 보내야 "조건 없음"이 서버 컬럼에서도 비워진다.
+    trigger: form.trigger.length > 0 ? form.trigger : null,
+  };
+}
+
+export function toChoicePayload(
+  value: OptionValueForm
+): CreateOptionChoicePayload {
+  return {
+    name: value.name.trim(),
+    priceDelta: value.priceDelta ?? 0,
+    quantityEnabled: value.quantityEnabled,
+    maxQuantity: value.maxQuantity ?? 1,
+    isDefault: value.isDefault,
+    state: value.state,
+  };
+}
+
+/** 저장 후 기대 순서의 한 칸. 새 선택지는 아직 id가 없어 폼 인덱스로 자리만 잡아 둔다. */
+export type ChoiceOrderSlot = { publicId: string } | { index: number };
+
+export type ChoiceChangePlan = {
+  creates: { index: number; payload: CreateOptionChoicePayload }[];
+  updates: { publicId: string; payload: UpdateOptionChoicePayload }[];
+  deletes: string[];
+  order: ChoiceOrderSlot[];
+};
+
+function isSameChoice(
+  saved: MenuOptionChoice,
+  payload: CreateOptionChoicePayload
+): boolean {
+  return (
+    saved.name === payload.name &&
+    saved.priceDelta === payload.priceDelta &&
+    saved.quantityEnabled === payload.quantityEnabled &&
+    saved.maxQuantity === payload.maxQuantity &&
+    saved.isDefault === payload.isDefault &&
+    saved.state === payload.state
+  );
 }
 
 /**
- * 서버 Record → 폼 배열. 편집 화면 초기값에 쓴다.
- * 서버 trigger는 대상 그룹을 이름으로 가리키므로 groupId로 옮겨 담는다. 필수 옵션과 선택
- * 옵션은 서로를 조건으로 쓸 수 있어서, 두 Record를 한 번에 변환해야 이름을 모두 찾을 수 있다.
+ * 저장된 선택지와 폼 값을 대조해 실제로 보낼 요청만 골라낸다.
+ *
+ * 선택지에는 옵션과 달리 통째 교체 API가 없다 — 장바구니가 선택지 publicId를 들고 있어서
+ * 지웠다 다시 만들면 담아둔 주문이 끊긴다. 그래서 남는 행은 반드시 수정으로 처리한다.
+ *
+ * 호출 순서는 생성 → 수정 → 삭제여야 한다. 삭제를 먼저 하면 선택지가 0개가 되는 순간이
+ * 생겨 서버가 409(MENU_OPTION_LAST_CHOICE)로 거절한다.
  */
-export function toOptionGroupForms({
-  requiredOptions,
-  customOptions,
-}: MenuOptionRecords): OptionGroupForms {
-  const identified = {
-    requiredOptions: identifyGroups(requiredOptions),
-    customOptions: identifyGroups(customOptions),
-  };
-
-  const groupIdByGroupKey = new Map(
-    [...identified.requiredOptions, ...identified.customOptions].map(
-      ({ groupKey, groupId }) => [groupKey, groupId]
-    )
+export function planChoiceChanges(
+  saved: MenuOptionChoice[],
+  form: OptionValueForm[]
+): ChoiceChangePlan {
+  const savedByPublicId = new Map(
+    saved.map((choice) => [choice.publicId, choice])
   );
 
-  return {
-    requiredOptions: identified.requiredOptions.map((group) =>
-      toOptionGroupForm(group, groupIdByGroupKey)
-    ),
-    customOptions: identified.customOptions.map((group) =>
-      toOptionGroupForm(group, groupIdByGroupKey)
-    ),
+  const plan: ChoiceChangePlan = {
+    creates: [],
+    updates: [],
+    deletes: [],
+    order: [],
   };
-}
+  const keptPublicIds = new Set<string>();
 
-function toMenuOptionRecord(
-  groups: OptionGroupForm[],
-  groupKeyByGroupId: Map<string, string>
-): MenuRequiredOption | undefined {
-  if (groups.length === 0) return undefined;
+  form.forEach((value, index) => {
+    const payload = toChoicePayload(value);
+    const savedChoice = value.publicId
+      ? savedByPublicId.get(value.publicId)
+      : undefined;
 
-  const entries = groups.map((group) => {
-    const options: MenuOptionValue[] = group.options.map((option) => ({
-      key: option.key,
-      price: option.price ?? 0,
-      ...(option.description === undefined
-        ? {}
-        : { description: option.description }),
-    }));
-    const defaultKey =
-      options[group.defaultIndex]?.key ?? options[0]?.key ?? "";
+    if (!savedChoice) {
+      plan.creates.push({ index, payload });
+      plan.order.push({ index });
+      return;
+    }
 
-    // 대상 그룹이 사라졌으면 이름을 만들 수 없다. 제출은 스키마가 먼저 막고, 미리보기에서는 조건 없이 보여준다.
-    const trigger = group.trigger.flatMap((trigger) => {
-      const targetGroupKey = groupKeyByGroupId.get(trigger.groupId);
-      if (!targetGroupKey) return [];
+    keptPublicIds.add(savedChoice.publicId);
+    plan.order.push({ publicId: savedChoice.publicId });
 
-      return [{ group: targetGroupKey, in: trigger.in }];
-    });
-
-    return [
-      group.groupKey,
-      {
-        options,
-        defaultKey,
-        ...(trigger.length === 0 ? {} : { trigger }),
-      },
-    ] as const;
+    if (!isSameChoice(savedChoice, payload)) {
+      plan.updates.push({ publicId: savedChoice.publicId, payload });
+    }
   });
 
-  return Object.fromEntries(entries);
+  plan.deletes = saved
+    .filter((choice) => !keptPublicIds.has(choice.publicId))
+    .map((choice) => choice.publicId);
+
+  return plan;
+}
+
+/** 생성 응답으로 받은 publicId를 자리표시자에 채워 최종 순서를 만든다. */
+export function resolveChoiceOrder(
+  order: ChoiceOrderSlot[],
+  createdPublicIdByIndex: Map<number, string>
+): string[] {
+  return order.flatMap((slot) => {
+    if ("publicId" in slot) return [slot.publicId];
+
+    const created = createdPublicIdByIndex.get(slot.index);
+    return created ? [created] : [];
+  });
+}
+
+function toChoiceFieldPath(
+  index: number,
+  leaf: string | number | undefined
+): FieldPath<OptionGroupForm> | undefined {
+  switch (leaf) {
+    case undefined:
+      return `choices.${index}`;
+    case "name":
+      return `choices.${index}.name`;
+    case "priceDelta":
+      return `choices.${index}.priceDelta`;
+    case "quantityEnabled":
+      return `choices.${index}.quantityEnabled`;
+    case "maxQuantity":
+      return `choices.${index}.maxQuantity`;
+    case "isDefault":
+      return `choices.${index}.isDefault`;
+    case "state":
+      return `choices.${index}.state`;
+    default:
+      return undefined;
+  }
+}
+
+function toTriggerFieldPath(
+  index: number,
+  leaf: string | number | undefined
+): FieldPath<OptionGroupForm> | undefined {
+  switch (leaf) {
+    case undefined:
+      return `trigger.${index}`;
+    case "optionId":
+      return `trigger.${index}.optionId`;
+    case "choiceIds":
+      return `trigger.${index}.choiceIds`;
+    default:
+      return undefined;
+  }
 }
 
 /**
- * 폼 배열 → 서버 Record. 그룹이 하나도 없으면 undefined(= 옵션 없음).
- * 고객 앱은 trigger 대상을 그룹 이름으로 찾으므로(`packages/ui/src/utils/menu/optionTrigger.ts`)
- * groupId를 제출 시점의 이름으로 되돌린다.
+ * zod 이슈 경로 → 폼 필드 경로.
+ *
+ * 두 경로가 같은 모양이라 문자열로 이어 붙이면 끝이지만, 그러면 타입이 `string`이 되어
+ * `setError`가 받아 주지 않는다. 아는 필드만 명시적으로 매핑해 캐스팅 없이 좁힌다.
+ * 매핑되지 않는 경로(스키마 전역 이슈 등)는 undefined를 돌려 카드 전체 메시지로 보낸다.
  */
-export function toMenuOptionRecords({
-  requiredOptions,
-  customOptions,
-}: OptionGroupForms): MenuOptionRecords {
-  const groupKeyByGroupId = new Map(
-    [...requiredOptions, ...customOptions].map((group) => [
-      group.groupId,
-      group.groupKey,
-    ])
-  );
+export function toOptionFieldPath(
+  path: readonly (string | number)[]
+): FieldPath<OptionGroupForm> | undefined {
+  const [head, second, third] = path;
 
-  return {
-    requiredOptions: toMenuOptionRecord(requiredOptions, groupKeyByGroupId),
-    customOptions: toMenuOptionRecord(customOptions, groupKeyByGroupId),
-  };
+  if (head === "choices" && typeof second === "number") {
+    return toChoiceFieldPath(second, third);
+  }
+  if (head === "trigger" && typeof second === "number") {
+    return toTriggerFieldPath(second, third);
+  }
+
+  switch (head) {
+    case "name":
+      return "name";
+    case "selectionType":
+      return "selectionType";
+    case "required":
+      return "required";
+    case "minSelect":
+      return "minSelect";
+    case "maxSelect":
+      return "maxSelect";
+    case "enabled":
+      return "enabled";
+    case "choices":
+      return "choices";
+    case "trigger":
+      return "trigger";
+    default:
+      return undefined;
+  }
 }
