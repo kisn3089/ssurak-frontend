@@ -32,7 +32,7 @@ export default function Counter({
 
   return (
     <>
-      <ButtonGroup>
+      <ButtonGroup className="shadow-md rounded-md">
         <Button
           type="button"
           variant={"outline"}

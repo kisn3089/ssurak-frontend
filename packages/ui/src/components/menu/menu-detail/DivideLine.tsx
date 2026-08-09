@@ -1,7 +1,7 @@
 import { cn } from "@ssurak/ui/lib/utils";
 
 type DivideLineProps = {
-  label: string;
+  label?: string;
   labelPosition?: "left" | "center" | "right";
   labelClassName?: string;
 };
@@ -14,9 +14,11 @@ export default function DivideLine({
   return (
     <div className="flex items-center gap-x-2 py-3 px-2">
       {labelPosition !== "left" && <Line />}
-      <span className={cn("text-xs text-muted-foreground", labelClassName)}>
-        {label}
-      </span>
+      {label && (
+        <span className={cn("text-xs text-muted-foreground", labelClassName)}>
+          {label}
+        </span>
+      )}
       {labelPosition !== "right" && <Line />}
     </div>
   );
