@@ -28,7 +28,7 @@ export default function OrderHistory() {
         .map((order) => (
           <div
             key={order.publicId}
-            className="flex rounded-4xl border border-border p-4 shadow-md w-full"
+            className="flex rounded-3xl border border-border p-4 shadow-md w-full"
           >
             <div className="flex flex-col gap-y-2 w-full">
               <div className="flex justify-between">

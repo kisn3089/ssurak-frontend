@@ -13,8 +13,8 @@ export default function CartMenuList() {
   const { state } = useCart();
 
   return (
-    <section className="p-4 flex flex-col gap-y-2 bg-white">
-      <Card className="divide-y divide-accent shadow-lg rounded-3xl">
+    <section className="p-4 flex flex-col gap-y-2">
+      <Card className="shadow-lg rounded-3xl">
         {state.menus.map((menu) => (
           <CartMenu key={`${menu.menuPublicId}${menu.id}`} menu={menu} />
         ))}

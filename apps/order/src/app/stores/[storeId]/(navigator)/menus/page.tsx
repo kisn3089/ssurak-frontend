@@ -37,7 +37,7 @@ export default function MenuListPage() {
 
   return (
     <>
-      <ul className="flex items-center gap-2 px-4 py-2 sticky bg-white top-12 z-10">
+      <ul className="flex items-center gap-2 px-4 py-2 sticky bg-accent-subtle top-12 z-10">
         {menuCategories.map((category) => (
           <li key={category.name}>
             <Button

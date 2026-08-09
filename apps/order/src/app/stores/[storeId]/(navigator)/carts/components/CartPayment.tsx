@@ -11,7 +11,7 @@ export default function CartPayment() {
   } = useCart();
 
   return (
-    <section className="p-4 bg-white">
+    <section className="p-4">
       <h3 className="font-bold text-lg">결제 상세</h3>
       <div className="p-3 flex flex-col font-semibold divide-y-2 divide-black">
         <div className="flex justify-between py-2">
