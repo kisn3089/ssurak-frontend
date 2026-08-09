@@ -2,7 +2,21 @@ import { ItemDescription } from "@ssurak/ui/components/item";
 import { MenuDetail } from "@ssurak/ui/components/menu/menu-detail";
 import MenuImage from "./MenuImage";
 import { DetailMenu } from "@ssurak/ui/components/menu/menu-detail/menu-detail.type";
+import { isSelectable } from "@ssurak/ui/utils/menu/optionSelection";
 import { buildImageUrl } from "@utils/buildImageUrl";
+
+function toDefaultSelectionKey(menu: DetailMenu) {
+  return menu.options
+    .map((option) => {
+      const defaultChoiceIds = option.choices
+        .filter((choice) => choice.isDefault && isSelectable(choice))
+        .map((choice) => choice.publicId)
+        .join(",");
+
+      return `${option.publicId}:${defaultChoiceIds}`;
+    })
+    .join("|");
+}
 
 type PreviewMenuProps = { menu: DetailMenu; children?: React.ReactNode };
 export default function PreviewMenu({ menu, children }: PreviewMenuProps) {
@@ -15,7 +29,7 @@ export default function PreviewMenu({ menu, children }: PreviewMenuProps) {
         </p>
       </header>
       <div className="flex flex-col items-center justify-center">
-        <MenuDetail.Provider menu={menu}>
+        <MenuDetail.Provider key={toDefaultSelectionKey(menu)} menu={menu}>
           <main className="bg-accent flex flex-col gap-y-2 max-w-100 min-w-100 @3xl:max-w-100">
             <MenuDetail.Info
               className="bg-background pointer-events-none"
