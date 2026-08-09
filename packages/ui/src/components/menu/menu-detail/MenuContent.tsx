@@ -11,10 +11,10 @@ export default function MenuContent({
   children,
 }: MenuContentProps) {
   const {
-      state: { menu },
-      meta: { price },
-    } = useMenuDetailContext();
-    
+    state: { menu },
+    meta: { price },
+  } = useMenuDetailContext();
+
   return (
     <ItemContent className="w-full px-2">
       <ItemTitle className="font-bold text-xl">{menu.name}</ItemTitle>
