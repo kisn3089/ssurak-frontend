@@ -4,7 +4,7 @@ export default function GridLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="antialiased h-full flex gap-2 pr-6 pb-4">
+    <section className="antialiased flex gap-2 pl-3 pr-6 pb-4 h-full">
       {children}
     </section>
   );
