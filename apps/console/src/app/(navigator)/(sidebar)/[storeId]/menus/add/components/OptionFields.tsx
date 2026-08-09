@@ -4,7 +4,7 @@ import { httpMenuOptionErrors } from "@ssurak/api/core/store/menu/option/httpMen
 import { MenuOptionGroup } from "@ssurak/api/types/menu/menuOptions.interface";
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
-import { FormState, useForm, useWatch } from "react-hook-form";
+import { FormState, useForm } from "react-hook-form";
 import ButtonTransDrag from "../../../components/ButtonTransDrag";
 import ErrorMessage from "../../../components/form/ErrorMessage";
 import { DragRowProps } from "../../../hooks/useDragSort";

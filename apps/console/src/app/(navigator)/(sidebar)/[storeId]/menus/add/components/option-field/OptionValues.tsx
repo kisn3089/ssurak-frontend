@@ -34,6 +34,8 @@ export default function OptionValues({
   });
   const selectionType = useWatch({ control, name: "selectionType" });
   const choices = useWatch({ control, name: "choices" });
+  const minSelect = useWatch({ control, name: "minSelect" });
+  const maxSelect = useWatch({ control, name: "maxSelect" });
 
   const { listRef, draggingIndex, targetIndex, getHandleProps, getItemProps } =
     useDragSort(fields.length, move);
@@ -49,6 +51,11 @@ export default function OptionValues({
     }
 
     setValue(`choices.${index}.isDefault`, nextIsDefault);
+  };
+
+  const clampSelectRange = (remaining: number) => {
+    setValue("maxSelect", Math.min(maxSelect ?? 1, remaining));
+    setValue("minSelect", Math.min(minSelect ?? 0, remaining));
   };
 
   return (
@@ -67,7 +74,7 @@ export default function OptionValues({
           onSelectDefault={() => toggleDefault(index)}
           onRemove={() => {
             remove(index);
-            setValue("maxSelect", Math.min(choices.length - 1, choices.length));
+            clampSelectRange(fields.length - 1);
           }}
         />
       ))}

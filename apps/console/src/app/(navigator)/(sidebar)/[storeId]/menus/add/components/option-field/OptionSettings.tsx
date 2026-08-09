@@ -67,8 +67,9 @@ export default function OptionSettings({
         : OptionSelectionType.MULTIPLE;
 
     selectionTypeField.onChange(narrowedSelectionType);
-    if (selectionType === OptionSelectionType.SINGLE) {
+    if (narrowedSelectionType === OptionSelectionType.SINGLE) {
       setValue("maxSelect", 1);
+      setValue("minSelect", requiredField.value ? 1 : 0);
     }
   };
 
@@ -145,7 +146,6 @@ export default function OptionSettings({
               min={1}
               max={maxSelectCondition}
               buttonSize={"icon-sm"}
-              disabled={!requiredField.value}
               aria-invalid={!!maxSelectState.error}
               quantity={maxSelectField.value ?? 1}
               onChange={maxSelectField.onChange}
