@@ -49,17 +49,11 @@ export default function useDragToConfirm<Thumb extends HTMLElement>({
   const movedRef = useRef(false);
 
   const [offsetX, setOffsetX] = useState(0);
-  const [hasReachedEnd, setHasReachedEnd] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
   const updateOffsetX = (next: number) => {
     offsetRef.current = next;
     setOffsetX(next);
-  };
-
-  const updateReachedEnd = (next: boolean) => {
-    reachedEndRef.current = next;
-    setHasReachedEnd(next);
   };
 
   /** 트랙 안에서 손잡이가 움직일 수 있는 거리. 패딩 안쪽만 씁니다. */
@@ -77,7 +71,7 @@ export default function useDragToConfirm<Thumb extends HTMLElement>({
 
   const resolveOffsetX = (rawX: number, maxOffsetX: number) => {
     if (rawX >= maxOffsetX) {
-      updateReachedEnd(true);
+      reachedEndRef.current = true;
       return maxOffsetX;
     }
     if (reachedEndRef.current) {
@@ -89,7 +83,7 @@ export default function useDragToConfirm<Thumb extends HTMLElement>({
   const endDrag = () => {
     startRef.current = null;
     setIsDragging(false);
-    updateReachedEnd(false);
+    reachedEndRef.current = false;
     updateOffsetX(0);
   };
 
@@ -147,8 +141,6 @@ export default function useDragToConfirm<Thumb extends HTMLElement>({
 
   return {
     trackRef,
-    hasReachedEnd,
-    isDragging,
     shouldIgnoreClick,
     thumbProps: {
       ref: thumbRef,

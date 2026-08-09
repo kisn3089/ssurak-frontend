@@ -24,7 +24,7 @@ export default function ButtonTransDrag({
     onDragConfirm();
   };
 
-  const { trackRef, thumbProps, hasReachedEnd, isDragging, shouldIgnoreClick } =
+  const { trackRef, thumbProps, shouldIgnoreClick } =
     useDragToConfirm<HTMLButtonElement>({
       enabled: isArmed,
       onConfirm: confirm,
