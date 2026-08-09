@@ -21,10 +21,12 @@ export default function Counter({
   buttonSize = "icon",
   commonClassName,
   onChange,
+  disabled,
   ...props
 }: CounterProps) {
   const min = props.min !== undefined ? Number(props.min) : 1;
   const max = props.max !== undefined ? Number(props.max) : Infinity;
+  const isInteractive = isAvailable && !disabled;
   const minDisabled = quantity <= min;
   const maxDisabled = quantity >= max;
 
@@ -35,7 +37,7 @@ export default function Counter({
           type="button"
           variant={"outline"}
           size={buttonSize}
-          disabled={minDisabled || !isAvailable}
+          disabled={minDisabled || !isInteractive}
           className={cn(
             "border-r disabled:opacity-100 shadow-none",
             {
@@ -50,7 +52,7 @@ export default function Counter({
         >
           <MinusIcon
             className={cn(
-              { "opacity-30": minDisabled || !isAvailable },
+              { "opacity-30": minDisabled || !isInteractive },
               { "size-3.5": buttonSize === "icon-sm" }
             )}
           />
@@ -58,7 +60,7 @@ export default function Counter({
         <ButtonGroupText
           className={cn(
             "shadow-none justify-center min-w-10 border-x font-semibold text-base bg-background dark:bg-input/30 px-2",
-            { "text-muted-foreground": !isAvailable },
+            { "text-muted-foreground": !isInteractive },
             { "px-0 min-w-6 border-x-0 h-8 text-sm": buttonSize === "icon-sm" },
             commonClassName
           )}
@@ -77,11 +79,11 @@ export default function Counter({
             e.stopPropagation();
             onChange(quantity + 1);
           }}
-          disabled={maxDisabled || !isAvailable}
+          disabled={maxDisabled || !isInteractive}
         >
           <PlusIcon
             className={cn(
-              { "opacity-30": maxDisabled || !isAvailable },
+              { "opacity-30": maxDisabled || !isInteractive },
               { "size-3.5": buttonSize === "icon-sm" }
             )}
           />

@@ -61,33 +61,32 @@ export default function OptionItem({ option, visible }: OptionItemProps) {
               )}
             >
               <div
+                role="button"
                 aria-pressed={selected}
                 onClick={() => toggleChoice(option.publicId, choice.publicId)}
                 className="flex h-full flex-col px-5 py-2 justify-center items-center rounded-xl outline-none hover:cursor-pointer focus-visible:ring-[3px] focus-visible:ring-ring/50"
               >
                 <span>{choice.name}</span>
-                <div onClick={(e) => e.stopPropagation()}>
-                  {choice.quantityEnabled && selected ? (
-                    <div className="pt-1">
-                      <Counter
-                        quantity={quantity}
-                        onChange={(next) =>
-                          changeChoiceQuantity(
-                            option.publicId,
-                            choice.publicId,
-                            next
-                          )
-                        }
-                        min={0}
-                        max={choice.maxQuantity}
-                        commonClassName="border-accent/30 bg-background-foreground dark:bg-background-foreground"
-                        buttonSize="icon-sm"
-                      />
-                    </div>
-                  ) : (
-                    <ChoiceHint choice={choice} soldOut={soldOut} />
-                  )}
-                </div>
+                {choice.quantityEnabled && selected ? (
+                  <div className="pt-1" onClick={(e) => e.stopPropagation()}>
+                    <Counter
+                      quantity={quantity}
+                      onChange={(next) =>
+                        changeChoiceQuantity(
+                          option.publicId,
+                          choice.publicId,
+                          next
+                        )
+                      }
+                      min={0}
+                      max={choice.maxQuantity}
+                      commonClassName="border-accent/30 bg-background-foreground dark:bg-background-foreground"
+                      buttonSize="icon-sm"
+                    />
+                  </div>
+                ) : (
+                  <ChoiceHint choice={choice} soldOut={soldOut} />
+                )}
               </div>
             </div>
           );
