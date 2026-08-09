@@ -203,7 +203,7 @@ export default function MenuEditForm() {
               <OptionFields
                 key={draftId}
                 formId={draftId}
-                savedOptions={[]}
+                savedOptions={options}
                 onDiscard={() => discardDraft(draftId)}
                 invalidateOptions={invalidateOptions}
                 createOptionCallback={createOption}

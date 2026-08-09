@@ -31,13 +31,15 @@ export default function useBuildOptionMutateCallback(
     payload: UpdateMenuOptionPayload,
     values: OptionGroupForm
   ) => {
+    const savedChoices = await saveChoices(option, values);
+
     await mutations.updateOption.mutateAsync({
       menuId,
       optionId: option.publicId,
       updateMenuOptionPayload: payload,
     });
 
-    return await saveChoices(option, values);
+    return savedChoices;
   };
 
   const deleteOption = async (optionId: string) => {
