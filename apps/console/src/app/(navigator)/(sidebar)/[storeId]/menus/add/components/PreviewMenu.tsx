@@ -30,9 +30,9 @@ export default function PreviewMenu({ menu, children }: PreviewMenuProps) {
       </header>
       <div className="flex flex-col items-center justify-center">
         <MenuDetail.Provider key={toDefaultSelectionKey(menu)} menu={menu}>
-          <main className="bg-accent flex flex-col gap-y-2 max-w-100 min-w-100 @3xl:max-w-100">
+          <main className="flex flex-col gap-y-2 max-w-100 min-w-100 @3xl:max-w-100">
             <MenuDetail.Info
-              className="bg-background pointer-events-none"
+              className="bg-accent-subtle pointer-events-none"
               description={
                 <ItemDescription className="text-base line-clamp-none">
                   {menu.description}
@@ -47,8 +47,9 @@ export default function PreviewMenu({ menu, children }: PreviewMenuProps) {
                 className="rounded-3xl shadow-2xl"
               />
             </MenuDetail.Info>
+            <MenuDetail.DivideLine label="옵션 선택" labelPosition="center" />
             <section
-              className="bg-background py-4 pb-[81px]"
+              className="bg-accent-subtle pb-[81px]"
               aria-label="메뉴 옵션 선택"
             >
               <MenuDetail.Options />

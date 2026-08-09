@@ -16,7 +16,7 @@ export default async function NavigatorLayout({
   return (
     <section className="antialiased">
       <SidebarProvider defaultOpen={defaultOpen} className="flex-col">
-        <header className="sticky top-0 bg-background z-20 flex justify-between px-3 items-center w-screen h-14 md:px-6">
+        <header className="sticky top-0 bg-accent-subtle z-20 flex justify-between px-3 items-center w-screen h-14 md:px-6">
           <div className="flex gap-x-2 items-center">
             <MobileSidebar />
             <Link href="/" className="font-bold text-lg hidden md:block">

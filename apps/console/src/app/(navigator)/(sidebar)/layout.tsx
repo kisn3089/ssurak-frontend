@@ -17,7 +17,9 @@ export default async function SidebarLayout({
         <ServerPrefetch url="/identity/v1/me" shouldSuccess>
           <ServerPrefetch url="/stores/v1">
             <NavSidebar />
-            <main className="w-full">{children}</main>
+            <main className="w-full bg-accent-subtle min-h-[calc(100vh-56px)]">
+              {children}
+            </main>
             <OrderNoticeDaemon />
           </ServerPrefetch>
         </ServerPrefetch>
