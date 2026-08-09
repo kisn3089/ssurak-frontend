@@ -50,7 +50,7 @@ export default function ImageUploader({
     return (
       <div
         className={cn(
-          "flex items-center justify-between border rounded-xl p-4 aria-invalid:border-destructive",
+          "flex items-center justify-between border rounded-xl p-4 aria-invalid:border-destructive bg-background",
           { "pointer-events-none opacity-60": isLoadingOrDisabled }
         )}
         aria-invalid={!!errorMessage}

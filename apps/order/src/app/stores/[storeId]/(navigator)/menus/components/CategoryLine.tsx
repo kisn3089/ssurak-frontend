@@ -5,7 +5,7 @@ const CategoryLine = forwardRef(
     return (
       <div
         ref={ref}
-        className="w-full h-px bg-accent my-4 scroll-m-24"
+        className="w-full h-px bg-border my-4 scroll-m-24"
         data-category={category}
       />
     );

@@ -32,9 +32,8 @@ export default function MenuDetailPage() {
 
   return (
     <MenuDetail.Provider menu={detailMenu}>
-      <main className="bg-accent flex flex-col gap-y-2">
+      <main className="flex flex-col gap-y-2">
         <MenuDetail.Info
-          className="bg-background"
           description={
             <ItemDescription className="text-base line-clamp-none">
               {menu.description}
@@ -49,10 +48,8 @@ export default function MenuDetailPage() {
             className="rounded-3xl"
           />
         </MenuDetail.Info>
-        <section
-          className="bg-white py-4 pb-[81px]"
-          aria-label="메뉴 옵션 선택"
-        >
+        <MenuDetail.DivideLine label="옵션 선택" labelPosition="center" />
+        <section className="pb-[81px]" aria-label="메뉴 옵션 선택">
           <MenuDetail.Options />
         </section>
         <MenuDetailAddCart />

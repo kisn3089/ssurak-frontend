@@ -13,7 +13,7 @@ export default function BoardTableLayout({
   return (
     <Card
       className={cn(
-        "cursor-pointer rounded-2xl h-full min-h-[220px] flex flex-col transition-shadow duration-300 bg-accent",
+        "cursor-pointer rounded-2xl h-full max-h-[calc((100vh-80px)/3)] flex flex-col transition-shadow duration-300 bg-accent",
         className
       )}
     >

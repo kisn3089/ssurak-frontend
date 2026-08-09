@@ -76,7 +76,7 @@ export default async function NavigatorLayout({
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <header className="flex flex-col items-center sticky bg-white top-0 z-10">
+      <header className="flex flex-col items-center sticky bg-accent-subtle top-0 z-10">
         <nav className="w-full h-12 flex items-center justify-between px-4">
           <NavLogoLink storeId={storeId} />
           <NavTableNumber />

@@ -6,7 +6,7 @@ export function OrderTableHeader<TData>({
   table,
 }: OrderTableHeaderProps<TData>) {
   return (
-    <TableHeader>
+    <TableHeader className="sticky top-0 bg-background">
       {table.getHeaderGroups().map((headerGroup) => (
         <TableRow
           className="grid grid-cols-[1.5fr_1fr_1fr] xl:grid-cols-[2fr_1fr_1fr]"

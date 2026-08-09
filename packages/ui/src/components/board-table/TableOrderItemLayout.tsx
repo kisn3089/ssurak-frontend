@@ -7,7 +7,7 @@ export default function TableOrderItemLayout({
 }) {
   return (
     <CardContent
-      className={`rounded-lg bg-background border p-2 font-semibold flex flex-col justify-center`}
+      className={`rounded-lg bg-background border p-2 font-semibold flex flex-col justify-center shadow-md`}
     >
       {children}
     </CardContent>

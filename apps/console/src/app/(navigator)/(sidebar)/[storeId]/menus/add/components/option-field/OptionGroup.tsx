@@ -113,7 +113,7 @@ export default function OptionGroup({
         side="left"
         className="min-w-full sm:min-w-4/5 lg:min-w-2/3"
       >
-        <SheetHeader className="border-b border-accent p-2">
+        <SheetHeader className="border-b p-2 px-4">
           <SheetTitle>{groupTitle}</SheetTitle>
           <SheetDescription>
             손님이 고르는 선택지와 노출 조건을 설정합니다.
@@ -121,7 +121,7 @@ export default function OptionGroup({
         </SheetHeader>
         <div className="flex-1 overflow-y-auto px-4 py-2">{children}</div>
         {footer && (
-          <SheetFooter className="flex-row items-center justify-between gap-x-2 border-t border-accent p-2">
+          <SheetFooter className="flex-row items-center justify-between gap-x-2 border-t p-2">
             {footer}
           </SheetFooter>
         )}

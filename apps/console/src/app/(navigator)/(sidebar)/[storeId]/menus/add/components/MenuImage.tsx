@@ -45,7 +45,7 @@ export default function MenuImage({
   return (
     <ItemMedia
       variant={"image"}
-      className={cn(sizeClassMap[size].class, className)}
+      className={cn(sizeClassMap[size].class, className, "bg-background")}
     >
       {src ? (
         <Image
