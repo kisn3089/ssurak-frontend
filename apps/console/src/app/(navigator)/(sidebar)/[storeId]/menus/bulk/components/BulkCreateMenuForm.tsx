@@ -65,7 +65,7 @@ export default function BulkCreateMenuForm() {
 
   const commitMenus = () =>
     bulkCreateMenus.mutate(
-      { bulkCreateMenusPayload: { items: bulkItems } },
+      { bulkCreateMenusPayload: { items: bulkItems, draftId: draft?.draftId } },
       {
         onSuccess: (created) => {
           toast.success(`메뉴 ${created.length}개를 등록했어요.`);
