@@ -1,5 +1,5 @@
 export default function formatBytes(bytes: number | undefined): string {
-  if (!bytes) return "";
+  if (bytes === undefined) return "";
 
   if (bytes < 1024) return `${bytes} B`;
   const kb = bytes / 1024;

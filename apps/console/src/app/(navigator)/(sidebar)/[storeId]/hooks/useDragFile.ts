@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 
 export default function useDragFile(
   isBlocked: boolean | undefined,
-  uploadFile: (file: File) => void
+  onChange: (files: File[]) => void
 ) {
   const [isDragActive, setIsDragActive] = useState(false);
   const dragDepthRef = useRef(0);
@@ -34,10 +34,8 @@ export default function useDragFile(
       resetDrag();
       if (isBlocked) return;
 
-      const file = e.dataTransfer.files?.[0];
-      if (!file) return;
-
-      uploadFile(file);
+      const file = Array.from(e.dataTransfer.files);
+      onChange(file);
     },
   };
 
