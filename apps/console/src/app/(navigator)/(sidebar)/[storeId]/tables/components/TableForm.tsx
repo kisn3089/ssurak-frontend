@@ -136,9 +136,18 @@ export default function TableForm({
       </div>
       <div className="flex justify-end gap-x-2 pb-4">
         <Link href={linkToCancel}>
-          <Button variant={"outline"}>취소</Button>
+          <Button
+            className="h-11 rounded-3xl font-semibold"
+            variant={"outline"}
+          >
+            취소
+          </Button>
         </Link>
-        <Button type="submit" disabled={!isValid || isLoading}>
+        <Button
+          type="submit"
+          className="h-11 rounded-3xl font-bold px-5"
+          disabled={!isValid || isLoading}
+        >
           <FormSubmitLabel isLoading={isLoading} buttonText={buttonText} />
         </Button>
       </div>

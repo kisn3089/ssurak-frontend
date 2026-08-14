@@ -214,6 +214,7 @@ export default function MenuEditForm() {
                   <Button
                     type="button"
                     onClick={save}
+                    className="h-11 rounded-3xl font-bold px-5"
                     disabled={formState.isSubmitting}
                   >
                     추가하기
