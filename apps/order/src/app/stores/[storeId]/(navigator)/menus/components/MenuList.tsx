@@ -16,7 +16,7 @@ export default function MenuList({
           key={menu.publicId}
           className={cn(
             `rounded-md hover:bg-accent transition-all duration-200`,
-            "active:not-aria-[haspopup]:scale-98 active:not-aria-[haspopup]:bg-accent hover:scale-98 hover:bg-accent",
+            "pressable:scale-98 pressable:bg-accent hover:scale-98 hover:bg-accent",
             !menu.isAvailable && "opacity-50"
           )}
         >
