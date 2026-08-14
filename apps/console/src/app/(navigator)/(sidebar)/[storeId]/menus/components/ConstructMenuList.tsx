@@ -9,6 +9,7 @@ import { useParams } from "next/navigation";
 import ConstructTableListLayout from "../../components/table-view/table/ConstructTableListLayout";
 import FilterTabs from "../../components/table-view/filter/FilterTabs";
 import useSliceByPage from "../../hooks/useSliceByPage";
+import EmptyMenu from "./EmptyMenu";
 
 interface ConstructMenuListProps {
   children: React.ReactNode;
@@ -39,6 +40,10 @@ export default function ConstructMenuList({
     label: category.name,
     id: category.publicId,
   }));
+
+  if (categoryWithMenuList.every((category) => category.menus.length === 0)) {
+    return <EmptyMenu />;
+  }
 
   return (
     <>
