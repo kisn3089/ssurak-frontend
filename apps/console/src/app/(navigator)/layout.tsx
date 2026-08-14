@@ -4,6 +4,7 @@ import Link from "next/link";
 import MobileSidebar from "./(sidebar)/components/MobileSidebar";
 import { SidebarProvider } from "@ssurak/ui/components/layouts/sidebar";
 import { cookies } from "next/headers";
+import ActionStatus from "@ssurak/ui/components/action-status/ActionStatus";
 
 export default async function NavigatorLayout({
   children,
@@ -23,7 +24,8 @@ export default async function NavigatorLayout({
               <TextLogo />
             </Link>
           </div>
-          <div className="flex flex-row items-center gap-4">
+          <div className="flex flex-row items-center gap-2">
+            <ActionStatus />
             <ToggleTheme />
           </div>
         </header>
