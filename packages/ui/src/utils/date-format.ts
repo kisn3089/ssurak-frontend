@@ -30,3 +30,27 @@ export function formatDate(
     ...(options ?? defaultOptions),
   });
 }
+
+export function formatRemaining(expiresAt: string, now: number = Date.now()) {
+  const remainingMs = new Date(expiresAt).getTime() - now;
+  if (remainingMs <= 0) return "곧 만료";
+
+  const hours = Math.floor(remainingMs / 3_600_000);
+  if (hours >= 1) return `${hours}시간 후 만료`;
+
+  return `${Math.max(1, Math.floor(remainingMs / 60_000))}분 후 만료`;
+}
+
+/** 만료까지 남은 시간을 **고정 유효기간(`totalMs`)** 대비 0~100으로 환산한다. */
+export function remainingRatio(
+  expiresAt: string,
+  totalMs: number,
+  now: number
+): number {
+  if (!Number.isFinite(totalMs) || totalMs <= 0) return 0;
+
+  const remainingMs = new Date(expiresAt).getTime() - now;
+  const ratio = (remainingMs / totalMs) * 100;
+
+  return Math.min(100, Math.max(0, ratio));
+}
