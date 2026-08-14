@@ -3,13 +3,17 @@ import { commonSchema } from "../common";
 
 export type CreateCategoryPayload = z.infer<typeof createCategoryPayloadSchema>;
 
+export const categoryNameSchema = z
+  .string()
+  .trim()
+  .min(1, "카테고리 이름은 필수입니다.")
+  .max(20, "카테고리 이름은 최대 20자까지 가능합니다.");
+
+export const CATEGORY_NAME_MAX = 20;
+
 export const createCategoryPayloadSchema = z
   .object({
-    name: z
-      .string()
-      .trim()
-      .min(1, "카테고리 이름은 필수입니다.")
-      .max(20, "카테고리 이름은 최대 20자까지 가능합니다."),
+    name: categoryNameSchema,
   })
   .strict();
 

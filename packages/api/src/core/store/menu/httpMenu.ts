@@ -1,4 +1,5 @@
 import {
+  BulkCreateMenusPayload,
   CreateMenuPayload,
   ReorderMenusPayload,
   UpdateMenuPayload,
@@ -16,6 +17,23 @@ export type CreateMenuParams = {
 };
 async function createMenu({ storeId, createMenuPayload }: CreateMenuParams) {
   const response = await http.post<Menu>(prefix(storeId), createMenuPayload);
+
+  return response.data;
+}
+
+export type BulkCreateMenusParams = {
+  storeId: string;
+  bulkCreateMenusPayload: BulkCreateMenusPayload;
+};
+
+async function bulkCreateMenus({
+  storeId,
+  bulkCreateMenusPayload,
+}: BulkCreateMenusParams) {
+  const response = await http.post<Menu[]>(
+    `${prefix(storeId)}/bulk`,
+    bulkCreateMenusPayload
+  );
 
   return response.data;
 }
@@ -63,6 +81,7 @@ async function deleteMenu({ storeId, menuId }: DeleteMenuParams) {
 
 export const httpMenus = {
   createMenu,
+  bulkCreateMenus,
   updateMenu,
   reorderMenus,
   deleteMenu,
