@@ -1,9 +1,9 @@
 "use client";
 
 import { Field, FieldDescription } from "@ssurak/ui/components/forms/field";
-import AddOptionGroupButton from "../../menus/add/components/option-field/AddOptionGroupButton";
 import FormLabel from "./FormLabel";
 import SuccessCheck from "@ssurak/ui/components/SuccessCheck";
+import AddFieldButton from "./AddFieldButton";
 
 type OptionFormFieldProps = {
   id: string;
@@ -40,11 +40,12 @@ export default function OptionFormField({
         {description}
       </FieldDescription>
       <div className="mt-2 flex flex-col gap-y-2">{children}</div>
-      <AddOptionGroupButton onClick={onAddOptionGroup}>
-        <span className="text-muted-foreground font-bold">
-          + 옵션 그룹 추가
-        </span>
-      </AddOptionGroupButton>
+      <AddFieldButton
+        onClick={onAddOptionGroup}
+        className="h-11 rounded-xl mt-2"
+      >
+        + 옵션 그룹 추가
+      </AddFieldButton>
     </Field>
   );
 }
