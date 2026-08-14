@@ -1,6 +1,8 @@
 import { PRICE_MAX } from "@ssurak/api/schemas/common";
-import { BulkMenuItem } from "@ssurak/api/schemas/model/menu.schema";
-import { MenuDraftItemPayload } from "@ssurak/api/schemas/model/menuDraft.schema";
+import {
+  BulkMenuItem,
+  MenuDraftItemPayload,
+} from "@ssurak/api/schemas/model/menuDraft.schema";
 import { CategoryWithMenusResponse } from "@ssurak/api/types/category/category.interface";
 import {
   MenuDraftIssue,

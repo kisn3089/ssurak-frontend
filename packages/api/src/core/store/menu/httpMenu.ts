@@ -1,9 +1,9 @@
 import {
-  BulkCreateMenusPayload,
   CreateMenuPayload,
   ReorderMenusPayload,
   UpdateMenuPayload,
 } from "../../../schemas/model/menu.schema";
+import { BulkCreateMenusPayload } from "../../../schemas/model/menuDraft.schema";
 import { Menu } from "../../../types/menu/menu.interface";
 import { http } from "../../axios/http";
 
