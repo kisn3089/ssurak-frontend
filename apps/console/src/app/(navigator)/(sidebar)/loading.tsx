@@ -1,18 +1,9 @@
-"use client";
+import { Spinner } from "@ssurak/ui/components/spinner";
 
-import { Skeleton } from "@ssurak/ui/components/skeleton";
-import TableBoardLayout from "./[storeId]/orders/components/table-board/TableOrderListLayout";
-import GridLayout from "./[storeId]/orders/components/GridLayout";
-
-export default function LoadingSkeleton() {
+export default function SidebarSegmentLoading() {
   return (
-    <GridLayout>
-      <TableBoardLayout>
-        {Array.from({ length: 8 }, (_, index) => (
-          <Skeleton key={index} />
-        ))}
-      </TableBoardLayout>
-      <div />
-    </GridLayout>
+    <div className="flex h-[calc(100vh-56px)] w-full items-center justify-center">
+      <Spinner className="size-6 text-muted-foreground" />
+    </div>
   );
 }
