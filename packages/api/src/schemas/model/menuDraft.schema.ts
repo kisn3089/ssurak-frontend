@@ -21,7 +21,7 @@ const bulkMenuItemSchema = z
     description: menuDescriptionSchema.nullable().optional(),
     categoryId: commonSchema.cuid2("Category").optional(),
     categoryName: categoryNameSchema.optional(),
-    isAvailable: z.boolean().default(true),
+    isAvailable: z.boolean().optional(),
   })
   .strict()
   .superRefine((item, ctx) => {

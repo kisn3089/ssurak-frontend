@@ -28,7 +28,7 @@ export const createMenuPayloadSchema = z
       .pipe(commonSchema.cuid2("Category")),
     description: menuDescriptionSchema.nullable().optional(),
     imageKey: z.string().nullable().optional(),
-    isAvailable: z.boolean().default(true),
+    isAvailable: z.boolean().optional(),
   })
   .strict();
 
