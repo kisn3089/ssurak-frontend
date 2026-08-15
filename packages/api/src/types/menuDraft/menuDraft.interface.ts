@@ -57,4 +57,6 @@ export interface MenuDraftResponse extends MenuDraftSummary {
 
 export interface MenuDraftListResponse {
   drafts: MenuDraftSummary[];
+  remaining: number | null;
+  resetAt: string | null;
 }
