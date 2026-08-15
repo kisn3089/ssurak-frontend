@@ -26,15 +26,17 @@ export default function RecentDraftList() {
 
   return (
     <Remaining remainingInfo={remainingInfo}>
-      {drafts.map((draft) => (
-        <li key={draft.draftId}>
-          <Link href={`/${storeId}/menus/bulk?draftId=${draft.draftId}`}>
-            <DraftSummaryWithThumbnails draft={draft}>
-              <ChevronRight className="size-5 shrink-0 text-muted-foreground" />
-            </DraftSummaryWithThumbnails>
-          </Link>
-        </li>
-      ))}
+      <ul className="flex flex-col gap-2">
+        {drafts.map((draft) => (
+          <li key={draft.draftId}>
+            <Link href={`/${storeId}/menus/bulk?draftId=${draft.draftId}`}>
+              <DraftSummaryWithThumbnails draft={draft}>
+                <ChevronRight className="size-5 shrink-0 text-muted-foreground" />
+              </DraftSummaryWithThumbnails>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </Remaining>
   );
 }

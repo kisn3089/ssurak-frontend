@@ -2,7 +2,7 @@ import { Spinner } from "@ssurak/ui/components/spinner";
 
 export default function RecentDraftSkeleton({ count }: { count: number }) {
   return (
-    <>
+    <ul className="flex flex-col gap-2">
       {Array.from({ length: count }, (_, i) => (
         <li
           key={i}
@@ -12,6 +12,6 @@ export default function RecentDraftSkeleton({ count }: { count: number }) {
           <Spinner />
         </li>
       ))}
-    </>
+    </ul>
   );
 }
