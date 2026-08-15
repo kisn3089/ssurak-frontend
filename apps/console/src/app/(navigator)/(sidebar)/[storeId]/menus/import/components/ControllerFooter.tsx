@@ -14,7 +14,7 @@ export default function ControllerFooter({
   children,
 }: ControllerFooterProps) {
   return (
-    <div className="pt-12 pb-4">
+    <div className="pt-8 pb-4">
       <div className="md:flex gap-x-1 md:gap-x-2 md:justify-end grid grid-cols-4 h-10">
         {children}
         <Link href="bulk">

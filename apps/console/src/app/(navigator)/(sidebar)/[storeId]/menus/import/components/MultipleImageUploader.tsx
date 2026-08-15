@@ -23,6 +23,7 @@ import { useParams, useRouter } from "next/navigation";
 import useExtractionStep from "../hooks/useExtractionStep";
 import ResetUploader from "./ResetUploader";
 import { revalidateMenuDrafts } from "@/app/common/servers/revalidateMenuDrafts";
+import MenuExtractGuide from "./MenuExtractGuide";
 
 export default function MultipleImageUploader() {
   const { storeId } = useParams<{ storeId: string }>();
@@ -95,7 +96,7 @@ export default function MultipleImageUploader() {
       {
         onSuccess: ({ draftId }) => {
           revalidateMenuDrafts(storeId);
-          router.push(`/${storeId}/menus/import/${draftId}`);
+          router.push(`/${storeId}/menus/bulk?draftId=${draftId}`);
         },
         onError: (error) => {
           toast.error(httpMenuDraftErrors.post(error));
@@ -137,6 +138,7 @@ export default function MultipleImageUploader() {
           </ValidatedImages>
         </UploadedMultipleImages>
       </ImageUploader>
+      <MenuExtractGuide />
       <ControllerFooter
         uploadFiles={uploadFiles}
         acceptedFileCount={acceptedFiles.length}
