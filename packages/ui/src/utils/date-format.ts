@@ -34,7 +34,7 @@ export function formatDate(
 /**
  * @param now 호출부 컴포넌트가 서버사이드를 거치므로 하이드레이션 오류를 방지하기 위해 필수로 받는다.
  * 아래 hook을 참조하면 편하게 현재 시각을 얻을 수 있다.
- * @see {@link useMinuteTick.ts}
+ * @see {@link ../hooks/useMinuteTick.ts}
  */
 export function formatRemaining(expiresAt: string, now: number): string {
   const remainingMs = new Date(expiresAt).getTime() - now;
