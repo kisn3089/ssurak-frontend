@@ -34,6 +34,8 @@ export default function Remaining({
     remaining !== null && remaining <= Math.ceil(rateLimit / 3);
 
   const hasReachedAttemptLimit = remaining !== null && remaining === 0;
+  const remainingIsNull = remaining === null;
+  const redHighlight = hasReachedAttemptLimit || remainingIsNull;
 
   return (
     <>
@@ -44,7 +46,7 @@ export default function Remaining({
             "bg-amber-50 dark:bg-amber-950/40 border-amber-200/70 dark:border-amber-900/60":
               isNearAttemptLimit,
             "bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-900/60":
-              hasReachedAttemptLimit,
+              redHighlight,
           }
         )}
       >
@@ -53,30 +55,32 @@ export default function Remaining({
           size={15}
           className={cn("text-blue-600 dark:text-blue-400", {
             "text-amber-700 dark:text-amber-400": isNearAttemptLimit,
-            "text-rose-700 dark:text-rose-400": hasReachedAttemptLimit,
+            "text-rose-700 dark:text-rose-400": redHighlight,
           })}
         />
         <p className="text-xs font-semibold">남은 추출</p>
-        <CircleProgress
-          max={rateLimit}
-          value={remaining ?? 0}
-          className={cn(
-            "data-filled:bg-blue-600 dark:data-filled:bg-blue-400",
-            {
-              "data-filled:bg-amber-700 dark:data-filled:bg-amber-400":
-                isNearAttemptLimit,
-              "data-filled:bg-rose-700 dark:data-filled:bg-rose-400":
-                hasReachedAttemptLimit,
-            }
-          )}
-        />
+        {!remainingIsNull && (
+          <CircleProgress
+            max={rateLimit}
+            value={remaining}
+            className={cn(
+              "data-filled:bg-blue-600 dark:data-filled:bg-blue-400",
+              {
+                "data-filled:bg-amber-700 dark:data-filled:bg-amber-400":
+                  isNearAttemptLimit,
+                "data-filled:bg-rose-700 dark:data-filled:bg-rose-400":
+                  redHighlight,
+              }
+            )}
+          />
+        )}
         <p
           className={cn("text-sm font-bold text-blue-600 dark:text-blue-400", {
             "text-amber-700 dark:text-amber-400": isNearAttemptLimit,
-            "text-rose-700 dark:text-rose-400": hasReachedAttemptLimit,
+            "text-rose-700 dark:text-rose-400": redHighlight,
           })}
         >
-          {remaining ?? 0}회
+          {!remainingIsNull ? `${remaining}회` : "확인 불가"}
         </p>
         <Separator orientation="vertical" className="text-accent h-3.5" />
         <Timer size={14} className="text-muted-foreground" />
