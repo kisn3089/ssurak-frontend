@@ -4,21 +4,21 @@ import { cn } from "@ssurak/ui/lib/utils";
 import { formatRemaining } from "@ssurak/ui/utils/date-format";
 import { Sparkles, Timer } from "lucide-react";
 
-const MAX_EXTRACTION_COUNT = 5;
-
 type RemainingProps = {
   children: React.ReactNode;
-  remaining: number | null;
-  resetAt: string | null;
+  remainingInfo: {
+    remaining: number | null;
+    resetAt: string | null;
+    rateLimit: number;
+  };
 };
 
 export default function Remaining({
   children,
-  remaining,
-  resetAt,
+  remainingInfo: { remaining, resetAt, rateLimit },
 }: RemainingProps) {
   const isNearAttemptLimit =
-    remaining !== null && remaining <= Math.ceil(MAX_EXTRACTION_COUNT / 3);
+    remaining !== null && remaining <= Math.ceil(rateLimit / 3);
 
   const hasReachedAttemptLimit = remaining !== null && remaining === 0;
 
@@ -45,7 +45,7 @@ export default function Remaining({
         />
         <p className="text-xs font-semibold">남은 추출</p>
         <CircleProgress
-          max={MAX_EXTRACTION_COUNT}
+          max={rateLimit}
           value={remaining ?? 0}
           className={cn(
             "data-filled:bg-blue-600 dark:data-filled:bg-blue-400",
