@@ -1,6 +1,9 @@
+"use client";
+
 import { MenuDraftListResponse } from "@ssurak/api/types/menuDraft/menuDraft.interface";
 import CircleProgress from "@ssurak/ui/components/circle-progress/CircleProgress";
 import { Separator } from "@ssurak/ui/components/forms/separator";
+import useMinuteTick from "@ssurak/ui/hooks/useMinuteTick";
 import { cn } from "@ssurak/ui/lib/utils";
 import { formatRemaining } from "@ssurak/ui/utils/date-format";
 import { Sparkles, Timer } from "lucide-react";
@@ -10,10 +13,23 @@ type RemainingProps = {
   remainingInfo: Omit<MenuDraftListResponse, "drafts">;
 };
 
+function resolveResetLabel(
+  resetAt: string | null,
+  rateWindowHours: number,
+  now: number | null
+) {
+  if (resetAt === null) return `첫 사용 시 ${rateWindowHours}시간 시작`;
+  if (now === null) return " ";
+
+  return `${formatRemaining(resetAt, now)}충전`;
+}
+
 export default function Remaining({
   children,
   remainingInfo: { remaining, resetAt, rateLimit, rateWindowHours },
 }: RemainingProps) {
+  const now = useMinuteTick();
+
   const isNearAttemptLimit =
     remaining !== null && remaining <= Math.ceil(rateLimit / 3);
 
@@ -64,10 +80,8 @@ export default function Remaining({
         </p>
         <Separator orientation="vertical" className="text-accent h-3.5" />
         <Timer size={14} className="text-muted-foreground" />
-        <p className="text-xs font-semibold text-muted-foreground">
-          {resetAt
-            ? `${formatRemaining(resetAt)}충전`
-            : `첫 사용 시 ${rateWindowHours}시간 시작`}
+        <p className="whitespace-pre text-xs font-semibold text-muted-foreground">
+          {resolveResetLabel(resetAt, rateWindowHours, now)}
         </p>
       </div>
       {children}
