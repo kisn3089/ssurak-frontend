@@ -71,7 +71,7 @@ export default function MenuExtractGuide() {
 
 function AlertGuide() {
   return (
-    <div className="flex items-center gap-x-3 mt-2 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200/70 dark:bg-amber-950/40 dark:border-amber-900/60">
+    <div className="flex items-center gap-x-3 mt-4 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200/70 dark:bg-amber-950/40 dark:border-amber-900/60">
       <TriangleAlert size={16} className="text-amber-700 dark:text-amber-400" />
       <p className="text-xs text-amber-900 dark:text-amber-200 font-semibold">
         AI가 읽어낸 값은 정확하지 않을 수 있습니다. 등록 전에 이름과 가격을 직접
