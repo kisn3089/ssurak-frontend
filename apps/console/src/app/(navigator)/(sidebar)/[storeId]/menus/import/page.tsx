@@ -9,9 +9,8 @@ import RecentDraftSkeleton from "./components/draft/RecentDraftSkeleton";
 import { IMPORT_PAGE_DESCRIPTION } from "./constants/page-copy";
 
 export const metadata: Metadata = {
-  title: "메뉴 일괄 생성 - ssurak",
-  description:
-    "사진을 업로드하여 메뉴를 일괄적으로 생성할 수 있는 페이지입니다.",
+  title: "AI 메뉴 추출 - ssurak",
+  description: "사진을 업로드하여 메뉴를 추출할 수 있는 페이지입니다.",
 };
 
 export default function ImportMenusPage({
