@@ -1,3 +1,4 @@
+import { MenuDraftListResponse } from "@ssurak/api/types/menuDraft/menuDraft.interface";
 import CircleProgress from "@ssurak/ui/components/circle-progress/CircleProgress";
 import { Separator } from "@ssurak/ui/components/forms/separator";
 import { cn } from "@ssurak/ui/lib/utils";
@@ -6,16 +7,12 @@ import { Sparkles, Timer } from "lucide-react";
 
 type RemainingProps = {
   children: React.ReactNode;
-  remainingInfo: {
-    remaining: number | null;
-    resetAt: string | null;
-    rateLimit: number;
-  };
+  remainingInfo: Omit<MenuDraftListResponse, "drafts">;
 };
 
 export default function Remaining({
   children,
-  remainingInfo: { remaining, resetAt, rateLimit },
+  remainingInfo: { remaining, resetAt, rateLimit, rateWindowHours },
 }: RemainingProps) {
   const isNearAttemptLimit =
     remaining !== null && remaining <= Math.ceil(rateLimit / 3);
@@ -70,7 +67,7 @@ export default function Remaining({
         <p className="text-xs font-semibold text-muted-foreground">
           {resetAt
             ? `${formatRemaining(resetAt)}충전`
-            : "첫 사용 시 2시간 시작"}
+            : `첫 사용 시 ${rateWindowHours}시간 시작`}
         </p>
       </div>
       {children}

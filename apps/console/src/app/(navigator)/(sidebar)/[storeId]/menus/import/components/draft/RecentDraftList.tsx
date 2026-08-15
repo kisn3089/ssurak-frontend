@@ -15,17 +15,17 @@ export default function RecentDraftList() {
   const { data } = useSuspenseWithAuth<MenuDraftListResponse>(
     menuDraftListUrl(storeId)
   );
-  const { drafts, remaining, resetAt, rateLimit } = data;
+  const { drafts, ...remainingInfo } = data;
 
   if (drafts.length === 0)
     return (
-      <Remaining remainingInfo={{ remaining, resetAt, rateLimit }}>
+      <Remaining remainingInfo={remainingInfo}>
         <EmptyRecentDrafts />
       </Remaining>
     );
 
   return (
-    <Remaining remainingInfo={{ remaining, resetAt, rateLimit }}>
+    <Remaining remainingInfo={remainingInfo}>
       {drafts.map((draft) => (
         <li key={draft.draftId}>
           <Link href={`/${storeId}/menus/bulk?draftId=${draft.draftId}`}>

@@ -60,4 +60,5 @@ export interface MenuDraftListResponse {
   remaining: number | null;
   resetAt: string | null;
   rateLimit: number;
+  rateWindowHours: number;
 }
