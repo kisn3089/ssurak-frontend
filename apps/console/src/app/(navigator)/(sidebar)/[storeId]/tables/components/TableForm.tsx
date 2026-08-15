@@ -135,14 +135,13 @@ export default function TableForm({
         </div>
       </div>
       <div className="flex justify-end gap-x-2 pb-4">
-        <Link href={linkToCancel}>
-          <Button
-            className="h-11 rounded-3xl font-semibold"
-            variant={"outline"}
-          >
-            취소
-          </Button>
-        </Link>
+        <Button
+          asChild
+          className="h-11 rounded-3xl font-semibold"
+          variant={"outline"}
+        >
+          <Link href={linkToCancel}>취소</Link>
+        </Button>
         <Button
           type="submit"
           className="h-11 rounded-3xl font-bold px-5"

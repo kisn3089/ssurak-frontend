@@ -69,16 +69,12 @@ export default function SyncDraftControlbar({
 
   return (
     <header className="flex items-center pt-4">
-      <Link href={UNDO_BUTTON_MAP[undoButtonType].href}>
-        <Button
-          type="button"
-          className="text-xs font-semibold"
-          variant={"outline"}
-        >
+      <Button asChild className="text-xs font-semibold" variant={"outline"}>
+        <Link href={UNDO_BUTTON_MAP[undoButtonType].href}>
           {UNDO_BUTTON_MAP[undoButtonType].icon}
           {UNDO_BUTTON_MAP[undoButtonType].label}
-        </Button>
-      </Link>
+        </Link>
+      </Button>
       <Button
         type="button"
         onClick={clearDraft}

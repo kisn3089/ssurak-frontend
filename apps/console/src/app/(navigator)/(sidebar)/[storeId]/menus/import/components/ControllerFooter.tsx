@@ -18,10 +18,7 @@ export default function ControllerFooter({
       <div className="md:flex gap-x-1 md:gap-x-2 md:justify-end grid grid-cols-4 h-10">
         {children}
         <Link href="bulk">
-          <Button
-            className="h-full w-full col-span-1 rounded-3xl"
-            variant={"outline"}
-          >
+          <Button className="h-full w-full rounded-3xl" variant={"outline"}>
             돌아가기
           </Button>
         </Link>
