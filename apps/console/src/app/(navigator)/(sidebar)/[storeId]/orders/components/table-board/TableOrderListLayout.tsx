@@ -3,7 +3,7 @@ export default function TableBoardLayout({
 }: React.PropsWithChildren) {
   return (
     <div
-      className={`w-full h-full grid auto-rows-fr gap-3 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4`}
+      className={`flex-1 min-w-0 h-full overflow-y-auto grid gap-3 grid-cols-[repeat(auto-fill,minmax(17rem,1fr))] auto-rows-[14rem] content-start`}
     >
       {children}
     </div>

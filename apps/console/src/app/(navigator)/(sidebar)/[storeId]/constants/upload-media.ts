@@ -5,3 +5,7 @@ export type ImagePreset = (typeof IMAGE_PRESETS)[number];
 /** 업로드 허용 용량 (backend media.constants.ts). */
 export const MAX_UPLOAD_SIZE_MB = 5;
 export const MAX_UPLOAD_SIZE = MAX_UPLOAD_SIZE_MB * 1024 * 1024;
+
+export const MAX_OCR_UPLOAD_SIZE_MB = 12;
+export const MAX_OCR_UPLOAD_SIZE = MAX_OCR_UPLOAD_SIZE_MB * 1024 * 1024;
+export const MAX_OCR_UPLOAD_COUNT = 3;

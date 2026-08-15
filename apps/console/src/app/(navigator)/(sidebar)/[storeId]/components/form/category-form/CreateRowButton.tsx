@@ -12,7 +12,7 @@ export default function CreateRowButton({
       variant={"outline"}
       className={cn(
         "group h-full w-full shadow-none border-none py-0 rounded-none",
-        "active:not-aria-[haspopup]:scale-none",
+        "pressable:scale-none",
         props.className
       )}
       {...props}

@@ -4,6 +4,7 @@
 @source "../**/*.{ts,tsx}";
 
 @custom-variant dark (&:is(.dark *));
+@custom-variant pressable (&:active:not([aria-haspopup]));
 
 :root {
   --edge-background: var(--accent-subtle);
@@ -157,7 +158,9 @@
   --animate-tzDraw: tzDraw 0.45s ease-out 0.18s forwards;
   --animate-tzRise: tzRise 0.38s ease-out 0.12s both;
   --animate-tzRiseFast: tzRiseFast 0.3s ease-out 0.12s both;
+  --animate-scan-sweep: scanSweep 2s linear infinite;
   --text-tiny: 0.625rem;
+
   @keyframes fade-in {
     0% {
       opacity: 0;
@@ -240,6 +243,40 @@
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  @keyframes scanSweep {
+    from {
+      transform: translateY(-200%);
+    }
+    to {
+      transform: translateY(200%);
+    }
+  }
+}
+
+@utility liquid-glass {
+  position: relative;
+
+  &::before {
+    content: "";
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      178.8deg,
+      #ffffff52 10.85%,
+      #14141475 24.36%,
+      #32323275 73.67%,
+      #ffffff75 90.68%
+    );
+    mask:
+      linear-gradient(#000, #000) content-box,
+      linear-gradient(#000, #000);
+    mask-composite: exclude;
+    -webkit-mask-composite: xor;
   }
 }
 

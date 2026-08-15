@@ -30,3 +30,33 @@ export function formatDate(
     ...(options ?? defaultOptions),
   });
 }
+
+/**
+ * @param now 호출부 컴포넌트가 서버사이드를 거치므로 하이드레이션 오류를 방지하기 위해 필수로 받는다.
+ * 아래 hook을 참조하면 편하게 현재 시각을 얻을 수 있다.
+ * @see {@link ../hooks/useMinuteTick.ts}
+ */
+export function formatRemaining(expiresAt: string, now: number): string {
+  const remainingMs = new Date(expiresAt).getTime() - now;
+  if (remainingMs <= 0) return "곧 ";
+
+  const hours = Math.floor(remainingMs / 3_600_000);
+  if (hours >= 1)
+    return `${hours}시간 ${Math.floor((remainingMs % 3_600_000) / 60_000)}분 후 `;
+
+  return `${Math.max(1, Math.floor(remainingMs / 60_000))}분 후 `;
+}
+
+/** 만료까지 남은 시간을 **고정 유효기간(`totalMs`)** 대비 0~100으로 환산한다. */
+export function remainingRatio(
+  expiresAt: string,
+  totalMs: number,
+  now: number
+): number {
+  if (!Number.isFinite(totalMs) || totalMs <= 0) return 0;
+
+  const remainingMs = new Date(expiresAt).getTime() - now;
+  const ratio = (remainingMs / totalMs) * 100;
+
+  return Math.min(100, Math.max(0, ratio));
+}

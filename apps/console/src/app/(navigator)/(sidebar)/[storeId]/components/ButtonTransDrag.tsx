@@ -46,16 +46,15 @@ export default function ButtonTransDrag({
   return (
     <div
       ref={trackRef}
-      className={cn("p-1.5", {
-        "bg-red-100 rounded-lg inset-shadow-red-900 inset-shadow-sm w-48":
-          isArmed,
+      className={cn("p-1.5 rounded-3xl", {
+        "bg-red-100 inset-shadow-red-900 inset-shadow-sm w-48": isArmed,
       })}
     >
       <Button
         {...props}
         {...thumbProps}
         onClick={handleClick}
-        className={cn(className, {
+        className={cn(className, "rounded-3xl font-bold px-5", {
           "shadow-red-900 shadow-sm hover:cursor-grab active:cursor-grabbing":
             isArmed,
         })}

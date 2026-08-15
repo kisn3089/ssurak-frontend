@@ -17,6 +17,7 @@ import { HttpAxiosError } from "../../axios/http";
  */
 export const httpMenuErrors = {
   post: postMenuErrors,
+  bulk: bulkCreateMenusErrors,
   get: getMenuErrors,
   patch: patchMenuErrors,
   reorder: reorderMenusErrors,
@@ -45,7 +46,7 @@ function postMenuErrors(error: HttpAxiosError) {
   const status = error.response?.data?.status;
   switch (status) {
     case 400:
-      return "입력한 메뉴 정보가 올바르지 않아요. 다시 확인해 주세요.";
+      return error.response?.data.message;
     case 404:
       if (isCategoryNotFound(error)) {
         return "선택한 카테고리를 찾을 수 없어요. 새로고침 후 다시 시도해 주세요.";
@@ -55,6 +56,28 @@ function postMenuErrors(error: HttpAxiosError) {
       return commonMenuError(
         error,
         "일시적인 서버 오류로 저장하지 못했어요. 잠시 후 다시 시도해 주세요."
+      );
+  }
+}
+
+/**
+ * 일괄 등록은 트랜잭션 하나라 부분 성공이 없다 — 실패하면 아무 메뉴도 만들어지지 않으므로,
+ * "일부만 등록됐을 수 있다"는 식으로 안내하지 않는다.
+ */
+function bulkCreateMenusErrors(error: HttpAxiosError) {
+  const status = error.response?.data?.status;
+  switch (status) {
+    case 400:
+      return error.response?.data.message;
+    case 404:
+      if (isCategoryNotFound(error)) {
+        return "선택한 카테고리를 찾을 수 없어요. 새로고침 후 다시 시도해 주세요.";
+      }
+      return "메뉴를 추가할 매장을 찾을 수 없어요.";
+    default:
+      return commonMenuError(
+        error,
+        "일시적인 서버 오류로 등록하지 못했어요. 아무 메뉴도 추가되지 않았으니 잠시 후 다시 시도해 주세요."
       );
   }
 }

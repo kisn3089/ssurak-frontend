@@ -4,10 +4,10 @@ import useSuspenseWithSession from "@ssurak/api/hooks/useSuspenseWithSession";
 import { OrderWithItemsResponse } from "@ssurak/api/types/order/order.interface";
 import { Badge } from "@ssurak/ui/components/forms/badge";
 import { BADGE_BY_ORDER_STATUS } from "@ssurak/ui/constants/badgeByOrderStatus.const";
-import { formatDate } from "../../(navigator)/utils/date-format";
 import OrderedItem from "./OrderedItem";
 import { transCurrencyFormat } from "@ssurak/ui/utils/menu/priceFormatter";
 import { sumFromObjects } from "@ssurak/api/utils/price";
+import { formatDate } from "@ssurak/ui/utils/date-format";
 
 export default function OrderHistory() {
   const { data: orders } = useSuspenseWithSession<OrderWithItemsResponse[]>(

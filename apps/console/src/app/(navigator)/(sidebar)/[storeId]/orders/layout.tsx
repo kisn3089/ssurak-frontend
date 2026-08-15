@@ -7,7 +7,8 @@ import OrderSyncDaemon from "./components/OrderSyncDaemon";
 import ServerPrefetch from "@/app/(navigator)/components/ServerPrefetch";
 import { setTablesCache } from "./utils/setTablesCache";
 import RealtimeStatusBanner from "@/app/(navigator)/(sidebar)/components/realtime/RealtimeStatusBanner";
-import { use } from "react";
+import TableBoardSkeleton from "./components/table-board/TableBoardSkeleton";
+import { Suspense, use } from "react";
 
 export const metadata: Metadata = {
   title: "주문 관리",
@@ -24,23 +25,25 @@ export default function OrdersLayout({
   const { storeId } = use(params);
 
   return (
-    <>
+    <div className="flex flex-col h-[calc(100vh-56px)]">
       <RealtimeStatusBanner />
       <GridLayout>
-        <ServerPrefetch<OrderBoardByStoreResponse>
-          url={`/orders/v1/stores/${storeId}/board`}
-          shouldSuccess
-          onSuccess={(data, queryClient) =>
-            setTablesCache(data, queryClient, storeId)
-          }
-        >
-          <AwaitOrdersSummary>
-            <OrderSyncDaemon />
-            <TableBoard />
-            {children}
-          </AwaitOrdersSummary>
-        </ServerPrefetch>
+        <Suspense fallback={<TableBoardSkeleton />}>
+          <ServerPrefetch<OrderBoardByStoreResponse>
+            url={`/orders/v1/stores/${storeId}/board`}
+            shouldSuccess
+            onSuccess={(data, queryClient) =>
+              setTablesCache(data, queryClient, storeId)
+            }
+          >
+            <AwaitOrdersSummary>
+              <OrderSyncDaemon />
+              <TableBoard />
+              {children}
+            </AwaitOrdersSummary>
+          </ServerPrefetch>
+        </Suspense>
       </GridLayout>
-    </>
+    </div>
   );
 }

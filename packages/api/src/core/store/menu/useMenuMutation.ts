@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  BulkCreateMenusParams,
   CreateMenuParams,
   DeleteMenuParams,
   httpMenus,
@@ -28,6 +29,19 @@ export default function useMenuMutation(
     onSuccess: () => !ignoreInvalidation && invalidateQueries(),
   });
 
+  // 카테고리가 새로 생길 수 있어(항목의 categoryName) 카테고리 캐시도 함께 무효화한다.
+  const bulkCreateMenus = useMutation({
+    mutationFn: (args: Omit<BulkCreateMenusParams, "storeId">) =>
+      httpMenus.bulkCreateMenus({ storeId, ...args }),
+    onSuccess: () => {
+      if (ignoreInvalidation) return;
+      invalidateQueries();
+      queryClient.invalidateQueries({
+        queryKey: makeQueryKey(`/stores/v1/${storeId}/categories`),
+      });
+    },
+  });
+
   const updateMenu = useMutation({
     mutationFn: (args: Omit<UpdateMenuParams, "storeId">) =>
       httpMenus.updateMenu({ storeId, ...args }),
@@ -49,6 +63,7 @@ export default function useMenuMutation(
 
   return {
     createMenu,
+    bulkCreateMenus,
     updateMenu,
     reorderMenus,
     deleteMenu,

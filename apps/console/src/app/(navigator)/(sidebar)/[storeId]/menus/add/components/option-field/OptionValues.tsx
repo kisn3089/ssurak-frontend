@@ -12,8 +12,8 @@ import { OptionGroupForm } from "../../../types/option-form.type";
 import { createEmptyOptionValue } from "../../../utils/menu-option-form";
 import TriggerController from "../trigger/TriggerController";
 import { TriggerGroupChoice } from "../trigger/TriggerCondition";
-import OptionAddButton from "./OptionAddButton";
 import OptionValue from "./OptionValue";
+import AddFieldButton from "../../../../components/form/AddFieldButton";
 
 type OptionValuesProps = {
   control: Control<OptionGroupForm>;
@@ -78,7 +78,9 @@ export default function OptionValues({
           }}
         />
       ))}
-      <OptionAddButton onClick={() => append(createEmptyOptionValue())} />
+      <AddFieldButton onClick={() => append(createEmptyOptionValue())}>
+        + 옵션 값 추가
+      </AddFieldButton>
       <TriggerController control={control} groupChoices={groupChoices} />
     </div>
   );

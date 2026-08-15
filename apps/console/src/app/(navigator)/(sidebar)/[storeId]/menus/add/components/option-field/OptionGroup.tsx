@@ -111,7 +111,7 @@ export default function OptionGroup({
 
       <SheetContent
         side="left"
-        className="min-w-full sm:min-w-4/5 lg:min-w-2/3"
+        className="min-w-full sm:min-w-4/5 lg:min-w-1/2"
       >
         <SheetHeader className="border-b p-2 px-4">
           <SheetTitle>{groupTitle}</SheetTitle>

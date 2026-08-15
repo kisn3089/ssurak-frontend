@@ -59,7 +59,7 @@ export default function Counter({
         </Button>
         <ButtonGroupText
           className={cn(
-            "shadow-none justify-center min-w-10 border-x font-semibold text-base bg-background px-2",
+            "shadow-none justify-center min-w-10 border-x font-semibold text-base bg-background dark:bg-input/30 dark:border-input px-2",
             { "text-muted-foreground": !isInteractive },
             { "px-0 min-w-6 border-x-0 h-8 text-sm": buttonSize === "icon-sm" },
             commonClassName
