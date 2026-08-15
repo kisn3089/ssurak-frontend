@@ -24,6 +24,7 @@ import { httpMenuErrors } from "@ssurak/api/core/store/menu/httpMenuErrors";
 import DraftSummaryWithThumbnails from "../../import/components/draft/DraftSummaryWithThumbnails";
 import useLocalStorage from "@ssurak/ui/hooks/useLocalStorage";
 import { localDraftKey } from "../hooks/useDraftAutosave";
+import { revalidateMenuDrafts } from "@/app/common/servers/revalidateMenuDrafts";
 
 export const DEFAULT_FORM_VALUES: DraftReviewFormValues = { items: [] };
 
@@ -70,6 +71,7 @@ export default function BulkCreateMenuForm() {
         onSuccess: (created) => {
           toast.success(`메뉴 ${created.length}개를 등록했어요.`);
           if (!draft) clearLocalDraft();
+          revalidateMenuDrafts(storeId);
           router.push(`/${storeId}/menus`);
         },
         onError: (error) => toast.error(httpMenuErrors.bulk(error)),
