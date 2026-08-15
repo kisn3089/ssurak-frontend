@@ -47,6 +47,10 @@ const HighlightContext = React.createContext<
   HighlightContextType<any> | undefined
 >(undefined);
 
+// 서버 렌더에서는 layout effect가 돌지 않으므로 useEffect로 떨어뜨려 경고를 피한다.
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? React.useLayoutEffect : React.useEffect;
+
 function useHighlight<T extends string>(): HighlightContextType<T> {
   const context = React.useContext(HighlightContext);
   if (!context) {
@@ -196,7 +200,11 @@ function Highlight<T extends React.ElementType = "div">({
     ((bounds: DOMRect) => void) | undefined
   >(undefined);
 
-  React.useEffect(() => {
+  // HighlightItem(자식)의 측정 이펙트가 부모보다 먼저 커밋되므로, 여기서 passive effect를 쓰면
+  // 첫 마운트 때 safeSetBoundsRef가 비어 있어 setBounds가 조용히 no-op이 된다.
+  // 개발 모드에서는 StrictMode 이중 호출로 가려지지만 프로덕션에서는 하이라이트가 아예 안 그려진다.
+  // layout effect로 올려 자식 passive effect보다 먼저 주입되도록 보장한다.
+  useIsomorphicLayoutEffect(() => {
     safeSetBoundsRef.current = (bounds: DOMRect) => {
       if (!localRef.current) return;
 
