@@ -23,24 +23,25 @@ export default function BulkMenuFormFooter({
   const hasDraftId = searchParams.get("draftId") !== null;
   const canCommit = registrableCount > 0 && blockedCount === 0;
 
+  const goListClassName = "h-11 rounded-3xl font-semibold col-span-1";
+
   return (
     <footer className="grid grid-cols-4 md:flex md:justify-end py-4 gap-x-2">
-      {hasDraftId && (
-        <Link href={`/${storeId}/menus/import`}>
-          <Button
-            variant={"outline"}
-            disabled={isCommitting}
-            className="h-11 rounded-3xl font-semibold col-span-1 w-full"
-          >
+      {hasDraftId &&
+        (isCommitting ? (
+          <Button variant="outline" disabled className={goListClassName}>
             목록으로
           </Button>
-        </Link>
-      )}
+        ) : (
+          <Button asChild variant="outline" className={goListClassName}>
+            <Link href={`/${storeId}/menus/import`}>목록으로</Link>
+          </Button>
+        ))}
       <Button
         onClick={onCommit}
         disabled={!canCommit}
         isLoading={isCommitting}
-        className={cn("h-11 px-6 rounded-3xl font-bold", {
+        className={cn("h-11 px-6 rounded-3xl font-bold col-span-3", {
           "col-span-4": !hasDraftId,
         })}
       >
