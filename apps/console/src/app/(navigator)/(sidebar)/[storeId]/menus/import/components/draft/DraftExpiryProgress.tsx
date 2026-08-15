@@ -59,7 +59,7 @@ export default function DraftExpiryProgress({
           { "text-destructive": isExpiredSoon }
         )}
       >
-        {now === null ? " " : formatRemaining(expiresAt, now)}
+        {now === null ? " " : `${formatRemaining(expiresAt, now)}만료`}
       </p>
     </div>
   );

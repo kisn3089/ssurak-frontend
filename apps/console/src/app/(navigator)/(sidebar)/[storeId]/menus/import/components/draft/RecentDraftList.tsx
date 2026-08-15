@@ -7,18 +7,26 @@ import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import DraftSummaryWithThumbnails from "./DraftSummaryWithThumbnails";
+import EmptyRecentDrafts from "./EmptyRecentDrafts";
+import Remaining from "./Remaining";
 
 export default function RecentDraftList() {
   const { storeId } = useParams<{ storeId: string }>();
   const { data } = useSuspenseWithAuth<MenuDraftListResponse>(
     menuDraftListUrl(storeId)
   );
+  const { drafts, remaining, resetAt } = data;
 
-  if (data.drafts.length === 0) return null;
+  if (drafts.length === 0)
+    return (
+      <Remaining remaining={remaining} resetAt={resetAt}>
+        <EmptyRecentDrafts />
+      </Remaining>
+    );
 
   return (
-    <>
-      {data.drafts.map((draft) => (
+    <Remaining remaining={remaining} resetAt={resetAt}>
+      {drafts.map((draft) => (
         <li key={draft.draftId}>
           <Link href={`/${storeId}/menus/bulk?draftId=${draft.draftId}`}>
             <DraftSummaryWithThumbnails draft={draft}>
@@ -27,6 +35,6 @@ export default function RecentDraftList() {
           </Link>
         </li>
       ))}
-    </>
+    </Remaining>
   );
 }
