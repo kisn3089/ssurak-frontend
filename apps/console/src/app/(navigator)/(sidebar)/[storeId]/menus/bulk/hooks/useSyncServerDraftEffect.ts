@@ -3,7 +3,7 @@ import useQueryWithAuth from "@ssurak/api/hooks/useQueryWithAuth";
 import { draftIdSchema } from "@ssurak/api/schemas/model/menuDraft.schema";
 import { MenuDraftResponse } from "@ssurak/api/types/menuDraft/menuDraft.interface";
 import { useParams, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { DraftReviewFormValues, toFormValues } from "../utils/draft-review";
 import { UseFormReset } from "react-hook-form";
 
@@ -25,10 +25,15 @@ export default function useSyncServerDraftEffect(
     { enabled: !!draftId }
   );
 
-  useEffect(() => {
-    if (!draftResult.data) return;
+  const hydratedDraftIdRef = useRef<string | null>(null);
 
-    reset(toFormValues(draftResult.data.items));
+  useEffect(() => {
+    const serverDraft = draftResult.data;
+    if (!serverDraft) return;
+    if (hydratedDraftIdRef.current === serverDraft.draftId) return;
+
+    hydratedDraftIdRef.current = serverDraft.draftId;
+    reset(toFormValues(serverDraft.items));
   }, [draftResult.data, reset]);
 
   return draftResult;
