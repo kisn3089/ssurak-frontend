@@ -29,7 +29,10 @@ export default function useSyncServerDraftEffect(
 
   useEffect(() => {
     const serverDraft = draftResult.data;
-    if (!serverDraft) return;
+    if (!serverDraft) {
+      hydratedDraftIdRef.current = null;
+      return;
+    }
     if (hydratedDraftIdRef.current === serverDraft.draftId) return;
 
     hydratedDraftIdRef.current = serverDraft.draftId;
