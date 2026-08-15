@@ -40,7 +40,9 @@ const noExistingMenus = new Set<string>();
 describe("toFormValues", () => {
   it("카테고리 판별 유니온을 폼의 두 필드로 편다", () => {
     const { items } = toFormValues([
-      draftItem({ category: { kind: "existing", categoryId: "c1", name: "찌개류" } }),
+      draftItem({
+        category: { kind: "existing", categoryId: "c1", name: "찌개류" },
+      }),
       draftItem({ category: { kind: "new", name: "주류" } }),
       draftItem({ category: { kind: "unknown" } }),
     ]);
