@@ -1,7 +1,10 @@
+"use client";
+
 import { ItemMedia } from "@ssurak/ui/components/item";
 import { cn } from "@ssurak/ui/lib/utils";
 import { ImagePlus } from "lucide-react";
 import Image from "next/image";
+import { useState } from "react";
 
 type MenuImageSize = "cover" | "thumbnail" | "tiny";
 type MenuImagePreset = {
@@ -42,22 +45,29 @@ export default function MenuImage({
   className = "",
   priority = false,
 }: MenuImageProps) {
+  const [isFailedImage, setIsFailedImage] = useState(false);
+
+  if (!src || isFailedImage) {
+    return (
+      <div className="bg-background w-full h-full p-8 rounded-3xl shadow-xl">
+        <EmptyImage />
+      </div>
+    );
+  }
+
   return (
     <ItemMedia
       variant={"image"}
       className={cn(sizeClassMap[size].class, className, "bg-background")}
     >
-      {src ? (
-        <Image
-          src={src}
-          alt={alt}
-          width={sizeClassMap[size].width}
-          height={sizeClassMap[size].height}
-          priority={priority}
-        />
-      ) : (
-        <EmptyImage />
-      )}
+      <Image
+        src={src}
+        alt={alt}
+        width={sizeClassMap[size].width}
+        height={sizeClassMap[size].height}
+        priority={priority}
+        onError={() => setIsFailedImage(true)}
+      />
     </ItemMedia>
   );
 }

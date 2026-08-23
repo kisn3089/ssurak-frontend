@@ -1,5 +1,8 @@
+"use client";
+
 import { ItemMedia } from "@ssurak/ui/components/item";
 import Image from "next/image";
+import { useState } from "react";
 
 type MenuImageSize = "cover" | "thumbnail" | "tiny";
 type MenuImagePreset = {
@@ -40,7 +43,9 @@ export default function MenuImage({
   className = "",
   priority = false,
 }: MenuImageProps) {
-  if (!src) {
+  const [isFailedImage, setIsFailedImage] = useState(false);
+
+  if (!src || isFailedImage) {
     return null;
   }
 
@@ -55,6 +60,7 @@ export default function MenuImage({
         width={sizeClassMap[size].width}
         height={sizeClassMap[size].height}
         priority={priority}
+        onError={() => setIsFailedImage(true)}
       />
     </ItemMedia>
   );
