@@ -11,10 +11,12 @@ function prefix(storeId: string) {
   return `/stores/v1/${storeId}/menus`;
 }
 
+type StoreParams = { storeId: string };
+export type MenuParams = StoreParams & { menuId: string };
+
 export type CreateMenuParams = {
-  storeId: string;
   createMenuPayload: CreateMenuPayload;
-};
+} & StoreParams;
 async function createMenu({ storeId, createMenuPayload }: CreateMenuParams) {
   const response = await http.post<Menu>(prefix(storeId), createMenuPayload);
 
@@ -22,9 +24,8 @@ async function createMenu({ storeId, createMenuPayload }: CreateMenuParams) {
 }
 
 export type BulkCreateMenusParams = {
-  storeId: string;
   bulkCreateMenusPayload: BulkCreateMenusPayload;
-};
+} & StoreParams;
 
 async function bulkCreateMenus({
   storeId,
@@ -39,10 +40,8 @@ async function bulkCreateMenus({
 }
 
 export type UpdateMenuParams = {
-  storeId: string;
-  menuId: string;
   updateMenuPayload: UpdateMenuPayload;
-};
+} & MenuParams;
 async function updateMenu({
   storeId,
   menuId,
@@ -56,9 +55,8 @@ async function updateMenu({
 }
 
 export type ReorderMenusParams = {
-  storeId: string;
   reorderMenusPayload: ReorderMenusPayload;
-};
+} & StoreParams;
 async function reorderMenus({
   storeId,
   reorderMenusPayload,
@@ -71,11 +69,11 @@ async function reorderMenus({
   return response.data;
 }
 
-export type DeleteMenuParams = {
-  storeId: string;
-  menuId: string;
-};
-async function deleteMenu({ storeId, menuId }: DeleteMenuParams) {
+export function restoreMenu({ storeId, menuId }: MenuParams) {
+  return http.patch(`${prefix(storeId)}/${menuId}/restore`);
+}
+
+async function deleteMenu({ storeId, menuId }: MenuParams) {
   await http.delete(`${prefix(storeId)}/${menuId}`);
 }
 
@@ -85,4 +83,5 @@ export const httpMenus = {
   updateMenu,
   reorderMenus,
   deleteMenu,
+  restoreMenu,
 };
