@@ -5,7 +5,7 @@ import TableInfoRow from "./TableInfoRow";
 type TableListSkeletonProps = {
   row: number;
   column: number;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 };
 
 export default function TableListSkeleton({

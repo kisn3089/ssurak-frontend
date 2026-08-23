@@ -1,6 +1,6 @@
 interface ConstructTableListLayoutProps {
   body: React.ReactNode;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export default function ConstructTableListLayout({
@@ -10,7 +10,7 @@ export default function ConstructTableListLayout({
   return (
     <div className="border border-border rounded-sm bg-background">
       <table className="w-full table-fixed text-sm">
-        <thead>{children}</thead>
+        <thead className="border-b">{children}</thead>
         <tbody>{body}</tbody>
       </table>
     </div>
