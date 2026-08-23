@@ -7,6 +7,8 @@ import RecentDraftPrefetch from "./components/draft/RecentDraftPrefetch";
 import RecentDraftLayout from "./components/draft/RecentDraftLayout";
 import RecentDraftSkeleton from "./components/draft/RecentDraftSkeleton";
 import { IMPORT_PAGE_DESCRIPTION } from "./constants/page-copy";
+import QueryErrorFallback from "@/app/common/QueryErrorFallback";
+import FailedGetTableView from "@/app/common/FailedGetTableView";
 
 export const metadata: Metadata = {
   title: "AI 메뉴 추출 - ssurak",
@@ -26,11 +28,18 @@ export default function ImportMenusPage({
       description={IMPORT_PAGE_DESCRIPTION}
     >
       <RecentDraftLayout>
-        <Suspense fallback={<RecentDraftSkeleton count={3} />}>
-          <RecentDraftPrefetch storeId={storeId}>
-            <RecentDraftList />
-          </RecentDraftPrefetch>
-        </Suspense>
+        <QueryErrorFallback
+          FallbackComponent={FailedGetTableView}
+          fallbackProps={{
+            title: "작성중인 메뉴를 불러오는 중 오류가 발생했습니다.",
+          }}
+        >
+          <Suspense fallback={<RecentDraftSkeleton count={3} />}>
+            <RecentDraftPrefetch storeId={storeId}>
+              <RecentDraftList />
+            </RecentDraftPrefetch>
+          </Suspense>
+        </QueryErrorFallback>
       </RecentDraftLayout>
       <MultipleImageUploader />
     </SectionLayout>
