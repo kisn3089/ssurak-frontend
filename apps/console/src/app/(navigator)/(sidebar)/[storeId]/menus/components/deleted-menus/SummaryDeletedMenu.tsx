@@ -20,6 +20,7 @@ export default function SummaryDeletedMenu({
         <Button
           type="button"
           variant={"secondary"}
+          aria-expanded={isOpen}
           onClick={() => setIsOpen(!isOpen)}
         >
           <ChevronDown

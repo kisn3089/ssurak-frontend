@@ -1,4 +1,4 @@
-import { Menu } from "@ssurak/api/types/menu/menu.interface";
+import { RestorableMenu } from "@ssurak/api/types/menu/menu.interface";
 import { useParams } from "next/navigation";
 import useToasting from "../../../hooks/useToasting";
 import useMenuMutation from "@ssurak/api/core/store/menu/useMenuMutation";
@@ -15,8 +15,6 @@ import { Progress } from "@ssurak/ui/components/progress";
 import { formatRemaining, remainingRatio } from "@ssurak/ui/utils/date-format";
 import { Button } from "@ssurak/ui/components/buttons/button";
 
-const RESTORE_TTL_MS = 3 * 24 * 60 * 60 * 1_000;
-
 const RESTORE_TOAST_TITLE = {
   loading: (name: string) => `${name} 메뉴 복구 중...`,
   success: (name: string) => `${name} 메뉴가 복구되었습니다.`,
@@ -26,7 +24,7 @@ const RESTORE_TOAST_TITLE = {
 export default function DeletedMenuListView({
   deletedMenuList,
 }: {
-  deletedMenuList: Menu[];
+  deletedMenuList: RestorableMenu[];
 }) {
   const { storeId } = useParams<{ storeId: string }>();
   const { isActioning } = useToasting();
@@ -57,7 +55,7 @@ export default function DeletedMenuListView({
     });
   };
 
-  const now = useMinuteTick() ?? 100;
+  const now = useMinuteTick();
 
   return (
     <>
@@ -66,9 +64,9 @@ export default function DeletedMenuListView({
           tableActionToastId.restore("menu", menu.publicId),
         ]);
 
-        const isExpiredSoon = new Date(
-          new Date(menu.deletedAt ?? new Date()).getTime() + RESTORE_TTL_MS
-        ).toISOString();
+        const retentionMs =
+          new Date(menu.restorableUntil).getTime() -
+          new Date(menu.deletedAt).getTime();
 
         return (
           <tr
@@ -85,13 +83,19 @@ export default function DeletedMenuListView({
               {transCurrencyFormat(menu.price)}
             </TableInfoRow>
             <TableInfoRow className="line-clamp-1">
-              {menu.deletedAt && (
+              {now !== null && (
                 <>
                   <Progress
-                    value={remainingRatio(isExpiredSoon, RESTORE_TTL_MS, now)}
+                    value={remainingRatio(
+                      menu.restorableUntil,
+                      retentionMs,
+                      now
+                    )}
                     className={"h-1.5"}
                   />
-                  <span className="text-muted-foreground lg:text-sm text-xs">{`${formatRemaining(isExpiredSoon, now)}삭제`}</span>
+                  <span className="text-muted-foreground lg:text-sm text-xs">
+                    {`${formatRemaining(menu.restorableUntil, now)}삭제 예정`}
+                  </span>
                 </>
               )}
             </TableInfoRow>

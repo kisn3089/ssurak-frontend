@@ -40,17 +40,9 @@ export default function MenusSettingPage({
           title: "삭제된 메뉴를 불러오는 중 오류가 발생했습니다.",
         }}
       >
-        <Suspense
-          fallback={
-            <div className="pt-4">
-              <TableListSkeleton row={2} column={3} />
-            </div>
-          }
-        >
+        <Suspense fallback={null}>
           <ServerPrefetch url={`/stores/v1/${storeId}/menus/deleted`}>
-            <div className="pt-4">
-              <DeletedMenus />
-            </div>
+            <DeletedMenus />
           </ServerPrefetch>
         </Suspense>
       </QueryErrorFallback>
