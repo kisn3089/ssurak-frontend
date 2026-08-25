@@ -109,6 +109,7 @@ export default function DeletedMenuListView({
                     publicId: menu.publicId,
                   })
                 }
+                disabled={isAction}
               >
                 복구
               </Button>
