@@ -2,7 +2,7 @@
 
 import { ItemMedia } from "@ssurak/ui/components/item";
 import { cn } from "@ssurak/ui/lib/utils";
-import { ImagePlus } from "lucide-react";
+import { ImageOff, ImagePlus } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -45,40 +45,62 @@ export default function MenuImage({
   className = "",
   priority = false,
 }: MenuImageProps) {
-  const [isFailedImage, setIsFailedImage] = useState(false);
-
-  if (!src || isFailedImage) {
-    return (
-      <div className="bg-background w-full h-full p-8 rounded-3xl shadow-xl">
-        <EmptyImage />
-      </div>
-    );
-  }
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const isFailedImage = src !== null && src === failedSrc;
 
   return (
     <ItemMedia
       variant={"image"}
       className={cn(sizeClassMap[size].class, className, "bg-background")}
     >
-      <Image
-        src={src}
-        alt={alt}
-        width={sizeClassMap[size].width}
-        height={sizeClassMap[size].height}
-        priority={priority}
-        onError={() => setIsFailedImage(true)}
-      />
+      {!src || isFailedImage ? (
+        <FallbackImage size={size} isFailedImage={isFailedImage} />
+      ) : (
+        <Image
+          src={src}
+          alt={alt}
+          width={sizeClassMap[size].width}
+          height={sizeClassMap[size].height}
+          priority={priority}
+          onError={() => setFailedSrc(src)}
+        />
+      )}
     </ItemMedia>
   );
 }
 
-function EmptyImage() {
+type FallbackImageProps = {
+  size: MenuImageSize;
+  isFailedImage: boolean;
+};
+
+function FallbackImage({ size, isFailedImage }: FallbackImageProps) {
+  const FallbackIcon = isFailedImage ? ImageOff : ImagePlus;
+
+  if (size !== "cover") {
+    return (
+      <FallbackIcon
+        aria-hidden
+        className={cn(
+          "text-muted-foreground",
+          size === "tiny" ? "size-5" : "size-8"
+        )}
+      />
+    );
+  }
+
   return (
-    <div className="flex flex-col items-center gap-y-2">
-      <ImagePlus className="mb-2" />
-      <p className="font-semibold">이미지가 아직 업로드되지 않았습니다.</p>
+    <div className="flex flex-col items-center gap-y-2 p-8">
+      <FallbackIcon aria-hidden className="mb-2" />
+      <p className="font-semibold">
+        {isFailedImage
+          ? "이미지를 불러오지 못했습니다."
+          : "이미지가 아직 업로드되지 않았습니다."}
+      </p>
       <p className="whitespace-pre text-center text-accent-foreground text-sm">
-        {`메뉴 이미지를 업로드하여 \n고객에게 어떻게 보일지 미리 확인하세요!`}
+        {isFailedImage
+          ? `잠시 후 다시 시도하거나 \n다른 이미지를 업로드해 주세요.`
+          : `메뉴 이미지를 업로드하여 \n고객에게 어떻게 보일지 미리 확인하세요!`}
       </p>
     </div>
   );

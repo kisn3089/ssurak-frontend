@@ -1,6 +1,8 @@
 "use client";
 
 import { ItemMedia } from "@ssurak/ui/components/item";
+import { cn } from "@ssurak/ui/lib/utils";
+import { ImageOff } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -43,25 +45,28 @@ export default function MenuImage({
   className = "",
   priority = false,
 }: MenuImageProps) {
-  const [isFailedImage, setIsFailedImage] = useState(false);
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const isFailedImage = Boolean(src) && src === failedSrc;
 
-  if (!src || isFailedImage) {
-    return null;
-  }
+  if (!src) return null;
 
   return (
     <ItemMedia
       variant={"image"}
-      className={`${sizeClassMap[size].class} shadow-lg ${className}`}
+      className={cn(sizeClassMap[size].class, "shadow-lg", className)}
     >
-      <Image
-        src={src}
-        alt={alt}
-        width={sizeClassMap[size].width}
-        height={sizeClassMap[size].height}
-        priority={priority}
-        onError={() => setIsFailedImage(true)}
-      />
+      {isFailedImage ? (
+        <ImageOff aria-hidden className="text-muted-foreground size-8" />
+      ) : (
+        <Image
+          src={src}
+          alt={alt}
+          width={sizeClassMap[size].width}
+          height={sizeClassMap[size].height}
+          priority={priority}
+          onError={() => setFailedSrc(src)}
+        />
+      )}
     </ItemMedia>
   );
 }
