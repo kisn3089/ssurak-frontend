@@ -5,7 +5,12 @@ import { RotateCcw } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
-export default function FailedGetCategoryList() {
+export default function FailedGetCategoryList({
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
   const { storeId } = useParams<{ storeId: string }>();
 
   return (
@@ -14,7 +19,7 @@ export default function FailedGetCategoryList() {
         <h1 className="font-bold text-lg">
           카테고리 목록을 불러오지 못했습니다.
         </h1>
-        <Button className="rounded-3xl">
+        <Button className="rounded-3xl" onClick={reset}>
           <RotateCcw />
           재시도
         </Button>
