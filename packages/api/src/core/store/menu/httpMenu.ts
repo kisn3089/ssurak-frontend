@@ -61,7 +61,7 @@ async function reorderMenus({
   storeId,
   reorderMenusPayload,
 }: ReorderMenusParams) {
-  const response = await http.put(
+  const response = await http.put<Menu[]>(
     `${prefix(storeId)}/reorder`,
     reorderMenusPayload
   );
@@ -69,8 +69,12 @@ async function reorderMenus({
   return response.data;
 }
 
-export function restoreMenu({ storeId, menuId }: MenuParams) {
-  return http.patch(`${prefix(storeId)}/${menuId}/restore`);
+export async function restoreMenu({ storeId, menuId }: MenuParams) {
+  const response = await http.patch<Menu>(
+    `${prefix(storeId)}/${menuId}/restore`
+  );
+
+  return response.data;
 }
 
 async function deleteMenu({ storeId, menuId }: MenuParams) {
