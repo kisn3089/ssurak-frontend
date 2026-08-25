@@ -56,7 +56,7 @@ export default function ConstructMenuList({
       >
         {children}
       </ConstructTableListLayout>
-      <footer className="pt-8">
+      <footer className="pt-8 pb-4">
         <Pagination dataLength={filteredMenuList.length} />
       </footer>
     </>

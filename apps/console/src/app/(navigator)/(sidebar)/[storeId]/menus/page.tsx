@@ -11,6 +11,9 @@ import { Metadata } from "next";
 import TableListSkeleton from "../components/table-view/table/TableListSkeleton";
 import TableListHeader from "../components/table-view/table/TableListHeader";
 import FilterListSkeleton from "../components/table-view/filter/FilterListSkeleton";
+import DeletedMenus from "./components/deleted-menus/DeletedMenus";
+import QueryErrorFallback from "@/app/common/QueryErrorFallback";
+import FailedGetTableView from "@/app/common/FailedGetTableView";
 
 export const metadata: Metadata = {
   title: "메뉴 설정 - ssurak",
@@ -31,22 +34,39 @@ export default function MenusSettingPage({
           <span>메뉴 추가</span>
         </HeaderLinkButton>
       </PageTitle>
-      <Suspense
-        fallback={
-          <>
-            <FilterListSkeleton />
-            <TableListSkeleton row={5} column={5}>
-              <TableListHeader headers={menuHeaders} />
-            </TableListSkeleton>
-          </>
-        }
+      <QueryErrorFallback
+        FallbackComponent={FailedGetTableView}
+        fallbackProps={{
+          title: "삭제된 메뉴를 불러오는 중 오류가 발생했습니다.",
+        }}
       >
-        <ServerPrefetch url={`/stores/v1/${storeId}/menus`}>
-          <ConstructMenuList>
-            <TableListHeader headers={menuHeaders} />
-          </ConstructMenuList>
-        </ServerPrefetch>
-      </Suspense>
+        <Suspense fallback={null}>
+          <ServerPrefetch url={`/stores/v1/${storeId}/menus/deleted`}>
+            <DeletedMenus />
+          </ServerPrefetch>
+        </Suspense>
+      </QueryErrorFallback>
+      <QueryErrorFallback
+        FallbackComponent={FailedGetTableView}
+        fallbackProps={{ title: "메뉴를 불러오는 중 오류가 발생했습니다." }}
+      >
+        <Suspense
+          fallback={
+            <>
+              <FilterListSkeleton />
+              <TableListSkeleton row={5} column={5}>
+                <TableListHeader headers={menuHeaders} />
+              </TableListSkeleton>
+            </>
+          }
+        >
+          <ServerPrefetch url={`/stores/v1/${storeId}/menus`}>
+            <ConstructMenuList>
+              <TableListHeader headers={menuHeaders} />
+            </ConstructMenuList>
+          </ServerPrefetch>
+        </Suspense>
+      </QueryErrorFallback>
     </MainLayout>
   );
 }

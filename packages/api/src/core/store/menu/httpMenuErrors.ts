@@ -14,6 +14,8 @@ import { HttpAxiosError } from "../../axios/http";
  *   - Menu는 publicId 외 unique 제약이 없어 P2002(409)는 발생하지 않는다.
  *   - 삭제는 soft delete(deletedAt update)라 P2003(FK Restrict)도 발생하지 않는다.
  *   - 그 외 → 400 PRISMA_ERROR / 500 INTERNAL_SERVER_ERROR
+ * - MenuService.restoreMenu: P2025를 잡아 보관 기간 안내를 담은 404로 바꿔 던진다.
+ *   이때는 필터를 거치지 않은 예외라 `details.resource`가 없다.
  */
 export const httpMenuErrors = {
   post: postMenuErrors,
@@ -22,6 +24,7 @@ export const httpMenuErrors = {
   patch: patchMenuErrors,
   reorder: reorderMenusErrors,
   delete: deleteMenuErrors,
+  restore: restoreMenuErrors,
 };
 
 /** 모든 메뉴 요청에 공통으로 발생할 수 있는 인증/권한/서버 오류를 처리한다. */
@@ -150,6 +153,30 @@ function deleteMenuErrors(error: HttpAxiosError) {
       return commonMenuError(
         error,
         "일시적인 서버 오류로 삭제하지 못했어요. 잠시 후 다시 시도해 주세요."
+      );
+  }
+}
+
+/**
+ * 복구 실패 사유(대상 없음 · 이미 복구됨 · 보관 기간 만료)가 전부 404 하나로 오고,
+ * 어떤 경우인지는 서버 문구에만 담겨 있다. 보관 기간(MENU_RETENTION_DAYS)도 백엔드에만
+ * 있어서 프론트가 문구를 새로 쓰면 기간이 바뀔 때 안내가 어긋난다 — 서버 문구를 그대로 쓴다.
+ */
+function restoreMenuErrors(error: HttpAxiosError) {
+  const status = error.response?.data?.status;
+  const serverMessage = error.response?.data?.message;
+  switch (status) {
+    case 400:
+      return serverMessage ?? "잘못된 요청이에요. 다시 시도해 주세요.";
+    case 404:
+      return (
+        serverMessage ??
+        "복구하려는 메뉴를 찾을 수 없어요. 새로고침 후 다시 시도해 주세요."
+      );
+    default:
+      return commonMenuError(
+        error,
+        "일시적인 서버 오류로 복구하지 못했어요. 잠시 후 다시 시도해 주세요."
       );
   }
 }

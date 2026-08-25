@@ -7,6 +7,8 @@ import { use } from "react";
 import { DRAFT_REVIEW_PAGE_DESCRIPTION } from "../import/constants/page-copy";
 import { draftIdSchema } from "@ssurak/api/schemas/model/menuDraft.schema";
 import { menuDraftUrl } from "@ssurak/api/core/store/menu/draft/useMenuDraftMutation";
+import QueryErrorFallback from "@/app/common/QueryErrorFallback";
+import FailedGetTableView from "@/app/common/FailedGetTableView";
 
 export const metadata: Metadata = {
   title: "여러 메뉴 추가 - ssurak",
@@ -34,15 +36,22 @@ export default function MenuBulkCreatePage({
       description={DRAFT_REVIEW_PAGE_DESCRIPTION}
       renderRightHeader={<ImportMenusLink />}
     >
-      <ServerPrefetch url={`/stores/v1/${storeId}/menus`}>
-        {draftUrl ? (
-          <ServerPrefetch url={draftUrl}>
+      <QueryErrorFallback
+        FallbackComponent={FailedGetTableView}
+        fallbackProps={{
+          title: "메뉴를 불러오는 중 오류가 발생했습니다.",
+        }}
+      >
+        <ServerPrefetch url={`/stores/v1/${storeId}/menus`}>
+          {draftUrl ? (
+            <ServerPrefetch url={draftUrl}>
+              <BulkCreateMenuForm />
+            </ServerPrefetch>
+          ) : (
             <BulkCreateMenuForm />
-          </ServerPrefetch>
-        ) : (
-          <BulkCreateMenuForm />
-        )}
-      </ServerPrefetch>
+          )}
+        </ServerPrefetch>
+      </QueryErrorFallback>
     </SectionLayout>
   );
 }

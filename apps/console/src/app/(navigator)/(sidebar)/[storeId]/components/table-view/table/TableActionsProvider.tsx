@@ -15,6 +15,8 @@ export const tableActionToastId = {
   activate: (prefix: string, publicId: string) =>
     `${prefix}-activate-${publicId}`,
   delete: (prefix: string, publicId: string) => `${prefix}-delete-${publicId}`,
+  restore: (prefix: string, publicId: string) =>
+    `${prefix}-restore-${publicId}`,
 };
 
 const promiseToastTile = {

@@ -40,6 +40,12 @@ export function formatRemaining(expiresAt: string, now: number): string {
   const remainingMs = new Date(expiresAt).getTime() - now;
   if (remainingMs <= 0) return "곧 ";
 
+  const days = Math.floor(remainingMs / 86_400_000);
+  if (days >= 1) {
+    const hours = Math.floor((remainingMs % 86_400_000) / 3_600_000);
+    return hours >= 1 ? `${days}일 ${hours}시간 후 ` : `${days}일 후 `;
+  }
+
   const hours = Math.floor(remainingMs / 3_600_000);
   if (hours >= 1)
     return `${hours}시간 ${Math.floor((remainingMs % 3_600_000) / 60_000)}분 후 `;

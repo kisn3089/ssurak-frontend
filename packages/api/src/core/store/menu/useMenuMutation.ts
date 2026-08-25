@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   BulkCreateMenusParams,
   CreateMenuParams,
-  DeleteMenuParams,
+  MenuParams,
   httpMenus,
   ReorderMenusParams,
   UpdateMenuParams,
@@ -56,8 +56,14 @@ export default function useMenuMutation(
   });
 
   const deleteMenu = useMutation({
-    mutationFn: (args: Omit<DeleteMenuParams, "storeId">) =>
+    mutationFn: (args: Omit<MenuParams, "storeId">) =>
       httpMenus.deleteMenu({ storeId, ...args }),
+    onSuccess: () => !ignoreInvalidation && invalidateQueries(),
+  });
+
+  const restoreMenu = useMutation({
+    mutationFn: (args: Omit<MenuParams, "storeId">) =>
+      httpMenus.restoreMenu({ storeId, ...args }),
     onSuccess: () => !ignoreInvalidation && invalidateQueries(),
   });
 
@@ -67,6 +73,7 @@ export default function useMenuMutation(
     updateMenu,
     reorderMenus,
     deleteMenu,
+    restoreMenu,
     invalidateQueries,
   };
 }

@@ -28,6 +28,19 @@ export interface Menu {
 }
 
 /**
+ * 복구 가능한 소프트 삭제 메뉴. `GET /stores/{storeId}/menus/deleted` 응답이다.
+ *
+ * 보관 기간(MENU_RETENTION_DAYS)은 S3 lifecycle 정책을 따라가는 백엔드 상수라
+ * 프론트가 복제하지 않는다 — 만료 시각을 서버가 계산해 내려준다.
+ */
+export interface RestorableMenu extends Menu {
+  /** 소프트 삭제 시각. 이 응답에서는 항상 값이 있다. */
+  deletedAt: string;
+  /** 복구 가능 만료 시각. 서버가 `deletedAt + MENU_RETENTION_MS`로 계산한다. */
+  restorableUntil: string;
+}
+
+/**
  * 옵션을 함께 실은 메뉴. 고객 메뉴판 전용이다 —
  * 주문 화면은 한 번의 요청으로 전부 렌더해야 해서 옵션을 나눠 받을 이유가 없다.
  */

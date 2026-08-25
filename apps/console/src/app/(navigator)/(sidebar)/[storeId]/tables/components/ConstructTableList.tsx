@@ -45,7 +45,7 @@ export default function ConstructTableList({
       >
         {children}
       </ConstructTableListLayout>
-      <footer className="pt-8">
+      <footer className="pt-8 pb-4">
         <Pagination dataLength={filteredTableList.length} />
       </footer>
     </>

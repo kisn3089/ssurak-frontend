@@ -1,5 +1,3 @@
-"use server";
-
 import { getAccessToken } from "@/app/common/servers/getAccessToken";
 import { http } from "@ssurak/api/core/axios/http";
 import { makeQueryKey } from "@ssurak/api/utils/makeQueryKey";

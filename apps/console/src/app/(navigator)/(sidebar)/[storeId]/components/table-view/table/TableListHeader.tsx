@@ -4,7 +4,7 @@ type TableListHeaderProps = {
 };
 export default function TableListHeader({ headers }: TableListHeaderProps) {
   return (
-    <tr className="border-b">
+    <tr>
       {headers.map((item, index) => (
         <th
           key={index}
