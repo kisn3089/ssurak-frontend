@@ -37,7 +37,20 @@ export default function parseCookieFromResponse(
         if (lowerKey === "expires" && val) {
           cookieOptions.expires = new Date(val);
         }
+        if (lowerKey === "max-age" && val) {
+          const maxAge = Number(val);
+          if (Number.isFinite(maxAge)) cookieOptions.maxAge = maxAge;
+        }
       });
+
+      if (
+        cookieOptions.expires === undefined &&
+        cookieOptions.maxAge !== undefined
+      ) {
+        cookieOptions.expires = new Date(
+          Date.now() + cookieOptions.maxAge * 1000
+        );
+      }
 
       responseCookies.push(cookieOptions);
     }
@@ -47,9 +60,15 @@ export default function parseCookieFromResponse(
 
 export async function setCookieFromResponseHeader(
   responseCookies: NextCookie[],
-  callback: ({ name, value, expires, path }: NextCookie) => Promise<void>
+  callback: ({
+    name,
+    value,
+    expires,
+    maxAge,
+    path,
+  }: NextCookie) => Promise<void>
 ) {
-  for (const { name, value, expires, path } of responseCookies) {
-    await callback({ name, value, expires, path });
+  for (const { name, value, expires, maxAge, path } of responseCookies) {
+    await callback({ name, value, expires, maxAge, path });
   }
 }
