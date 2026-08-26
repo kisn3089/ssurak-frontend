@@ -46,12 +46,13 @@ export async function proxy(req: NextRequest) {
 
     const res = NextResponse.next({ request: { headers: req.headers } });
 
-    for (const { name, value, expires, maxAge } of responseCookies) {
+    for (const { name, value, expires, maxAge, path } of responseCookies) {
       res.cookies.set(name, value, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         ...cookieOptions,
+        path: path ?? cookieOptions.path,
         expires,
         maxAge,
       });

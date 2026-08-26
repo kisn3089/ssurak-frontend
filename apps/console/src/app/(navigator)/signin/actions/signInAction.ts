@@ -46,8 +46,8 @@ export default async function signInAction({
       const responseCookies = parseCookieFromResponse(cookieFromResponseHeader);
       await setCookieFromResponseHeader(
         responseCookies,
-        async ({ name, value, expires, maxAge }) => {
-          await setServerCookie(name, value, { expires, maxAge });
+        async ({ name, value, expires, maxAge, path }) => {
+          await setServerCookie(name, value, { expires, maxAge, path });
         }
       );
     }

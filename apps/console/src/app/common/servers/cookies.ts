@@ -24,6 +24,7 @@ export async function setServerCookie(
     sameSite: "lax",
     ...cookieOptions,
     ...options,
+    path: options?.path ?? cookieOptions.path,
   });
 }
 
