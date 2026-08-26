@@ -52,42 +52,38 @@ export default function OptionItem({ option, visible }: OptionItemProps) {
 
           return (
             <div
+              role="button"
               key={choice.publicId}
               data-disabled={disabled}
+              aria-pressed={selected}
+              onClick={() => toggleChoice(option.publicId, choice.publicId)}
               className={cn(
                 buttonVariants({ variant: selected ? "default" : "outline" }),
-                "flex flex-col min-h-14 h-fit min-w-24 gap-2 py-0 px-0 font-semibold border rounded-2xl",
+                "flex flex-col min-h-14 h-fit min-w-24 gap-2 px-5 py-2 font-semibold border rounded-2xl",
                 "data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50"
               )}
             >
-              <div
-                role="button"
-                aria-pressed={selected}
-                onClick={() => toggleChoice(option.publicId, choice.publicId)}
-                className="flex h-full flex-col px-5 py-2 justify-center items-center rounded-xl outline-none hover:cursor-pointer focus-visible:ring-[3px] focus-visible:ring-ring/50"
-              >
-                <span>{choice.name}</span>
-                {choice.quantityEnabled && selected ? (
-                  <div className="pt-1" onClick={(e) => e.stopPropagation()}>
-                    <Counter
-                      quantity={quantity}
-                      onChange={(next) =>
-                        changeChoiceQuantity(
-                          option.publicId,
-                          choice.publicId,
-                          next
-                        )
-                      }
-                      min={0}
-                      max={choice.maxQuantity}
-                      commonClassName="border-accent/30 bg-background-foreground dark:bg-background-foreground"
-                      buttonSize="icon-sm"
-                    />
-                  </div>
-                ) : (
-                  <ChoiceHint choice={choice} soldOut={soldOut} />
-                )}
-              </div>
+              <span>{choice.name}</span>
+              {choice.quantityEnabled && selected ? (
+                <div className="pt-1" onClick={(e) => e.stopPropagation()}>
+                  <Counter
+                    quantity={quantity}
+                    onChange={(next) =>
+                      changeChoiceQuantity(
+                        option.publicId,
+                        choice.publicId,
+                        next
+                      )
+                    }
+                    min={0}
+                    max={choice.maxQuantity}
+                    commonClassName="border-accent/30 bg-background-foreground dark:bg-background-foreground"
+                    buttonSize="icon-sm"
+                  />
+                </div>
+              ) : (
+                <ChoiceHint choice={choice} soldOut={soldOut} />
+              )}
             </div>
           );
         })}

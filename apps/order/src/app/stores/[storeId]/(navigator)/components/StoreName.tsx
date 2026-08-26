@@ -13,5 +13,9 @@ export default function StoreName() {
     }
   );
 
-  return <h1 className="md:text-lg font-bold truncate">{storeName}</h1>;
+  return (
+    <div className="flex flex-wrap overflow-hidden w-48">
+      <h1 className="md:text-lg font-bold truncate">{storeName}</h1>
+    </div>
+  );
 }
