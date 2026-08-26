@@ -65,6 +65,7 @@ export default function MenuImage({
           height={sizeClassMap[size].height}
           priority={priority}
           onError={() => setFailedSrc(src)}
+          loading="eager"
         />
       )}
     </ItemMedia>
