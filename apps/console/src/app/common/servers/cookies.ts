@@ -18,7 +18,13 @@ export async function setServerCookie(
   options?: Pick<ResponseCookie, "path" | "maxAge" | "expires">
 ) {
   const cookieStore = await cookies();
-  cookieStore.set(name, value, { ...cookieOptions, ...options });
+  cookieStore.set(name, value, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    ...cookieOptions,
+    ...options,
+  });
 }
 
 export async function clearServerCookie(names: CookieKey[]) {
