@@ -10,9 +10,12 @@ export interface Store {
   addressDetail: string | null;
   businessHours: string | null;
   description: string | null;
-  isOpen: boolean;
+  isPaused: boolean;
   /** 주문 접수 시 고객에게 노출할 안내 메시지 */
   acceptedMessage: string | null;
+  timezone: string;
+  businessDayCutoff: number;
+  orderNumberPrefix: string;
   createdAt: string;
   updatedAt: string;
 }
