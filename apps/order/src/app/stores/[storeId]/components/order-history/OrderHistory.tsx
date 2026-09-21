@@ -42,6 +42,9 @@ export default function OrderHistory() {
                   {formatDate(order.createdAt)}
                 </p>
               </div>
+              <p className="text-xs text-muted-foreground">
+                {`주문번호 ${order.orderNumber}`}
+              </p>
               <div className="flex flex-col gap-y-2 w-full">
                 {order.orderItems.map((orderItem) => (
                   <OrderedItem key={orderItem.publicId} orderItem={orderItem} />

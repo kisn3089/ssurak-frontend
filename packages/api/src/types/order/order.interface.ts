@@ -28,6 +28,9 @@ export interface Order {
   /** 고객 주문 멱등성 키. 관리자 주문은 사용하지 않아 nullable. */
   idempotencyKey: string | null;
   status: OrderStatus;
+  businessDate: string;
+  orderSeq: number;
+  orderNumber: string;
   /** 메뉴별 요청사항과 별개로 고객이 주문 전체에 남기는 요청사항 */
   memo: string | null;
   cancelledReason: string | null;
