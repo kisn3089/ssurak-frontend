@@ -7,7 +7,9 @@ import parseCookieFromResponse, {
   setCookieFromResponseHeader,
 } from "@ssurak/api/utils/parseCookieFromResponse";
 import { COOKIE_TABLE } from "@ssurak/api/utils/cookieTable.const";
+import { isExpired } from "@ssurak/auth/utils/decodedToken";
 import { isAxiosError } from "axios";
+import { getAccessToken } from "./getAccessToken";
 
 const SESSION_ENDED_STATUS = [401, 419];
 
@@ -16,6 +18,11 @@ const SESSION_ENDED_STATUS = [401, 419];
  * 실패해도 던지지 않고 원인을 구분해 반환한다 ({@link RefreshAccessTokenResult}).
  */
 export async function refreshAccessToken(): Promise<RefreshAccessTokenResult> {
+  const accessToken = await getAccessToken();
+  if (accessToken && !isExpired(accessToken)) {
+    return { status: "refreshed", accessToken };
+  }
+
   /** 토큰 값은 서버 안에서만 다루고, 클라이언트로는 절대 반환하지 않는다. */
   const refreshToken = (await getServerCookie(COOKIE_TABLE.REFRESH))?.value;
 

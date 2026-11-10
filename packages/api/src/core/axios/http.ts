@@ -7,6 +7,13 @@ declare module "@tanstack/react-query" {
   }
 }
 
+declare module "axios" {
+  interface AxiosRequestConfig {
+    /** 419 갱신 후 이미 한 번 재시도한 요청인지. 재시도에서도 419가 나면 더 갱신하지 않는다. */
+    hasRetriedAfterRefresh?: boolean;
+  }
+}
+
 const isServer = typeof window === "undefined";
 
 export const resolveSsurakBaseURL = (): string => {
@@ -78,24 +85,53 @@ function refreshAccessTokenOnce(
   return refreshPromise;
 }
 
+/** 갱신 결과를 메모리 토큰·axios 헤더에 반영하고, 세션이 끝났으면 로그아웃한다. */
+async function refreshAndApply(
+  callbacks: AuthCallbacks
+): Promise<RefreshAccessTokenResult> {
+  const refreshed = await refreshAccessTokenOnce(callbacks);
+
+  if (refreshed.status === "refreshed") {
+    callbacks.setAuthInfo({ accessToken: refreshed.accessToken });
+    updateAxiosAuthorizationHeader(refreshed.accessToken);
+  }
+
+  if (refreshed.status === "unauthorized") {
+    callbacks.signOut();
+  }
+
+  return refreshed;
+}
+
+/**
+ * 419 인터셉터 밖에서 토큰을 갱신한다 (소켓 핸드셰이크 거절 등).
+ * 인터셉터와 같은 갱신 Promise를 공유하므로 동시에 불려도 refresh 토큰은 한 번만 회전한다.
+ */
+export function refreshAuthSession(): Promise<RefreshAccessTokenResult> {
+  if (!authCallbacks) return Promise.resolve({ status: "unavailable" });
+  return refreshAndApply(authCallbacks);
+}
+
 http.interceptors.response.use(
   undefined,
   async (error: AxiosError<HttpError, AxiosRequestConfig>) => {
     if (error instanceof AxiosError && error.config) {
-      if (error.response?.status === 419 && authCallbacks) {
-        const refreshed = await refreshAccessTokenOnce(authCallbacks);
+      /**
+       * 갱신이 쿠키의 아직 유효한 access 토큰을 그대로 돌려줄 수 있어서(서버 간 시계 오차 등),
+       * 재시도에서도 419가 나면 같은 토큰으로 무한히 재시도하지 않도록 한 번만 허용한다.
+       */
+      if (
+        error.response?.status === 419 &&
+        !error.config.hasRetriedAfterRefresh &&
+        authCallbacks
+      ) {
+        const refreshed = await refreshAndApply(authCallbacks);
 
         if (refreshed.status === "refreshed") {
-          authCallbacks.setAuthInfo({ accessToken: refreshed.accessToken });
-          updateAxiosAuthorizationHeader(refreshed.accessToken);
-
+          error.config.hasRetriedAfterRefresh = true;
           error.config.headers["Authorization"] =
             `Bearer ${refreshed.accessToken}`;
           return http(error.config);
-        }
-
-        if (refreshed.status === "unauthorized") {
-          authCallbacks.signOut();
         }
       }
 
