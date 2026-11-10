@@ -6,6 +6,7 @@ import {
   getRealtimeSocketEpoch,
   REALTIME_EVENT,
   subscribeAdmin,
+  subscribeRealtimeResync,
   subscribeRealtimeSocketEpoch,
   unsubscribeAdmin,
 } from "./socket";
@@ -38,23 +39,17 @@ export const useStoreOrderSyncDaemon = (
   useEffect(() => {
     if (!storeId) return;
 
-    const socket = getRealtimeSocket();
-
-    const invalidateOrders = () => {
+    /**
+     * 보드 응답에 모든 테이블의 활성 세션이 들어 있고, 보드 쿼리가 성공할 때 테이블별 캐시를 채운다.
+     * 테이블 키(`/orders/v1/tables/...`)까지 무효화하면 테이블 수만큼 요청이 나가므로 보드만 다시 조회한다.
+     */
+    return subscribeRealtimeResync((resyncedStoreId) => {
+      if (resyncedStoreId !== storeId) return;
       void queryClient.invalidateQueries({
         queryKey: makeQueryKey(`/orders/v1/stores/${storeId}/board`),
       });
-      void queryClient.invalidateQueries({
-        queryKey: makeQueryKey("/orders/v1/tables"),
-      });
-    };
-
-    socket.io.on("reconnect", invalidateOrders);
-
-    return () => {
-      socket.io.off("reconnect", invalidateOrders);
-    };
-  }, [storeId, queryClient, socketEpoch]);
+    });
+  }, [storeId, queryClient]);
 
   useEffect(() => {
     if (!storeId) return;

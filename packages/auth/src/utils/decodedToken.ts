@@ -16,12 +16,18 @@ export function getTokenSubject(token: string | undefined): string | null {
   }
 }
 
-export function isExpired(token: string | undefined): boolean {
+/**
+ * @param leewaySeconds 만료까지 이 시간(초) 이하로 남았으면 만료로 본다. 서버 간 시계 오차나 사용 도중 만료를 흡수할 때 쓴다.
+ */
+export function isExpired(
+  token: string | undefined,
+  leewaySeconds = 0
+): boolean {
   if (!token) return true;
 
   try {
     const decodedToken = jwtDecode<TokenPayloadDecoded>(token);
-    if (Date.now() >= decodedToken.exp * 1000) {
+    if (Date.now() >= (decodedToken.exp - leewaySeconds) * 1000) {
       return true;
     }
   } catch (error) {
