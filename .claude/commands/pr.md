@@ -1,12 +1,12 @@
 ---
-description: PR 템플릿 기반으로 git history를 분석하여 PR 설명을 자동 생성
-allowed-tools: Bash(git:*), Read
+description: PR 템플릿 기반으로 git history를 분석하여 PR 설명을 생성하고 gh로 PR까지 생성
+allowed-tools: Bash(git:*), Bash(gh:*), Bash(mktemp:*), Read, Write, Skill
 argument-hint: [base-branch]
 ---
 
 # PR Description Generator
 
-PR 템플릿(`.github/pull_request_template.md`)과 git history를 분석하여 PR 설명을 생성합니다.
+PR 템플릿(`.github/pull_request_template.md`)과 git history를 분석하여 PR 설명을 생성하고, `gh pr create`로 PR까지 생성합니다.
 
 ## 실행 단계
 
@@ -21,20 +21,24 @@ Base branch를 결정합니다:
 - `$ARGUMENTS` 인자가 있으면 해당 브랜치 사용
 - 없으면 `main` 사용
 
-다음 git 명령어들을 실행하여 컨텍스트를 수집합니다:
+다음 git 명령어들을 실행하여 컨텍스트를 수집합니다.
+비교 기준은 로컬 브랜치가 아니라 `origin/<base-branch>`입니다. 현재 브랜치가 base branch 자체여도(로컬 `main`에 커밋한 경우) push 대상 커밋을 잡을 수 있습니다.
 
 ```bash
+# 원격 base 최신화
+git fetch origin <base-branch>
+
 # 현재 브랜치
 git branch --show-current
 
 # 커밋 로그 (base branch 이후)
-git log <base-branch>..HEAD --pretty=format:"%h %s%n%b---"
+git log origin/<base-branch>..HEAD --pretty=format:"%h %s%n%b---"
 
 # 변경 파일 요약
-git diff --stat <base-branch>...HEAD
+git diff --stat origin/<base-branch>...HEAD
 
 # 전체 diff
-git diff <base-branch>...HEAD
+git diff origin/<base-branch>...HEAD
 ```
 
 ### 3. 변경 사항 분석
@@ -192,9 +196,35 @@ fix(console): 주문 목록 필터링 및 데이터 동기화 오류 수정
 chore: reactCompiler 설정 제거 및 API 버전화 적용
 ```
 
-### 6. 출력
+### 6. PR 생성 (gh)
+
+작성한 제목과 본문으로 PR을 생성합니다.
+
+1. **사전 확인**
+   - 현재 브랜치가 base branch이거나 `main`이면 중단하지 않고 새 브랜치를 만들어 이어갑니다.
+     - `git log origin/<base-branch>..HEAD`의 커밋을 분석해 `<type>/<kebab-case-요약>` 형식의 브랜치명을 정합니다 (예: `fix/realtime-handshake-token-refresh`, `feat/deleted-menu-restore`). type은 5단계의 PR 제목 type과 맞추고, 요약은 영어 소문자로 3~5단어 이내로 작성합니다.
+     - `git switch -c <새 브랜치>`로 현재 커밋에서 브랜치를 만든 뒤, 로컬 base 브랜치는 `git branch -f <base-branch> origin/<base-branch>`로 원격 상태로 되돌립니다 (커밋은 새 브랜치에 남습니다).
+     - `origin/<base-branch>` 이후 커밋이 없으면 PR로 만들 변경이 없으므로 중단합니다.
+   - `gh pr view --json url -q .url`로 이미 열린 PR이 있는지 확인합니다. 있으면 새로 만들지 않고 `gh pr edit --title ... --body-file ...`로 갱신할지 사용자에게 묻습니다.
+   - `git status -sb`로 원격 추적 브랜치와 비교해 push되지 않은 커밋이 있으면 `git push -u origin <현재 브랜치>`를 먼저 실행합니다 (pre-push 훅이 `pnpm build`를 돌립니다).
+2. **본문 파일 작성**: 백틱·따옴표가 셸에서 깨지지 않도록 본문은 `mktemp`로 만든 임시 파일에 Write 도구로 저장합니다.
+3. **생성**
+
+   ```bash
+   gh pr create --base <base-branch> --head <현재 브랜치> --title "<PR 제목>" --body-file <본문 파일>
+   ```
+
+### 7. CodeRabbit 리뷰 요청
+
+PR이 새로 생성되었으면 Skill 도구로 `coderabbit-review` 스킬을 생성된 PR 번호와 함께 호출합니다 (`args: "<PR 번호>"`).
+이 저장소는 별 10개 미만 공개 저장소라 CodeRabbit 자동 리뷰가 동작하지 않기 때문입니다. 실행 여부·중복 판단은 해당 스킬이 담당합니다.
+기존 PR을 `gh pr edit`으로 갱신만 한 경우에는 호출하지 않습니다.
+
+### 8. 출력
 
 **출력 순서:**
 
 1. PR 제목 (## PR 제목)
-2. PR 본문 (마크다운 코드 블록으로 감싸서 복사하기 쉽게 제공)
+2. 생성된 PR URL
+3. CodeRabbit 리뷰 요청 결과 (요청한 코멘트 URL 또는 건너뛴 이유)
+4. PR 본문은 다시 출력하지 않습니다 (PR 페이지에서 확인). `gh` 실행이 실패한 경우에만 본문을 마크다운 코드 블록으로 출력해 수동으로 붙여넣을 수 있게 합니다.
